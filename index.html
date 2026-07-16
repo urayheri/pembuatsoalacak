@@ -350,9 +350,10 @@
 
             try {
                 const response = await fetch(proxyUrl, {
-                    method: "POST",
-                    body: JSON.stringify(promptInstruction)
-                });
+    method: "POST",
+    mode: "cors", // <--- Tambahkan ini
+    body: JSON.stringify(promptInstruction)
+});
 
                 const data = await response.json();
                 const parsedData = JSON.parse(data.candidates[0].content.parts[0].text);
