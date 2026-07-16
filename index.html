@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Pengacak Soal Ujian Massal (Exam Shuffler v3.9)</title>
-    <!-- Favicon menggunakan Emoji agar 100% praktis tanpa file gambar tambahan -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔀</text></svg>">
-    <!-- Tailwind CSS untuk Desain UI Modern -->
+    <title>Exam Shuffler Professional (v4.0)</title>
+    <!-- Favicon menggunakan Emoji -->
+    <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔀</text></svg>">
+    <!-- Tailwind CSS v4 untuk UI Modern -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Pustaka Membaca & Membuat Excel -->
+    <!-- Pustaka Excel (SheetJS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Pustaka Membuat File Word (.docx) secara Lokal -->
+    <!-- Pustaka Pembuat File Word (.docx) -->
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
-    <!-- Pustaka Pengemas File ZIP -->
+    <!-- Pustaka Kompresi ZIP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -22,15 +22,15 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🔀 Exam Shuffler to Word (PG & Essay)
+                    🔀 Exam Shuffler to Word Suite (v4.0)
                 </h1>
-                <p class="text-indigo-100 text-sm mt-1">Mendukung kombinasi Pilihan Ganda (diacak) dan Essay (tetap di akhir) otomatis.</p>
+                <p class="text-indigo-100 text-sm mt-1">Sistem pembuatan dokumen ujian otomatis dengan manajemen Kop Surat dan Ukuran Kertas.</p>
             </div>
-            <!-- Statistik Penggunaan (Global & Lokal) -->
+            <!-- Statistik Penggunaan -->
             <div class="bg-indigo-700/50 border border-indigo-500/30 px-4 py-2.5 rounded-xl text-xs space-y-1 w-full md:w-auto">
                 <div class="flex justify-between md:justify-start gap-4">
                     <span class="text-indigo-200">Digunakan Global:</span>
-                    <span id="globalCounter" class="font-bold text-yellow-300">Memuat...</span>
+                    <span id="globalCounter" class="font-bold text-yellow-300">Online</span>
                 </div>
                 <div class="flex justify-between md:justify-start gap-4">
                     <span class="text-indigo-200">Penggunaan Anda:</span>
@@ -41,26 +41,86 @@
     </header>
 
     <!-- Konten Utama -->
-    <main class="container mx-auto px-4 py-8 flex-1 max-w-4xl">
+    <main class="container mx-auto px-4 py-8 flex-1 max-w-4xl space-y-6">
         
         <!-- Panduan & Download Template -->
-        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
-            <h2 class="text-lg font-bold mb-2 text-slate-700">📋 Petunjuk Format Kombinasi (PG & Essay)</h2>
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-base font-bold mb-2 text-slate-700">📋 Petunjuk Dokumen & Template</h2>
             <p class="text-slate-600 text-sm mb-4">
-                Untuk membuat soal Essay, cukup isi kolom <strong>Soal</strong> saja, lalu <strong>kosongkan</strong> kolom Pilihan A sampai E dan kolom Kunci Jawaban. Sistem akan otomatis menaruhnya di bagian akhir kertas ujian.
+                Siapkan data Anda dalam format Excel. Kosongkan kolom pilihan jawaban (A-E) jika baris tersebut adalah jenis soal Essay.
             </p>
             <div class="flex flex-wrap gap-2">
-                <button id="downloadTemplateEBtn" class="px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 transition-colors flex items-center gap-2 shadow-xs">
+                <button id="downloadTemplateEBtn" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 transition-colors flex items-center gap-2 shadow-xs">
                     📥 Template SMK/SMA (PG A-E + Essay)
                 </button>
-                <button id="downloadTemplateDBtn" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 transition-colors flex items-center gap-2 shadow-xs">
+                <button id="downloadTemplateDBtn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 transition-colors flex items-center gap-2 shadow-xs">
                     📥 Template SMP/SD (PG A-D + Essay)
                 </button>
             </div>
         </section>
 
-        <!-- Konfigurasi & Upload -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- FITUR PENGATURAN KOP SURAT & KERTAS -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Sisi Kiri: Kop Surat -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🏢 Pengaturan Kop Surat</h3>
+                <div class="space-y-3 text-xs">
+                    <label class="block">
+                        <span class="text-slate-600 font-semibold block mb-1">Logo Sekolah (Gambar PNG/JPG)</span>
+                        <input type="file" id="logoInput" accept="image/*" class="w-full border border-slate-200 rounded p-1.5 file:bg-slate-100 file:border-0 file:px-2 file:py-1 file:rounded file:text-xs file:font-semibold">
+                    </label>
+                    <label class="block">
+                        <span class="text-slate-600 font-semibold block mb-1">Nama Instansi / Sekolah</span>
+                        <input type="text" id="namaSekolah" placeholder="Contoh: SMK NEGERI 1 SAMBAS" class="w-full border border-slate-200 rounded p-2 text-sm focus:outline-indigo-500">
+                    </label>
+                    <label class="block">
+                        <span class="text-slate-600 font-semibold block mb-1">Judul Ujian / Sub-Header</span>
+                        <input type="text" id="judulUjian" placeholder="Contoh: Penilaian Akhir Semester Ganjil" class="w-full border border-slate-200 rounded p-2 text-sm focus:outline-indigo-500">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Sisi Kanan: Kertas & Pembatasan Soal -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">📄 Pengaturan Kertas & Batasan</h3>
+                <div class="space-y-3 text-xs">
+                    <label class="block">
+                        <span class="text-slate-600 font-semibold block mb-1">Ukuran Kertas Utama</span>
+                        <select id="pageSize" class="w-full border border-slate-200 rounded p-2 text-sm focus:outline-indigo-500 bg-white">
+                            <option value="A4">A4 (210mm x 297mm)</option>
+                            <option value="F4">F4 / Folio Sekolah (215mm x 330mm)</option>
+                            <option value="CUSTOM">Custom Ukuran Sendiri (mm)</option>
+                        </select>
+                    </label>
+                    
+                    <!-- Form Input Ukuran Custom (Otomatis muncul jika dipilih) -->
+                    <div id="customPageFields" class="hidden grid grid-cols-2 gap-2">
+                        <label class="block">
+                            <span class="text-slate-500 block mb-1">Lebar (mm)</span>
+                            <input type="number" id="customWidth" value="210" class="w-full border border-slate-200 rounded p-1.5 text-sm">
+                        </label>
+                        <label class="block">
+                            <span class="text-slate-500 block mb-1">Tinggi (mm)</span>
+                            <input type="number" id="customHeight" value="297" class="w-full border border-slate-200 rounded p-1.5 text-sm">
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                        <label class="block">
+                            <span class="text-slate-600 font-semibold block mb-1">Batasi Jumlah Soal PG</span>
+                            <input type="number" id="limitPG" placeholder="Gunakan Semua" class="w-full border border-slate-200 rounded p-2 text-sm focus:outline-indigo-500">
+                        </label>
+                        <label class="block">
+                            <span class="text-slate-600 font-semibold block mb-1">Batasi Jumlah Soal Essay</span>
+                            <input type="number" id="limitEssay" placeholder="Gunakan Semua" class="w-full border border-slate-200 rounded p-2 text-sm focus:outline-indigo-500">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konfigurasi Utama & Upload File -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Upload Box -->
             <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-center">
                 <label class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition-colors block">
@@ -72,7 +132,7 @@
             </div>
 
             <!-- Jumlah Paket -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between gap-4">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Jumlah Paket Ujian</label>
                     <select id="packetCount" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -81,7 +141,7 @@
                         <option value="4">4 Paket (Paket A, B, C, D)</option>
                     </select>
                 </div>
-                <button id="processBtn" disabled class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
+                <button id="processBtn" disabled class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
                     📝 Ekspor ke Word (.ZIP)
                 </button>
             </div>
@@ -98,7 +158,7 @@
 
     <!-- Footer -->
     <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
-        Mendukung Struktur PG & Essay | Margin Hemat 0.5" | 100% Client-Side.
+        Mendukung A4/F4 & Pembatasan Butir Soal | Margin Hemat 0.5" | 100% Client-Side.
     </footer>
 
     <script>
@@ -108,87 +168,72 @@
         const processBtn = document.getElementById('processBtn');
         const previewSection = document.getElementById('previewSection');
         const soalContainer = document.getElementById('soalContainer');
-        const downloadTemplateEBtn = document.getElementById('downloadTemplateEBtn');
-        const downloadTemplateDBtn = document.getElementById('downloadTemplateDBtn');
+        const pageSizeDropdown = document.getElementById('pageSize');
+        const customPageFields = document.getElementById('customPageFields');
 
         let originalPGQuestions = [];
         let originalEssayQuestions = [];
         let optionCountGlobal = 4;
 
-        // ID Unik untuk Counter Global di server CountAPI (Ganti jika ingin mereset)
-        const apiKey = 'shuffler_herimukti_count_v1';
+        const apiKey = 'shuffler_herimukti_count_v4';
 
-        // Fungsi Memuat Counter saat halaman pertama dibuka
+        // Tampilkan/Sembunyikan Field Custom Kertas
+        pageSizeDropdown.addEventListener('change', (e) => {
+            if (e.target.value === "CUSTOM") {
+                customPageFields.classList.remove('hidden');
+            } else {
+                customPageFields.classList.add('hidden');
+            }
+        });
+
+        // Load Memori Usage Counters
         async function loadCounters() {
-            // 1. Ambil & Tampilkan Counter Lokal (localStorage)
             const localVal = localStorage.getItem('local_shuffler_count') || 0;
             document.getElementById('localCounter').textContent = `${localVal} kali`;
-
-            // 2. Ambil & Tampilkan Counter Global
             try {
                 const res = await fetch(`https://api.countapi.xyz/get/default/${apiKey}`);
                 const data = await res.json();
                 document.getElementById('globalCounter').textContent = `${data.value} kali`;
-            } catch (err) {
-                document.getElementById('globalCounter').textContent = "Online";
-            }
+            } catch (err) { document.getElementById('globalCounter').textContent = "Online"; }
         }
         loadCounters();
 
-        // Fungsi Menambahkan Angka Counter saat Sukses Memproses
         function incrementCounters() {
-            // 1. Update Lokal
             let localVal = parseInt(localStorage.getItem('local_shuffler_count') || 0);
             localVal++;
             localStorage.setItem('local_shuffler_count', localVal);
             document.getElementById('localCounter').textContent = `${localVal} kali`;
 
-            // 2. Update Global (Hit API)
-            fetch(`https://api.countapi.xyz/hit/default/${apiKey}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('globalCounter').textContent = `${data.value} kali`;
-                })
-                .catch(err => console.log("Gagal sinkronisasi statistik global."));
+            fetch(`https://api.countapi.xyz/hit/default/${apiKey}`).then(res => res.json()).then(data => {
+                document.getElementById('globalCounter').textContent = `${data.value} kali`;
+            }).catch(e => console.log(e));
         }
 
         // Logika Unduh Template Excel A-E + Essay
-        downloadTemplateEBtn.addEventListener('click', () => {
+        document.getElementById('downloadTemplateEBtn').addEventListener('click', () => {
             const header = ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Pilihan E", "Kunci Jawaban"];
             const rowPG = ["Struktur data FIFO (First In First Out) adalah...", "Stack", "Queue", "Tree", "Graph", "Array", "B"];
             const rowEssay = ["Jelaskan perbedaan mendasar antara struktur data Stack dan Queue!", "", "", "", "", "", ""];
-
-            const templateData = [header, rowPG, rowEssay];
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(templateData);
-
-            ws['!cols'] = [
-                { wch: 45 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 15 }
-            ];
-
+            const ws = XLSX.utils.aoa_to_sheet([header, rowPG, rowEssay]);
+            ws['!cols'] = [{ wch: 45 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 15 }];
             XLSX.utils.book_append_sheet(wb, ws, "Bank Soal");
             XLSX.writeFile(wb, "Template_SMK_PG_E_dan_Essay.xlsx");
         });
 
         // Logika Unduh Template Excel A-D + Essay
-        downloadTemplateDBtn.addEventListener('click', () => {
+        document.getElementById('downloadTemplateDBtn').addEventListener('click', () => {
             const header = ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Kunci Jawaban"];
             const rowPG = ["Ibukota dari negara Indonesia saat ini adalah...", "Surabaya", "Bandung", "Jakarta", "Medan", "C"];
             const rowEssay = ["Sebutkan 3 pahlawan nasional yang merumuskan teks proklamasi!", "", "", "", "", ""];
-
-            const templateData = [header, rowPG, rowEssay];
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(templateData);
-
-            ws['!cols'] = [
-                { wch: 45 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 15 }
-            ];
-
+            const ws = XLSX.utils.aoa_to_sheet([header, rowPG, rowEssay]);
+            ws['!cols'] = [{ wch: 45 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 15 }];
             XLSX.utils.book_append_sheet(wb, ws, "Bank Soal");
             XLSX.writeFile(wb, "Template_SMP_PG_D_dan_Essay.xlsx");
         });
 
-        // Membaca Bank Soal Excel secara Dinamis (PG & Essay)
+        // Membaca Bank Soal Excel secara Dinamis
         excelInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -226,14 +271,9 @@
                         if (r[0]) {
                             let isEssay = true;
                             for(let j = 1; j <= optionCountGlobal; j++) {
-                                if (r[j] && r[j].toString().trim() !== "") {
-                                    isEssay = false;
-                                    break;
-                                }
+                                if (r[j] && r[j].toString().trim() !== "") { isEssay = false; break; }
                             }
-                            if (r[keyIndex] && r[keyIndex].toString().trim() !== "") {
-                                isEssay = false;
-                            }
+                            if (r[keyIndex] && r[keyIndex].toString().trim() !== "") isEssay = false;
 
                             if (isEssay) {
                                 originalEssayQuestions.push({ soal: r[0] });
@@ -243,9 +283,7 @@
                                     optionsArray.push({ teks: r[j] || "-", labelOriginal: labels[j-1] });
                                 }
                                 originalPGQuestions.push({
-                                    soal: r[0],
-                                    opsi: optionsArray,
-                                    kunciOriginal: r[keyIndex].toString().trim().toUpperCase()
+                                    soal: r[0], opsi: optionsArray, kunciOriginal: r[keyIndex].toString().trim().toUpperCase()
                                 });
                             }
                         }
@@ -259,26 +297,12 @@
                         soalContainer.innerHTML = '';
                         if (originalPGQuestions.length > 0) {
                             const titlePG = document.createElement('h4');
-                            titlePG.className = "font-bold text-indigo-600 mb-2";
-                            titlePG.textContent = "A. PILIHAN GANDA";
+                            titlePG.className = "font-bold text-indigo-600 mb-2 text-xs";
+                            titlePG.textContent = "A. PILIHAN GANDA (PREVIEW)";
                             soalContainer.appendChild(titlePG);
-
                             originalPGQuestions.forEach((q, idx) => {
                                 const item = document.createElement('div');
-                                item.className = "py-1.5 pl-4";
-                                item.innerHTML = `<p>${idx + 1}. ${q.soal}</p>`;
-                                soalContainer.appendChild(item);
-                            });
-                        }
-                        if (originalEssayQuestions.length > 0) {
-                            const titleEssay = document.createElement('h4');
-                            titleEssay.className = "font-bold text-indigo-600 mt-4 mb-2";
-                            titleEssay.textContent = "B. ESSAY";
-                            soalContainer.appendChild(titleEssay);
-
-                            originalEssayQuestions.forEach((q, idx) => {
-                                const item = document.createElement('div');
-                                item.className = "py-1.5 pl-4";
+                                item.className = "py-1 pl-4 text-xs";
                                 item.innerHTML = `<p>${idx + 1}. ${q.soal}</p>`;
                                 soalContainer.appendChild(item);
                             });
@@ -299,30 +323,82 @@
             return arr;
         }
 
-        // Pembuat Dokumen Word (.docx) Kombinasi PG & Essay
+        // Pembuat Dokumen Word (.docx) dengan Custom Kop & Ukuran Kertas Dinamis
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
-            const { Document, Paragraph, TextRun, AlignmentType } = window.docx;
+            const { Document, Paragraph, TextRun, AlignmentType, ImageRun } = window.docx;
             const children = [];
 
-            // Kop Judul Dokumen
-            children.push(
-                new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [
-                        new TextRun({ text: title.toUpperCase(), bold: true, size: 28, font: "Arial" })
-                    ],
-                    spacing: { after: 300 }
-                })
-            );
+            // 🛠️ PARSING UKURAN KERTAS DINAMIS (1 mm = 56.7 twips/dxa)
+            const sizeMode = document.getElementById('pageSize').value;
+            let targetW = 210, targetH = 297; // Default A4
+            
+            if (sizeMode === "F4") {
+                targetW = 215; targetH = 330;
+            } else if (sizeMode === "CUSTOM") {
+                targetW = parseFloat(document.getElementById('customWidth').value) || 210;
+                targetH = parseFloat(document.getElementById('customHeight').value) || 297;
+            }
+            
+            const dxaWidth = Math.round(targetW * 56.7);
+            const dxaHeight = Math.round(targetH * 56.7);
+
+            // 📝 PEMBUATAN KOP SURAT KUSTOM
+            if (!isAnswerKey) {
+                // 1. Upload & Render Gambar Logo Sekolah
+                const logoFile = document.getElementById('logoInput').files[0];
+                if (logoFile) {
+                    try {
+                        const buffer = await logoFile.arrayBuffer();
+                        children.push(
+                            new Paragraph({
+                                alignment: AlignmentType.CENTER,
+                                children: [ new ImageRun({ data: buffer, transformation: { width: 55, height: 55 } }) ],
+                                spacing: { after: 100 }
+                            })
+                        );
+                    } catch(e) { console.log("Gagal memuat berkas logo gambar."); }
+                }
+
+                // 2. Teks Nama Sekolah dan Subjudul Ujian
+                const schoolInput = document.getElementById('namaSekolah').value || "NAMA INSTANSI SEKOLAH ANDA";
+                const examInput = document.getElementById('judulUjian').value || "UJIAN UTAMA SEMESTER";
+
+                children.push(
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [ new TextRun({ text: schoolInput.toUpperCase(), bold: true, size: 24, font: "Arial" }) ]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [ new TextRun({ text: examInput, font: "Arial", size: 20 }) ],
+                        spacing: { after: 200 }
+                    }),
+                    // Garis Pembatas Kop Cetak
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [ new TextRun({ text: "_________________________________________________________________________________", bold: true, font: "Arial", size: 18 }) ],
+                        spacing: { after: 300 }
+                    })
+                );
+            } else {
+                // Kop Sederhana Lembar Kunci Jawaban
+                children.push(
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [ new TextRun({ text: title.toUpperCase(), bold: true, size: 26, font: "Arial" }) ],
+                        spacing: { after: 300 }
+                    })
+                );
+            }
 
             const labels = ['A', 'B', 'C', 'D', 'E'];
 
-            // === BAGIAN PILIHAN GANDA ===
+            // === CORE LAYOUT: PILIHAN GANDA ===
             if (pgData.length > 0) {
                 if (!isAnswerKey) {
                     children.push(
                         new Paragraph({
-                            children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: "Arial", size: 24 })],
+                            children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: "Arial", size: 22 })],
                             spacing: { before: 100, after: 150 }
                         })
                     );
@@ -357,15 +433,8 @@
                             for (let t = 1; t < q.shuffledOptions.length; t++) {
                                 tabStops.push({ type: "left", position: t * colWidth });
                             }
-
-                            children.push(
-                                new Paragraph({
-                                    tabStops: tabStops,
-                                    indent: { left: 360 },
-                                    children: runChildren,
-                                    spacing: { after: 60 }
-                                })
-                            );
+                            children.push(new Paragraph({ tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
+                        
                         } else if (totalOptLen >= 80 && totalOptLen < 160) {
                             for(let i = 0; i < q.shuffledOptions.length; i += 2) {
                                 const runChildren = [
@@ -376,31 +445,18 @@
                                     runChildren.push(new TextRun({ text: `\t${labels[i+1]}. `, bold: true, font: "Arial", size: 22 }));
                                     runChildren.push(new TextRun({ text: q.shuffledOptions[i+1].teks, font: "Arial", size: 22 }));
                                 }
-                                children.push(
-                                    new Paragraph({
-                                        tabStops: [{ type: "left", position: 4600 }], 
-                                        indent: { left: 360 },
-                                        children: runChildren,
-                                        spacing: { after: 60 }
-                                    })
-                                );
+                                children.push(new Paragraph({ tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
                             }
                         } else {
                             q.shuffledOptions.forEach((opt, oIdx) => {
-                                children.push(
-                                    new Paragraph({
-                                        indent: { left: 720, hanging: 360 },
-                                        children: [
-                                            new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: "Arial", size: 22 }),
-                                            new TextRun({ text: opt.teks, font: "Arial", size: 22 })
-                                        ],
-                                        spacing: { after: 60 }
-                                    })
-                                );
+                                children.push(new Paragraph({ indent: { left: 720, hanging: 360 }, children: [
+                                    new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: "Arial", size: 22 }),
+                                    new TextRun({ text: opt.teks, font: "Arial", size: 22 })
+                                ], spacing: { after: 60 } }));
                             });
                         }
                     } else {
-                        // Render Kunci Jawaban PG
+                        // Kunci Jawaban PG (2 Kolom Hemat)
                         if (index % 2 === 0) {
                             const runChildren = [
                                 new TextRun({ text: `Nomor ${index + 1} : `, font: "Arial", size: 22 }),
@@ -411,59 +467,44 @@
                                 runChildren.push(new TextRun({ text: `\tNomor ${index + 2} : `, font: "Arial", size: 22 }));
                                 runChildren.push(new TextRun({ text: ` ${nextQ.newKey} `, bold: true, font: "Arial", size: 22 }));
                             }
-                            children.push(
-                                new Paragraph({
-                                    tabStops: [{ type: "left", position: 4000 }],
-                                    children: runChildren,
-                                    spacing: { after: 60 }
-                                })
-                            );
+                            children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
                         }
                     }
                 });
             }
 
-            // === BAGIAN ESSAY ===
+            // === CORE LAYOUT: ESSAY ===
             if (essayData.length > 0 && !isAnswerKey) {
                 children.push(
                     new Paragraph({
-                        children: [new TextRun({ text: "B. ESSAY", bold: true, font: "Arial", size: 24 })],
+                        children: [new TextRun({ text: "B. ESSAY", bold: true, font: "Arial", size: 22 })],
                         spacing: { before: 300, after: 150 }
                     })
                 );
-
                 essayData.forEach((eq, eIndex) => {
-                    children.push(
-                        new Paragraph({
-                            indent: { left: 360, hanging: 360 },
-                            children: [
-                                new TextRun({ text: `${eIndex + 1}. `, bold: true, font: "Arial", size: 22 }),
-                                new TextRun({ text: eq.soal, font: "Arial", size: 22 })
-                            ],
-                            spacing: { before: 120, after: 120 }
-                        })
-                    );
+                    children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [
+                        new TextRun({ text: `${eIndex + 1}. `, bold: true, font: "Arial", size: 22 }),
+                        new TextRun({ text: eq.soal, font: "Arial", size: 22 })
+                    ], spacing: { before: 120, after: 120 } }));
                 });
             }
 
-            // Margin Halaman 0.5 Inci
+            // Injeksi Konfigurasi Kertas & Margin 0.5 Inci
             const doc = new Document({
                 sections: [{
                     properties: {
                         page: {
-                            margin: {
-                                top: 720, bottom: 720, left: 720, right: 720,
-                            },
+                            size: { width: dxaWidth, height: dxaHeight },
+                            margin: { top: 720, bottom: 720, left: 720, right: 720 },
                         },
                     },
                     children: children
                 }]
             });
-            
             return await window.docx.Packer.toBlob(doc);
         }
 
-        // Eksekusi Pengacakan, Pemisahan PG/Essay, & Pengepakan ZIP
+        // 6. Pemrosesan ZIP dengan Filtering Batasan Jumlah Soal
         processBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
             const zip = new JSZip();
@@ -472,11 +513,18 @@
             processBtn.disabled = true;
             processBtn.textContent = "Sedang Mengemas...";
 
+            // ⚙️ LOGIKA PEMBATASAN JUMLAH SOAL (SLICING ARRAY)
+            const limitPGVal = parseInt(document.getElementById('limitPG').value);
+            const limitEssayVal = parseInt(document.getElementById('limitEssay').value);
+
+            const limitedPG = !isNaN(limitPGVal) ? originalPGQuestions.slice(0, limitPGVal) : originalPGQuestions;
+            const limitedEssay = !isNaN(limitEssayVal) ? originalEssayQuestions.slice(0, limitEssayVal) : originalEssayQuestions;
+
             for (let p = 0; p < numPackets; p++) {
                 const packetLetter = String.fromCharCode(65 + p);
                 
-                const shuffledPG = shuffleArray(originalPGQuestions);
-                const staticEssay = [...originalEssayQuestions];
+                const shuffledPG = shuffleArray(limitedPG);
+                const staticEssay = [...limitedEssay];
 
                 const processedPG = shuffledPG.map(q => {
                     const shuffledOptions = shuffleArray(q.opsi);
@@ -490,21 +538,19 @@
                 const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, staticEssay, false);
                 zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
 
-                const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedQuestions = processedPG, [], true);
+                const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, [], true);
                 zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
             }
 
             zip.generateAsync({ type: 'blob' }).then((content) => {
                 const element = document.createElement('a');
                 element.href = URL.createObjectURL(content);
-                element.download = "Paket_Ujian_Kombinasi_Hemat.zip";
+                element.download = "Paket_Ujian_Komplit_Hemat.zip";
                 document.body.appendChild(element);
                 element.click();
                 document.body.removeChild(element);
 
-                // Tambahkan nilai counter sukses
                 incrementCounters();
-
                 processBtn.disabled = false;
                 processBtn.textContent = "📝 Ekspor ke Word (.ZIP)";
             });
