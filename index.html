@@ -162,11 +162,7 @@
             <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🤖 Modul Ekstraksi & Pembuat Soal AI</h3>
             
             <!-- INPUT API KEY GEMINI YANG AMAN (LOCAL MEMORY STORAGE) -->
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
-                <label class="block font-bold text-amber-900">🔑 Masukkan Google Gemini API Key Anda:</label>
-                <input type="password" id="geminiApiKey" placeholder="Tempel AI Studio API Key Anda di sini..." class="w-full border bg-white border-amber-300 rounded p-2 text-xs font-mono focus:outline-indigo-500">
-                <span class="text-[10px] text-amber-700 block mt-0.5">Aman dari pelacakan GitHub. Kunci disimpan secara lokal di browser Anda sendiri.</span>
-            </div>
+          
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1">
@@ -439,37 +435,50 @@
         // GANTI BAGIAN EVENT LISTENER processGenerateBtn DENGAN INI:
 processGenerateBtn.addEventListener('click', async () => {
     const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
-    const proxyUrl = "https://script.google.com/macros/s/AKfycbwC_WIdSG5z-95jEbicVAPDryF9aRCAbS77AMztze0s7JWHxQm05wqOVX-xSb-ta6kB/exec"; // <--- PASTE LINK DI SINI
+    // MASUKKAN URL WEB APP ANDA DI SINI
+    const proxyUrl = "MASUKKAN_URL_GOOGLE_SCRIPT_ANDA_DI_SINI"; 
     
-    if(!materi) return alert("Silakan unggah dokumen PDF/Word atau tempel materi teks terlebih dahulu!");
+    if(!materi) return alert("Silakan unggah dokumen atau tempel teks materi terlebih dahulu!");
 
-    // ... (logic kuota kognitif tetap sama)
+    // Ambil kuota kognitif dari input UI Anda (C1-C6)
+    const kuotaKognitif = {
+        "C1": parseInt(document.getElementById('countC1').value) || 0,
+        "C2": parseInt(document.getElementById('countC2').value) || 0,
+        "C3": parseInt(document.getElementById('countC3').value) || 0,
+        "C4": parseInt(document.getElementById('countC4').value) || 0,
+        "C5": parseInt(document.getElementById('countC5').value) || 0,
+        "C6": parseInt(document.getElementById('countC6').value) || 0
+    };
 
     processGenerateBtn.disabled = true;
     processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
     const promptInstruction = {
-        contents: [{ parts: [{ text: "Buatkan soal ujian berdasarkan materi ini: " + materi + "...(instruksi prompt Anda)..." }] }]
+        contents: [{ parts: [{ text: `Buatkan soal ujian dari materi ini: ${materi.substring(0, 5000)}. 
+            Buat ${totalPGMinta} soal PG (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}...) dan ${generateCountEssay.value} soal Essay.
+            Output JSON murni tanpa markdown.` }] }]
     };
 
     try {
         const response = await fetch(proxyUrl, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(promptInstruction)
         });
 
-        const jsonResult = await response.json();
-        // ... (lanjutkan parsing hasil seperti sebelumnya)
-        
+        const data = await response.json();
+        const parsedData = JSON.parse(data.candidates[0].content.parts[0].text);
+
+        originalPGQuestions = parsedData.pilihan_ganda;
+        originalEssayQuestions = parsedData.essay;
+
+        renderEditorUI();
     } catch (err) {
-        alert("Gagal terhubung ke AI: " + err.message);
+        alert("Gagal menghubungi server AI: " + err.message);
     } finally {
         processGenerateBtn.disabled = false;
         processGenerateBtn.textContent = "✨ Generate Soal";
     }
 });
-
         function renderEditorUI() {
             previewSection.classList.remove('hidden'); exportSingleWordBtn.classList.remove('hidden');
             previewTitle.textContent = "Editor Pembuatan Soal & Level Kognitif (Dapat Diedit)"; soalContainer.innerHTML = "";
