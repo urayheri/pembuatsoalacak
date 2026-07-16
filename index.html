@@ -436,84 +436,39 @@
         });
 
         // ================= MODE 2: KONEKSI DENGAN GOOGLE GEMINI API (SOAL AI ASLI) =================
-        processGenerateBtn.addEventListener('click', async () => {
-            const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
-            const token = geminiApiKeyInput.value.trim();
-            
-            if(!token) return alert("Silakan masukkan Google Gemini API Key Anda terlebih dahulu untuk memulai!");
-            if(!materi) return alert("Silakan unggah dokumen PDF/Word atau tempel materi teks terlebih dahulu!");
+        // GANTI BAGIAN EVENT LISTENER processGenerateBtn DENGAN INI:
+processGenerateBtn.addEventListener('click', async () => {
+    const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
+    const proxyUrl = "https://script.google.com/macros/s/AKfycbwC_WIdSG5z-95jEbicVAPDryF9aRCAbS77AMztze0s7JWHxQm05wqOVX-xSb-ta6kB/exec"; // <--- PASTE LINK DI SINI
+    
+    if(!materi) return alert("Silakan unggah dokumen PDF/Word atau tempel materi teks terlebih dahulu!");
 
-            const kuotaKognitif = {
-                "C1": parseInt(document.getElementById('countC1').value) || 0,
-                "C2": parseInt(document.getElementById('countC2').value) || 0,
-                "C3": parseInt(document.getElementById('countC3').value) || 0,
-                "C4": parseInt(document.getElementById('countC4').value) || 0,
-                "C5": parseInt(document.getElementById('countC5').value) || 0,
-                "C6": parseInt(document.getElementById('countC6').value) || 0
-            };
+    // ... (logic kuota kognitif tetap sama)
 
-            const totalPGMinta = Object.values(kuotaKognitif).reduce((a, b) => a + b, 0);
-            if (totalPGMinta === 0) return alert("Silakan isi kuota soal pada minimal salah satu tingkat kognitif!");
+    processGenerateBtn.disabled = true;
+    processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
-            processGenerateBtn.disabled = true;
-            processGenerateBtn.textContent = "Menghubungi Gemini AI Cloud...";
+    const promptInstruction = {
+        contents: [{ parts: [{ text: "Buatkan soal ujian berdasarkan materi ini: " + materi + "...(instruksi prompt Anda)..." }] }]
+    };
 
-            const essayCount = parseInt(generateCountEssay.value) || 0;
-
-            const promptInstruction = `
-                Kamu adalah sistem pakar pembuat soal ujian sekolah. Berdasarkan materi berikut:
-                "${materi.substring(0, 6000)}"
-
-                Buatkan soal pilihan ganda dan essay dengan spesifikasi ketat sebagai berikut:
-                1. Pilihan Ganda: buat total ${totalPGMinta} soal. Di mana masing-masing kognitif jumlahnya wajib tepat: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
-                2. Pilihan ganda harus memiliki 5 opsi (A, B, C, D, E) yang bervariasi secara kontekstual, pengecoh yang cerdas, dan tidak boleh memiliki pola kalimat yang seragam di setiap nomor.
-                3. Essay: buat total ${essayCount} soal.
-                4. Output Wajib dalam bentuk JSON murni berstruktur tanpa markdown (\`\`\`) seperti berikut:
-                {
-                   "pilihan_ganda": [
-                      {"soal": "Teks kalimat soal...", "opsi": [{"teks": "Pilihan A..."}, {"teks": "Pilihan B..."}, {"teks": "Pilihan C..."}, {"teks": "Pilihan D..."}, {"teks": "Pilihan E..."}], "kunci": "A/B/C/D/E", "kognitif": "C1"},
-                      ...
-                   ],
-                   "essay": [
-                      {"soal": "Teks kalimat soal...", "kognitif": "C2"},
-                      ...
-                   ]
-                }
-            `;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${token}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptInstruction }] }],
-                        generationConfig: { responseMimeType: "application/json" }
-                    })
-                });
-
-                const jsonResult = await response.json();
-                const cleanText = jsonResult.candidates[0].content.parts[0].text;
-                const parsedData = JSON.parse(cleanText);
-
-                originalPGQuestions = parsedData.pilihan_ganda.map(q => {
-                    return {
-                        soal: q.soal,
-                        opsi: q.opsi,
-                        kunciOriginal: q.kunci.toUpperCase(),
-                        kognitif: q.kognitif.toUpperCase()
-                    };
-                });
-
-                originalEssayQuestions = parsedData.essay;
-
-                renderEditorUI();
-            } catch (err) {
-                alert("Gagal terhubung ke Gemini AI: " + err.message + "\nPastikan API Key Anda benar dan aktif!");
-            } finally {
-                processGenerateBtn.disabled = false;
-                processGenerateBtn.textContent = "✨ Hubungi AI Cloud & Generate Soal";
-            }
+    try {
+        const response = await fetch(proxyUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(promptInstruction)
         });
+
+        const jsonResult = await response.json();
+        // ... (lanjutkan parsing hasil seperti sebelumnya)
+        
+    } catch (err) {
+        alert("Gagal terhubung ke AI: " + err.message);
+    } finally {
+        processGenerateBtn.disabled = false;
+        processGenerateBtn.textContent = "✨ Generate Soal";
+    }
+});
 
         function renderEditorUI() {
             previewSection.classList.remove('hidden'); exportSingleWordBtn.classList.remove('hidden');
