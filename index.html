@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Ultra Full Extended Edition (v7.4)</title>
+    <title>Exam Master Suite - Complete Counter Edition (v7.5)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -29,7 +29,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v7.4)
+                    🛠️ Exam Master Suite (v7.5)
                 </h1>
                 <p class="text-indigo-100 text-sm mt-1">Multi-Source Document Parser & Precise Cognitive Level Target Distributor.</p>
             </div>
@@ -78,7 +78,7 @@
             </div>
         </section>
 
-        <!-- PANEL PARAMETER KOP GAMBAR & ATRIBUT DINAMIS (SHARED PARAMETERS - FITUR UTAMA AMAN) -->
+        <!-- PANEL PARAMETER KOP GAMBAR & ATRIBUT DINAMIS (SHARED PARAMETERS) -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Sisi Kiri: Upload Gambar Kop Surat Sekolah Utuh -->
             <div class="space-y-3">
@@ -176,41 +176,46 @@
                 </div>
             </div>
 
-            <!-- DETAIL TARJET DISTRIBUSI JUMLAH SOAL PER LEVEL KOGNITIF -->
+            <!-- DETAIL TARGET DISTRIBUSI JUMLAH SOAL PER LEVEL KOGNITIF -->
             <div class="pt-3 border-t border-slate-100 space-y-2">
                 <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1">📊 Tentukan Jumlah Soal Per Tingkat Kognitif (C1 - C6)</h4>
                 <div class="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C1 (Mengingat)</span>
-                        <input type="number" id="countC1" value="2" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500">
+                        <input type="number" id="countC1" value="2" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500 cog-input">
                     </label>
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C2 (Memahami)</span>
-                        <input type="number" id="countC2" value="2" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500">
+                        <input type="number" id="countC2" value="2" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500 cog-input">
                     </label>
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C3 (Menerapkan)</span>
-                        <input type="number" id="countC3" value="1" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500">
+                        <input type="number" id="countC3" value="1" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500 cog-input">
                     </label>
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C4 (Menganalisis)</span>
-                        <input type="number" id="countC4" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500">
+                        <input type="number" id="countC4" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500 cog-input">
                     </label>
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C5 (Evaluasi)</span>
-                        <input type="number" id="countC5" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500">
+                        <input type="number" id="countC5" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500 cog-input">
                     </label>
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C6 (Mencipta)</span>
-                        <input type="number" id="countC6" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500">
+                        <input type="number" id="countC6" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-indigo-500 cog-input">
                     </label>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2 border-t border-slate-50">
+            <!-- RINGKASAN DATA JUMLAH SOAL TOTAL (PG DIKEMBALIKAN + ESSAY) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2 border-t border-slate-50">
+                <label class="block">
+                    <span class="text-slate-600 font-semibold block mb-1">Total Soal PG Diinginkan (Akumulasi Otomatis)</span>
+                    <input type="text" id="generateCountPG" value="5" readonly class="w-full border p-2 rounded-lg text-sm bg-slate-100 font-bold text-slate-600 cursor-not-allowed text-center">
+                </label>
                 <label class="block">
                     <span class="text-slate-600 font-semibold block mb-1">Jumlah Keseluruhan Soal Essay</span>
-                    <input type="number" id="generateCountEssay" value="2" class="w-full border p-2 rounded-lg text-sm focus:outline-indigo-500">
+                    <input type="number" id="generateCountEssay" value="2" class="w-full border p-2 rounded-lg text-sm focus:outline-indigo-500 text-center">
                 </label>
                 <div class="flex items-end">
                     <button id="processGenerateBtn" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm transition-colors shadow-sm cursor-pointer">
@@ -234,7 +239,7 @@
 
     <!-- FOOTER -->
     <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
-        Exam Master Suite Edition | Engine v7.4 Core Architecture.
+        Exam Master Suite Edition | Engine v7.5 Full Counter Architecture.
     </footer>
 
     <!-- LOGIKA JAVASCRIPT DETIL DAN LENGKAP -->
@@ -259,6 +264,7 @@
         const materiFileInput = document.getElementById('materiFileInput');
         const fileMateriStatus = document.getElementById('fileMateriStatus');
         const materiInputText = document.getElementById('materiInputText');
+        const generateCountPG = document.getElementById('generateCountPG');
         const generateCountEssay = document.getElementById('generateCountEssay');
         const processGenerateBtn = document.getElementById('processGenerateBtn');
 
@@ -269,7 +275,24 @@
         let activeTab = "acak"; 
         let extractedTextFromDocument = "";
 
-        const apiKey = 'exam_master_suite_count_v7_4';
+        const apiKey = 'exam_master_suite_count_v7_5';
+
+        // ================= FUNGSI REAL-TIME TOTAL SOAL PG =================
+        function updateTotalPG() {
+            const c1 = parseInt(document.getElementById('countC1').value) || 0;
+            const c2 = parseInt(document.getElementById('countC2').value) || 0;
+            const c3 = parseInt(document.getElementById('countC3').value) || 0;
+            const c4 = parseInt(document.getElementById('countC4').value) || 0;
+            const c5 = parseInt(document.getElementById('countC5').value) || 0;
+            const c6 = parseInt(document.getElementById('countC6').value) || 0;
+            generateCountPG.value = c1 + c2 + c3 + c4 + c5 + c6;
+        }
+
+        // Jalankan event listener perubahan pada setiap kotak kognitif
+        document.querySelectorAll('.cog-input').forEach(input => {
+            input.addEventListener('input', updateTotalPG);
+            input.addEventListener('change', updateTotalPG);
+        });
 
         // ================= EVENT LISTENER NAVIGASI TAB UTAMA =================
         tabAcakBtn.addEventListener('click', () => {
@@ -289,6 +312,7 @@
             panelBuat.classList.remove('hidden'); 
             panelAcak.classList.add('hidden');
             previewSection.classList.add('hidden');
+            updateTotalPG(); // Pastikan kalkulator berjalan saat tab dimuat
         });
 
         // ================= LOGIKA COUNTER STATISTIK DATA =================
@@ -449,7 +473,7 @@
             const uniqueKeywords = [...new Set(keywords)].slice(0, 30);
             const kwPool = uniqueKeywords.length > 0 ? uniqueKeywords : ["Komponen", "Prosedur", "Mekanisme", "Sistem", "Fungsi"];
 
-            // Bank Pola Kalimat Alami Luwes v7.4 (C1 s.d C6)
+            // Bank Pola Kalimat Alami Luwes (C1 s.d C6)
             const bankPolaKalimat = {
                 "C1": [
                     (kw) => `Manakah yang merupakan definisi paling tepat dari konsep '${kw}'?`,
@@ -713,7 +737,7 @@
             }
             zip.generateAsync({ type: 'blob' }).then((content) => {
                 const element = document.createElement('a'); element.href = URL.createObjectURL(content);
-                element.download = "Paket_Ujian_Massal_Extended.zip"; document.body.appendChild(element); element.click();
+                element.download = "Paket_Ujian_Massal_Final.zip"; document.body.appendChild(element); element.click();
                 document.body.removeChild(element); incrementCounters(); processAcakBtn.disabled = false;
             });
         });
@@ -725,7 +749,7 @@
             try {
                 const blob = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
                 const element = document.createElement('a'); element.href = URL.createObjectURL(blob);
-                element.download = "Hasil_AI_Kuota_Extended.docx"; document.body.appendChild(element); element.click();
+                element.download = "Hasil_AI_Kuota_Final.docx"; document.body.appendChild(element); element.click();
                 document.body.removeChild(element); incrementCounters();
             } catch(e) { alert(e.message); }
             finally { exportSingleWordBtn.disabled = false; }
