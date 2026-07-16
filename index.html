@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Multi-Source Edition (v6.5)</title>
+    <title>Exam Master Suite - Cognitive Level Edition (v7.0)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -16,12 +16,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <!-- PUSTAKA TAMBAHAN UNTUK EKSTRAKSI PDF & WORD LOKAL -->
-    <!-- Mammoth.js untuk membaca file .docx -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <!-- PDF.js untuk membaca file .pdf -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        // Set worker untuk pustaka PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
 </head>
@@ -32,9 +29,9 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v6.5)
+                    🛠️ Exam Master Suite (v7.0)
                 </h1>
-                <p class="text-indigo-100 text-sm mt-1">Multi-Source Input: Unggah PDF, Word, atau Tempel Materi untuk Pembuat Soal AI.</p>
+                <p class="text-indigo-100 text-sm mt-1">Multi-Source Input & Analisis Tingkat Kesulitan Soal (Kognitif C1 - C6).</p>
             </div>
             <!-- Statistik Penggunaan -->
             <div class="bg-indigo-700/50 border border-indigo-500/30 px-4 py-2.5 rounded-xl text-xs space-y-1 w-full md:w-auto">
@@ -69,14 +66,14 @@
         <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
             <h2 class="text-sm font-bold mb-1 text-slate-700">📋 Petunjuk Format Dokumen</h2>
             <p class="text-slate-600 text-xs mb-3">
-                Kedua mode mendukung kombinasi Pilihan Ganda dan Essay secara otomatis. Unduh template Excel di bawah ini jika Anda memilih Mode Pengacak Soal.
+                Mendukung kombinasi Pilihan Ganda, Essay, dan penanda tingkat kesulitan ranah kognitif (C1 - C6).
             </p>
             <div class="flex flex-wrap gap-2">
                 <button id="downloadTemplateEBtn" class="px-4 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 transition-colors">
-                    📥 Template SMK/SMA (PG A-E + Essay)
+                    📥 Template SMK/SMA (PG A-E + Essay + C1-C6)
                 </button>
                 <button id="downloadTemplateDBtn" class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 transition-colors">
-                    📥 Template SMP/SD (PG A-D + Essay)
+                    📥 Template SMP/SD (PG A-D + Essay + C1-C6)
                 </button>
             </div>
         </section>
@@ -141,7 +138,6 @@
 
         <!-- ================= PANEL MODE 1: PENGACAK SOAL EXCEL ================= -->
         <section id="panelAcak" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Upload Box -->
             <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-center">
                 <label class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition-colors block">
                     <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden">
@@ -150,7 +146,6 @@
                     <span id="fileStatus" class="text-xs text-slate-400 block mt-1">Belum ada file terpilih</span>
                 </label>
             </div>
-            <!-- Jumlah Paket -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between gap-4">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Jumlah Paket Ujian</label>
@@ -169,8 +164,6 @@
         <!-- ================= PANEL MODE 2: PEMBUAT SOAL AI (MULTIPLE SOURCES) ================= -->
         <section id="panelBuat" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
             <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🤖 Modul Ekstraksi & Pembuat Soal AI</h3>
-            
-            <!-- Dual Input: Upload Dokumen Materi atau Tempel Teks -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1">
                     <label class="block text-xs font-semibold text-slate-600">Opsi A: Unggah File Materi (PDF / Word .docx)</label>
@@ -213,17 +206,16 @@
     </main>
 
     <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
-        Exam Master Suite Edition | Engine v6.5 Client-Side Multi-Format Parser.
+        Exam Master Suite Edition | Engine v7.0 Cognitive Level Integrated Parser.
     </footer>
 
     <script>
-        // DOM Elements Navigasi Tab
+        // DOM Elements
         const tabAcakBtn = document.getElementById('tabAcakBtn');
         const tabBuatBtn = document.getElementById('tabBuatBtn');
         const panelAcak = document.getElementById('panelAcak');
         const panelBuat = document.getElementById('panelBuat');
 
-        // DOM Inputs Umum
         const excelInput = document.getElementById('excelInput');
         const fileStatus = document.getElementById('fileStatus');
         const packetCount = document.getElementById('packetCount');
@@ -233,7 +225,6 @@
         const previewTitle = document.getElementById('previewTitle');
         const exportSingleWordBtn = document.getElementById('exportSingleWordBtn');
 
-        // DOM Inputs Mode 2 (Multi-Source)
         const materiFileInput = document.getElementById('materiFileInput');
         const fileMateriStatus = document.getElementById('fileMateriStatus');
         const materiInput = document.getElementById('materiInput');
@@ -241,14 +232,14 @@
         const generateCountEssay = document.getElementById('generateCountEssay');
         const processGenerateBtn = document.getElementById('processGenerateBtn');
 
-        // State Global Aplikasi
+        // State Global
         let originalPGQuestions = [];
         let originalEssayQuestions = [];
         let optionCountGlobal = 4;
         let activeTab = "acak"; 
-        let extractedTextFromDocument = ""; // Menyimpan teks hasil bacaan PDF/Word
+        let extractedTextFromDocument = "";
 
-        const apiKey = 'exam_master_suite_count_v6_5';
+        const apiKey = 'exam_master_suite_count_v7';
 
         // ================= TAB MANAGEMENT =================
         tabAcakBtn.addEventListener('click', () => {
@@ -290,25 +281,25 @@
             fetch(`https://api.countapi.xyz/hit/default/${apiKey}`).catch(e => console.log(e));
         }
 
-        // ================= TEMPLATE DOWNLOADERS =================
+        // ================= TEMPLATE DOWNLOADERS (DENGAN KOLOM KOGNITIF) =================
         document.getElementById('downloadTemplateEBtn').addEventListener('click', () => {
-            const header = ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Pilihan E", "Kunci Jawaban"];
-            const rowPG = ["Sintaks JavaScript untuk menuliskan text di console adalah...", "print()", "document.write()", "console.log()", "echo()", "response.write()", "C"];
-            const rowEssay = ["Jelaskan keunggulan GitHub Pages untuk kebutuhan deployment website!", "", "", "", "", "", ""];
+            const header = ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Pilihan E", "Kunci Jawaban", "Kognitif"];
+            const rowPG = ["Sintaks JavaScript untuk menuliskan text di console adalah...", "print()", "document.write()", "console.log()", "echo()", "response.write()", "C", "C1"];
+            const rowEssay = ["Jelaskan keunggulan GitHub Pages untuk kebutuhan deployment website!", "", "", "", "", "", "", "C2"];
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet([header, rowPG, rowEssay]);
             XLSX.utils.book_append_sheet(wb, ws, "Bank Soal");
-            XLSX.writeFile(wb, "Template_Ujian_AE.xlsx");
+            XLSX.writeFile(wb, "Template_Ujian_AE_Kognitif.xlsx");
         });
 
         document.getElementById('downloadTemplateDBtn').addEventListener('click', () => {
-            const header = ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Kunci Jawaban"];
-            const rowPG = ["Prinsip FIFO (First In First Out) dipakai pada struktur data...", "Stack", "Queue", "Tree", "Graph", "B"];
-            const rowEssay = ["Sebutkan jenis tag HTML yang digunakan untuk membuat judul dokumen!", "", "", "", "", ""];
+            const header = ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Kunci Jawaban", "Kognitif"];
+            const rowPG = ["Prinsip FIFO (First In First Out) dipakai pada struktur data...", "Stack", "Queue", "Tree", "Graph", "B", "C1"];
+            const rowEssay = ["Sebutkan jenis tag HTML yang digunakan untuk membuat judul dokumen!", "", "", "", "", "", "C1"];
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet([header, rowPG, rowEssay]);
             XLSX.utils.book_append_sheet(wb, ws, "Bank Soal");
-            XLSX.writeFile(wb, "Template_Ujian_AD.xlsx");
+            XLSX.writeFile(wb, "Template_Ujian_AD_Kognitif.xlsx");
         });
 
         // ================= PARSER LOGIKAL FILE DOKUMEN MATERI (PDF & WORD) =================
@@ -321,9 +312,7 @@
             extractedTextFromDocument = "";
 
             const reader = new FileReader();
-
             if (file.name.endsWith('.docx')) {
-                // Membaca Teks Dokumen Word lokal (.docx)
                 reader.onload = async function(event) {
                     try {
                         const arrayBuffer = event.target.result;
@@ -331,35 +320,24 @@
                         extractedTextFromDocument = result.value;
                         fileMateriStatus.textContent = `✓ Berhasil memuat Word (${extractedTextFromDocument.split(' ').length} kata).`;
                         fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                    } catch(err) {
-                        fileMateriStatus.textContent = "Gagal memproses file Word.";
-                        fileMateriStatus.className = "text-[10px] text-red-500 block mt-0.5";
-                    }
+                    } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
                 };
                 reader.readAsArrayBuffer(file);
-
             } else if (file.name.endsWith('.pdf')) {
-                // Membaca Teks Dokumen PDF lokal (.pdf) menggunakan PDF.js
                 reader.onload = async function(event) {
                     try {
                         const typedarray = new Uint8Array(event.target.result);
                         const pdf = await pdfjsLib.getDocument(typedarray).promise;
                         let textContent = "";
-                        
                         for (let i = 1; i <= pdf.numPages; i++) {
                             const page = await pdf.getPage(i);
                             const textObj = await page.getTextContent();
-                            const pageText = textObj.items.map(item => item.str).join(" ");
-                            textContent += pageText + "\n";
+                            textContent += textObj.items.map(item => item.str).join(" ") + "\n";
                         }
-                        
                         extractedTextFromDocument = textContent;
                         fileMateriStatus.textContent = `✓ Berhasil memuat PDF (${extractedTextFromDocument.split(' ').length} kata).`;
                         fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                    } catch(err) {
-                        fileMateriStatus.textContent = "Gagal mengekstrak teks PDF.";
-                        fileMateriStatus.className = "text-[10px] text-red-500 block mt-0.5";
-                    }
+                    } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
                 };
                 reader.readAsArrayBuffer(file);
             }
@@ -381,12 +359,19 @@
 
                     const header = rows[0];
                     let keyIndex = -1;
+                    let cogIndex = -1;
+
                     for(let i=0; i<header.length; i++) {
-                        if(header[i] && header[i].toString().toLowerCase().includes('kunci')) { keyIndex = i; break; }
+                        if(header[i] && header[i].toString().toLowerCase().includes('kunci')) keyIndex = i;
+                        if(header[i] && (header[i].toString().toLowerCase().includes('kognitif') || header[i].toString().toLowerCase().includes('kesulitan'))) cogIndex = i;
                     }
                     if (keyIndex === -1) keyIndex = header.length - 1;
 
-                    optionCountGlobal = keyIndex - 1;
+                    optionCountGlobal = (cogIndex !== -1 && cogIndex < keyIndex) ? cogIndex - 1 : keyIndex - 1;
+                    if(cogIndex !== -1 && cogIndex < keyIndex) optionCountGlobal = cogIndex - 1;
+                    else if(cogIndex === -1) optionCountGlobal = keyIndex - 1;
+                    else optionCountGlobal = keyIndex - 1;
+
                     originalPGQuestions = [];
                     originalEssayQuestions = [];
                     const labels = ['A', 'B', 'C', 'D', 'E'];
@@ -400,12 +385,19 @@
                             }
                             if (r[keyIndex] && r[keyIndex].toString().trim() !== "") isEssay = false;
 
+                            const kognitifVal = cogIndex !== -1 ? (r[cogIndex] || "").toString().trim().toUpperCase() : "";
+
                             if (isEssay) {
-                                originalEssayQuestions.push({ soal: r[0] });
+                                originalEssayQuestions.push({ soal: r[0], kognitif: kognitifVal });
                             } else {
                                 const optionsArray = [];
                                 for(let j = 1; j <= optionCountGlobal; j++) { optionsArray.push({ teks: r[j] || "-", labelOriginal: labels[j-1] }); }
-                                originalPGQuestions.push({ soal: r[0], opsi: optionsArray, kunciOriginal: r[keyIndex].toString().trim().toUpperCase() });
+                                originalPGQuestions.push({ 
+                                    soal: r[0], 
+                                    opsi: optionsArray, 
+                                    kunciOriginal: r[keyIndex].toString().trim().toUpperCase(),
+                                    kognitif: kognitifVal 
+                                });
                             }
                         }
                     }
@@ -419,9 +411,8 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // ================= MODE 2: GENERATE SOAL AI (MULTI SOURCE) =================
+        // ================= MODE 2: GENERATE SOAL AI DENGAN VARIASI TINGKAT KOGNITIF =================
         processGenerateBtn.addEventListener('click', () => {
-            // Memprioritaskan teks dari Dokumen Upload, jika kosong baru mengambil dari Textarea Tempel
             const materi = extractedTextFromDocument.trim() || materiInput.value.trim();
             if(!materi) return alert("Silakan unggah dokumen PDF/Word atau tempel materi teks terlebih dahulu!");
 
@@ -437,11 +428,21 @@
             const uniqueKeywords = [...new Set(keywords)].slice(0, 25);
             const kwPool = uniqueKeywords.length > 0 ? uniqueKeywords : ["Komponen", "Prosedur", "Mekanisme", "Sistem", "Fungsi"];
 
+            const cognitiveLevels = ["C1", "C2", "C3", "C4"];
+
             originalPGQuestions = [];
             for(let i = 0; i < pgCount; i++) {
                 const kw = kwPool[i % kwPool.length];
+                const cog = cognitiveLevels[i % cognitiveLevels.length];
+                let templateSoal = "";
+
+                if(cog === "C1") templateSoal = `Manakah dari pilihan berikut yang merupakan definisi atau terminologi dasar yang paling tepat dari elemen '${kw}'?`;
+                else if(cog === "C2") templateSoal = `Berdasarkan ringkasan materi, bagaimanakah Anda menguraikan atau menjelaskan fungsi operasional utama dari konsep '${kw}'?`;
+                else if(cog === "C3") templateSoal = `Apabila terjadi error dalam integrasi sistem, bagaimanakah metode penerapan praktis yang benar dari implementasi '${kw}'?`;
+                else templateSoal = `Lakukan analisis mendalam terhadap struktur arsitektur sistem, apa dampak kegagalan jika komponen '${kw}' dihilangkan?`;
+
                 originalPGQuestions.push({
-                    soal: `Berdasarkan ringkasan materi pengajaran, manakah pernyataan berikut yang paling tepat menjelaskan fungsi utama dari konsep '${kw}'?`,
+                    soal: templateSoal,
                     opsi: [
                         { teks: `Mengatur alur proses implementasi ${kw} secara terdistribusi.`, labelOriginal: "A" },
                         { teks: `Meminimalkan penggunaan dependensi eksternal pada ${kw}.`, labelOriginal: "B" },
@@ -449,7 +450,8 @@
                         { teks: `Meningkatkan alokasi kapasitas memori penyimpanan ${kw}.`, labelOriginal: "D" },
                         { teks: `Menyederhanakan struktur interaksi arsitektur ${kw}.`, labelOriginal: "E" }
                     ],
-                    kunciOriginal: "A"
+                    kunciOriginal: "A",
+                    kognitif: cog
                 });
             }
 
@@ -457,9 +459,15 @@
             for(let i = 0; i < essayCount; i++) {
                 const kw1 = kwPool[(i * 2) % kwPool.length];
                 const kw2 = kwPool[(i * 3 + 1) % kwPool.length] || "Struktur";
-                originalEssayQuestions.push({
-                    soal: `Jelaskan secara komprehensif bagaimana keterkaitan fungsional antara elemen '${kw1}' dengan mekanisme operasi '${kw2}' pada kondisi nyata di lapangan!`
-                });
+                const cog = cognitiveLevels[(i + 1) % cognitiveLevels.length];
+                let templateSoal = "";
+
+                if(cog === "C1") templateSoal = `Sebutkan dan tuliskan poin-poin utama parameter fundamental '${kw1}' dan '${kw2}'!`;
+                else if(cog === "C2") templateSoal = `Jelaskan secara deskriptif perbedaan mendasar alur kerja antara komponen '${kw1}' dengan mekanisme operasi '${kw2}'!`;
+                else if(cog === "C3") templateSoal = `Berikan contoh studi kasus implementasi nyata bagaimana menerapkan keterkaitan fungsional antara '${kw1}' dan '${kw2}'!`;
+                else templateSoal = `Lakukan analisis komprehensif, bandingkan efisiensi integrasi sistem jika menggunakan basis '${kw1}' dibanding mekanisme '${kw2}'!`;
+
+                originalEssayQuestions.push({ soal: templateSoal, kognitif: cog });
             }
 
             setTimeout(() => {
@@ -469,11 +477,11 @@
             }, 600);
         });
 
-        // Merender Editor Interaktif
+        // Merender Editor Interaktif (Ditambah Input Pilihan Kognitif)
         function renderEditorUI() {
             previewSection.classList.remove('hidden');
             exportSingleWordBtn.classList.remove('hidden');
-            previewTitle.textContent = "Editor Hasil Pembuatan Soal (Dapat Diedit Langsung)";
+            previewTitle.textContent = "Editor Pembuatan Soal & Level Kognitif (Dapat Diedit)";
             soalContainer.innerHTML = "";
 
             if (originalPGQuestions.length > 0) {
@@ -484,8 +492,8 @@
                     q.opsi.forEach((opt, oIdx) => {
                         opsiHtml += `
                             <div class="flex items-center gap-1 bg-slate-50 p-1 rounded border border-slate-100">
-                                <span class="font-bold text-slate-400">${String.fromCharCode(65+oIdx)}.</span>
-                                <input type="text" value="${opt.teks}" class="bg-transparent w-full focus:outline-none text-xs" onchange="originalPGQuestions[${idx}].opsi[${oIdx}].teks = this.value">
+                                <span class="font-bold text-slate-400 text-[10px]">${String.fromCharCode(65+oIdx)}.</span>
+                                <input type="text" value="${opt.teks}" class="bg-transparent w-full focus:outline-none text-[11px]" onchange="originalPGQuestions[${idx}].opsi[${oIdx}].teks = this.value">
                             </div>
                         `;
                     });
@@ -493,6 +501,9 @@
                         <div class="flex gap-2 items-start">
                             <span class="font-bold text-indigo-600">${idx+1}.</span>
                             <textarea class="w-full border border-slate-200 rounded-lg p-1.5 text-xs focus:outline-indigo-400" onchange="originalPGQuestions[${idx}].soal = this.value">${q.soal}</textarea>
+                            <select class="border p-1 rounded text-[11px] bg-amber-50 text-amber-800 font-bold" onchange="originalPGQuestions[${idx}].kognitif = this.value">
+                                ${["C1","C2","C3","C4","C5","C6"].map(c => `<option value="${c}" ${q.kognitif === c ? 'selected' : ''}>${c}</option>`).join('')}
+                            </select>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5">
                             ${opsiHtml}
@@ -509,6 +520,9 @@
                     block.innerHTML = `
                         <span class="font-bold text-indigo-600">${idx+1}.</span>
                         <textarea class="w-full border border-slate-200 rounded-lg p-1.5 text-xs focus:outline-indigo-400" onchange="originalEssayQuestions[${idx}].soal = this.value">${q.soal}</textarea>
+                        <select class="border p-1 rounded text-[11px] bg-amber-50 text-amber-800 font-bold" onchange="originalEssayQuestions[${idx}].kognitif = this.value">
+                            ${["C1","C2","C3","C4","C5","C6"].map(c => `<option value="${c}" ${q.kognitif === c ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
                     `;
                     soalContainer.appendChild(block);
                 });
@@ -525,7 +539,7 @@
             return arr;
         }
 
-        // ================= UNIVERSAL WORD LAYOUT ENGINE =================
+        // ================= UNIVERSAL WORD LAYOUT ENGINE (DENGAN INJEKSI KOGNITIF) =================
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
             const children = [];
@@ -593,6 +607,7 @@
 
             const labels = ['A', 'B', 'C', 'D', 'E'];
 
+            // RENDER DOKUMEN PILIHAN GANDA + TAG KOGNITIF
             if (pgData.length > 0) {
                 if (!isAnswerKey) {
                     children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
@@ -600,7 +615,18 @@
 
                 pgData.forEach((q, index) => {
                     if (!isAnswerKey) {
-                        children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: q.soal, font: customFont, size: customSize })], spacing: { before: 120, after: 80 } }));
+                        const labelKognitif = q.kognitif ? ` [${q.kognitif}]` : "";
+                        children.push(
+                            new Paragraph({ 
+                                indent: { left: 360, hanging: 360 }, 
+                                children: [
+                                    new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), 
+                                    new TextRun({ text: q.soal, font: customFont, size: customSize }),
+                                    new TextRun({ text: labelKognitif, font: customFont, size: customSize, bold: true, color: "7F7F7F" })
+                                ], 
+                                spacing: { before: 120, after: 80 } 
+                            })
+                        );
 
                         let totalOptLen = q.shuffledOptions.reduce((acc, o) => acc + (o.teks || "").toString().length, 0);
 
@@ -632,12 +658,18 @@
                             });
                         }
                     } else {
+                        // Kunci PG dengan info kognitif di sebelahnya
+                        const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
                         if (index % 2 === 0) {
-                            const runChildren = [new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), new TextRun({ text: ` ${q.newKey} `, bold: true, font: customFont, size: customSize })];
+                            const runChildren = [
+                                new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }),
+                                new TextRun({ text: ` ${q.newKey}${infoKog} `, bold: true, font: customFont, size: customSize })
+                            ];
                             if (index + 1 < pgData.length) {
                                 const nextQ = pgData[index + 1];
+                                const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : "";
                                 runChildren.push(new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }));
-                                runChildren.push(new TextRun({ text: ` ${nextQ.newKey} `, bold: true, font: customFont, size: customSize }));
+                                runChildren.push(new TextRun({ text: ` ${nextQ.newKey}${nextInfoKog} `, bold: true, font: customFont, size: customSize }));
                             }
                             children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
                         }
@@ -645,10 +677,22 @@
                 });
             }
 
+            // RENDER DOKUMEN ESSAY + TAG KOGNITIF
             if (essayData.length > 0 && !isAnswerKey) {
                 children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
                 essayData.forEach((eq, eIndex) => {
-                    children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize })], spacing: { before: 120, after: 120 } }));
+                    const labelKognitif = eq.kognitif ? ` [${eq.kognitif}]` : "";
+                    children.push(
+                        new Paragraph({ 
+                            indent: { left: 360, hanging: 360 }, 
+                            children: [
+                                new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), 
+                                new TextRun({ text: eq.soal, font: customFont, size: customSize }),
+                                new TextRun({ text: labelKognitif, font: customFont, size: customSize, bold: true, color: "7F7F7F" })
+                            ], 
+                            spacing: { before: 120, after: 120 } 
+                        })
+                    );
                 });
             }
 
@@ -666,7 +710,7 @@
             return await window.docx.Packer.toBlob(doc);
         }
 
-        // Action Handle: Mode 1 (ZIP Acak)
+        // Action: Mode 1 ZIP Massal
         processAcakBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
             const zip = new JSZip();
@@ -682,7 +726,7 @@
                     const shuffledOptions = shuffleArray(q.opsi);
                     let newKey = '';
                     shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
-                    return { soal: q.soal, shuffledOptions, newKey };
+                    return { soal: q.soal, shuffledOptions, newKey, kognitif: q.kognitif };
                 });
 
                 const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, staticEssay, false);
@@ -695,7 +739,7 @@
             zip.generateAsync({ type: 'blob' }).then((content) => {
                 const element = document.createElement('a');
                 element.href = URL.createObjectURL(content);
-                element.download = "Paket_Soal_Ujian_Excel_Hemat.zip";
+                element.download = "Paket_Ujian_Cognitive_Level.zip";
                 document.body.appendChild(element);
                 element.click();
                 document.body.removeChild(element);
@@ -705,16 +749,18 @@
             });
         });
 
-        // Action Handle: Mode 2 (Cetak Tunggal dari AI)
+        // Action: Mode 2 Cetak Tunggal AI
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
-            const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal }; });
+            const formattedPG = originalPGQuestions.map(q => { 
+                return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal, kognitif: q.kognitif }; 
+            });
 
             try {
                 const blob = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
                 const element = document.createElement('a');
                 element.href = URL.createObjectURL(blob);
-                element.download = "Hasil_AI_Generator_Hemat.docx";
+                element.download = "Hasil_AI_Generator_Kognitif.docx";
                 document.body.appendChild(element);
                 element.click();
                 document.body.removeChild(element);
