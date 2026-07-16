@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Complete Counter Edition (v7.5)</title>
+    <title>Exam Master Suite - Production Ready Edition (v7.6)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -29,7 +29,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v7.5)
+                    🛠️ Exam Master Suite (v7.6)
                 </h1>
                 <p class="text-indigo-100 text-sm mt-1">Multi-Source Document Parser & Precise Cognitive Level Target Distributor.</p>
             </div>
@@ -207,7 +207,7 @@
                 </div>
             </div>
 
-            <!-- RINGKASAN DATA JUMLAH SOAL TOTAL (PG DIKEMBALIKAN + ESSAY) -->
+            <!-- RINGKASAN DATA JUMLAH SOAL TOTAL -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2 border-t border-slate-50">
                 <label class="block">
                     <span class="text-slate-600 font-semibold block mb-1">Total Soal PG Diinginkan (Akumulasi Otomatis)</span>
@@ -239,7 +239,7 @@
 
     <!-- FOOTER -->
     <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
-        Exam Master Suite Edition | Engine v7.5 Full Counter Architecture.
+        Exam Master Suite Edition | Engine v7.6 Production Counter Framework.
     </footer>
 
     <!-- LOGIKA JAVASCRIPT DETIL DAN LENGKAP -->
@@ -275,7 +275,7 @@
         let activeTab = "acak"; 
         let extractedTextFromDocument = "";
 
-        const apiKey = 'exam_master_suite_count_v7_5';
+        const apiKey = 'exam_master_suite_count_v7_6';
 
         // ================= FUNGSI REAL-TIME TOTAL SOAL PG =================
         function updateTotalPG() {
@@ -288,7 +288,6 @@
             generateCountPG.value = c1 + c2 + c3 + c4 + c5 + c6;
         }
 
-        // Jalankan event listener perubahan pada setiap kotak kognitif
         document.querySelectorAll('.cog-input').forEach(input => {
             input.addEventListener('input', updateTotalPG);
             input.addEventListener('change', updateTotalPG);
@@ -312,7 +311,7 @@
             panelBuat.classList.remove('hidden'); 
             panelAcak.classList.add('hidden');
             previewSection.classList.add('hidden');
-            updateTotalPG(); // Pastikan kalkulator berjalan saat tab dimuat
+            updateTotalPG();
         });
 
         // ================= LOGIKA COUNTER STATISTIK DATA =================
@@ -446,7 +445,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // ================= MODE 2: GENERATE SOAL DENGAN TARGET KUOTA KOGNITIF PRESELEKSI KUSTOM =================
+        // ================= MODE 2: GENERATE SOAL (PERBAIKAN ISTILAH ALAMI & FILTER BLACKLIST) =================
         processGenerateBtn.addEventListener('click', () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             if(!materi) return alert("Silakan unggah dokumen PDF/Word atau tempel materi teks terlebih dahulu!");
@@ -467,13 +466,22 @@
             processGenerateBtn.textContent = "Mengekstrak...";
             const essayCount = parseInt(generateCountEssay.value) || 0;
 
-            const keywords = materi.split(/[ ,.!\n()]+/ )
-                                    .filter(w => w.length > 4 && !["adalah", "untuk", "dalam", "yang", "dengan"].includes(w.toLowerCase()))
-                                    .map(w => w.replace(/[^a-zA-Z]/g, ''));
-            const uniqueKeywords = [...new Set(keywords)].slice(0, 30);
-            const kwPool = uniqueKeywords.length > 0 ? uniqueKeywords : ["Komponen", "Prosedur", "Mekanisme", "Sistem", "Fungsi"];
+            // DAFTAR HITAM KATA HUBUNG UMUM AGAR TIDAK ANEH SAAT MASUK KALIMAT SOAL
+            const wordBlacklist = [
+                "sebelum", "setelah", "adalah", "untuk", "dalam", "dengan", "fungsi", "sistem", "elemen", "struktur", 
+                "proses", "elemen", "kedua", "antara", "terjadi", "kendala", "sebuah", "manakah", "istilah", "materi", 
+                "prinsip", "alurl", "konsep", "proyek", "fitur", "langkah", "praktis", "pertama", "lakukan", "analisis",
+                "terhadap", "mengalami", "kegagalan", "dihilangkan", "faktor", "membuat", "lebih", "unggul", "dibanding"
+            ];
 
-            // Bank Pola Kalimat Alami Luwes (C1 s.d C6)
+            const keywords = materi.split(/[ ,.!\n()''""’`]+/ )
+                                    .map(w => w.replace(/[^a-zA-Z0-9]/g, ''))
+                                    .filter(w => w.length > 4 && !wordBlacklist.includes(w.toLowerCase()));
+            
+            const uniqueKeywords = [...new Set(keywords)].slice(0, 35);
+            const kwPool = uniqueKeywords.length > 0 ? uniqueKeywords : ["Variabel", "Database", "Algoritma", "Routing", "Interface"];
+
+            // Bank Pola Kalimat Alami Luwes
             const bankPolaKalimat = {
                 "C1": [
                     (kw) => `Manakah yang merupakan definisi paling tepat dari konsep '${kw}'?`,
@@ -547,7 +555,7 @@
                 const kw2 = kwPool[(i * 3 + 1) % kwPool.length] || "Struktur";
                 const cog = essayLevels[i % essayLevels.length];
                 originalEssayQuestions.push({ 
-                    soal: `Jelaskan secara komprehensif bagaimana keterkaitan fungsional antara elemen '${kw1}' dengan mekanisme operasi '${kw2}' pada tingkat kognitif ${cog}!`, 
+                    soal: `Jelaskan secara komprehensif bagaimana keterkaitan fungsional antara elemen '${kw1}' dengan mekanisme operasi '${kw2}'!`, 
                     kognitif: cog 
                 });
             }
@@ -609,7 +617,7 @@
             return arr;
         }
 
-        // ================= DYNAMIC WORD LAYOUT PACKER ENGINE =================
+        // ================= UNIVERSAL DOCUMENT MAKER CORE (KOGNITIF DI HILANGKAN DARI NASKAH SOAL) =================
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
             const children = [];
@@ -677,8 +685,8 @@
                 if (!isAnswerKey) children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
                 pgData.forEach((q, index) => {
                     if (!isAnswerKey) {
-                        const labelKognitif = q.kognitif ? ` [${q.kognitif}]` : "";
-                        children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: q.soal, font: customFont, size: customSize }), new TextRun({ text: labelKognitif, font: customFont, size: customSize, bold: true, color: "7F7F7F" })], spacing: { before: 120, after: 80 } }));
+                        // LEVEL KOGNITIF TIDAK DIMASUKKAN KE DALAM NASKAH SOAL LAGI
+                        children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: q.soal, font: customFont, size: customSize })], spacing: { before: 120, after: 80 } }));
                         let totalOptLen = q.shuffledOptions.reduce((acc, o) => acc + (o.teks || "").toString().length, 0);
                         if (totalOptLen < 80) {
                             const runChildren = []; q.shuffledOptions.forEach((opt, oIdx) => { runChildren.push(new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize })); if (oIdx < q.shuffledOptions.length - 1) runChildren.push(new TextRun({ text: "\t" })); });
@@ -694,6 +702,7 @@
                             q.shuffledOptions.forEach((opt, oIdx) => { children.push(new Paragraph({ indent: { left: 720, hanging: 360 }, children: [new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize })], spacing: { after: 60 } })); });
                         }
                     } else {
+                        // KUNCI JAWABAN KINI RAPI MENAMPILKAN KUNCI HURUF DAN KOGNITIF DI SEBELAHNYA
                         const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
                         if (index % 2 === 0) {
                             const runChildren = [new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), new TextRun({ text: ` ${q.newKey}${infoKog} `, bold: true, font: customFont, size: customSize })];
@@ -707,8 +716,7 @@
             if (essayData.length > 0 && !isAnswerKey) {
                 children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
                 essayData.forEach((eq, eIndex) => {
-                    const labelKognitif = eq.kognitif ? ` [${eq.kognitif}]` : "";
-                    children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize }), new TextRun({ text: labelKognitif, font: customFont, size: customSize, bold: true, color: "7F7F7F" })], spacing: { before: 120, after: 120 } }));
+                    children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize })], spacing: { before: 120, after: 120 } }));
                 });
             }
 
@@ -742,15 +750,27 @@
             });
         });
 
-        // Action Trigger: Mode 2 Cetak Tunggal
+        // Action Trigger: Mode 2 Cetak Tunggal (Kunci Jawaban Terpisah Dibuat Otomatis Berdampingan)
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
             const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal, kognitif: q.kognitif }; });
+            
             try {
-                const blob = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
-                const element = document.createElement('a'); element.href = URL.createObjectURL(blob);
-                element.download = "Hasil_AI_Kuota_Final.docx"; document.body.appendChild(element); element.click();
-                document.body.removeChild(element); incrementCounters();
+                // 1. Download File Lembar Soal Ujian (Tanpa Tanda C)
+                const blobSoal = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
+                const elementSoal = document.createElement('a'); elementSoal.href = URL.createObjectURL(blobSoal);
+                elementSoal.download = "Hasil_AI_Soal_Ujian.docx"; document.body.appendChild(elementSoal); elementSoal.click();
+                document.body.removeChild(elementSoal);
+
+                // 2. Download File Lembar Kunci Jawaban (Sesuai Standar Mode 1 Berdampingan)
+                setTimeout(async () => {
+                    const blobKunci = await createDocxBlob("Kunci Jawaban Ujian - Hasil AI", formattedPG, [], true);
+                    const elementKunci = document.createElement('a'); elementKunci.href = URL.createObjectURL(blobKunci);
+                    elementKunci.download = "Hasil_AI_Kunci_Jawaban.docx"; document.body.appendChild(elementKunci); elementKunci.click();
+                    document.body.removeChild(elementKunci);
+                    incrementCounters();
+                }, 400);
+
             } catch(e) { alert(e.message); }
             finally { exportSingleWordBtn.disabled = false; }
         });
