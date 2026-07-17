@@ -683,14 +683,25 @@
         });
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
-            const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal || q.kunci, kognitif: q.kognitif }; });
+            
+            // PERBAIKAN: Memastikan properti kunci terbaca dengan benar dari output JSON AI (q.kunci)
+            const formattedPG = originalPGQuestions.map(q => { 
+                return { 
+                    soal: q.soal, 
+                    shuffledOptions: q.opsi, 
+                    newKey: q.kunci || q.kunciOriginal, // <--- Membaca properti 'kunci' dari Gemini
+                    kognitif: q.kognitif 
+                }; 
+            });
             
             try {
+                // 1. Cetak naskah soal ujian (.docx)
                 const blobSoal = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
                 const elementSoal = document.createElement('a'); elementSoal.href = URL.createObjectURL(blobSoal);
                 elementSoal.download = "Hasil_AI_Soal_Ujian.docx"; document.body.appendChild(elementSoal); elementSoal.click();
                 document.body.removeChild(elementSoal);
 
+                // 2. Cetak naskah kunci jawaban ujian (.docx) setelah jeda singkat
                 setTimeout(async () => {
                     const blobKunci = await createDocxBlob("Kunci Jawaban Ujian - Hasil AI", formattedPG, [], true);
                     const elementKunci = document.createElement('a'); elementKunci.href = URL.createObjectURL(blobKunci);
@@ -698,8 +709,11 @@
                     document.body.removeChild(elementKunci);
                 }, 400);
 
-            } catch(e) { alert("Kegagalan Cetak: " + e.message); }
-            finally { exportSingleWordBtn.disabled = false; }
+            } catch(e) { 
+                alert("Kegagalan Cetak: " + e.message); 
+            } finally { 
+                exportSingleWordBtn.disabled = false; 
+            }
         });
     </script>
 </body>
