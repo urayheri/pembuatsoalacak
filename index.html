@@ -434,13 +434,13 @@
         processGenerateBtn.onclick = async () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             
-            // PROTEKSI IP: Memecah URL asli valid milik Pak Uray Heri agar tidak bisa diduplikasi/di-scan otomatis
+            // KEAMANAN URL: Tetap dipecah menjadi array agar aman dari pelacakan orang lain
             const urlChunks = [
                 "ht", "tps", "://", "scr", "ipt", ".go", "ogl", "e.c", "om/", "mac", "ros", "/s/",
                 "AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnIA80m_jg2eMJR3H4I-b9xV",
                 "/ex", "ec"
             ];
-            const targetCloudGateway = urlChunks.join(""); // Digabungkan dengan presisi saat runtime
+            const targetCloudGateway = urlChunks.join("");
             
             if (!materi) return alert("Silakan unggah dokumen atau tempel teks materi terlebih dahulu!");
 
@@ -460,21 +460,16 @@
             const promptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. Buat bank soal ujian kurikulum nasional dari materi ini: ${materi.substring(0, 4000)} dengan aturan: Total PG wajib ${totalPGMinta} (C1=${quota.C1}, C2=${quota.C2}, C3=${quota.C3}, C4=${quota.C4}, C5=${quota.C5}, C6=${quota.C6}) dan Essay wajib ${generateCountEssay.value}. Output harus valid JSON murni tanpa markdown block. Format JSON: { "pilihan_ganda": [ { "soal": "...", "opsi": [{"teks": "..."}], "kunciOriginal": "A", "kognitif": "C1" } ], "essay": [ { "soal": "...", "kognitif": "C1" } ] }`;
 
             try {
+                // Mengirimkan data sebagai TEXT MENTAH sesuai dengan kebutuhan doPost Apps Script lama Bapak
                 const response = await fetch(targetCloudGateway, {
                     method: "POST",
-                    headers: { 
-                        "Content-Type": "text/plain"
-                    },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                    body: promptText
                 });
                 
-                if (!response.ok) throw new Error("Respon Server Cloud Tidak OK (Status: " + response.status + ")");
-                
                 const rawText = await response.text();
-                const jsonRes = JSON.parse(rawText);
-                if (jsonRes.error) throw new Error(JSON.stringify(jsonRes.error));
                 
-                const cleanJson = jsonRes.candidates[0].content.parts[0].text.replace(/```json/g, "").replace(/```/g, "").trim();
+                // Bersihkan teks jika ada bungkus markdown ```json
+                const cleanJson = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
                 const parsedData = JSON.parse(cleanJson);
                 
                 originalPGQuestions = parsedData.pilihan_ganda;
@@ -482,7 +477,7 @@
                 optionCountGlobal = originalPGQuestions[0].opsi.length;
                 renderEditorUI();
             } catch (err) {
-                alert("Hambatan Cloud AI (v9.2):\n" + err.message + "\n\nTips:\n1. Pastikan Web App di Google Apps Script Anda disetel ke 'Anyone'.\n2. Cek kuota request API jika materi terlalu panjang.");
+                alert("Hambatan Sistem AI:\n" + err.message + "\n\nTips: Pastikan koneksi internet stabil.");
             } finally {
                 processGenerateBtn.disabled = false;
                 processGenerateBtn.textContent = "✨ Hubungi AI Cloud & Generate Soal";
