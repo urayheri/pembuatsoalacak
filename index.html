@@ -18,6 +18,7 @@
     <!-- PUSTAKA TAMBAHAN UNTUK EKSTRAKSI PDF & WORD LOKAL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
@@ -276,8 +277,60 @@
     <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
         Exam Master Suite Edition | Dibuat dengan cinta oleh U.Heri Mukti,S.Tr.Kom.
     </footer>
-
     <!-- LOGIKA JAVASCRIPT DETIL DAN LENGKAP -->
+<script>
+    (function() {
+    // 1. HARDENED DOMAIN PROTECTOR MATRIX (Base64 Whitelist)
+    const allowedHosts = [
+        atob("dXJheWhlcmkuZ2l0aHViLmlv"), // urayheri.github.io
+        atob("bG9jYWxob3N0"),             // localhost
+        atob("MTI3LjAuMC4x"),           // 127.0.0.1
+        ""                               // Mengizinkan file lokal/APK Bapak
+    ];
+    
+    if (!allowedHosts.includes(window.location.hostname)) {
+        document.documentElement.innerHTML = "";
+        window.location.replace("https://google.com");
+        throw new Error("Akses Ilegal!");
+    }
+
+    // 2. ANTI-RIGHT CLICK (Blokir total klik kanan)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 3. ANTI-KEYBOARD SHORTCUTS (View Source, F12, Inspect Element)
+    document.onkeydown = function(e) {
+        // Blokir F12
+        if (e.keyCode === 123) return false;
+        
+        // Blokir Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+Shift+C (Selector)
+        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
+        
+        // Blokir Ctrl+U (View Source)
+        if (e.ctrlKey && e.keyCode === 85) return false;
+        
+        // Blokir Ctrl+S (Save Page) untuk mencegah source code diunduh offline
+        if (e.ctrlKey && e.keyCode === 83) return false;
+    };
+
+    // 4. DEVTOOLS DETECTOR & CONSOLE FREEZER (Membekukan console jika dipaksa buka)
+    setInterval(function() {
+        // Membersihkan console secara instan agar tidak bisa dibaca
+        console.clear();
+        
+        // Trigger debugger loop untuk menghentikan eksekusi script pencuri
+        const startTime = +new Date();
+        debugger;
+        const endTime = +new Date();
+        
+        // Jika proses debugger memakan waktu lama, artinya DevTools sedang terbuka
+        if (endTime - startTime > 100) {
+            document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f8fafc;padding:20px;text-align:center;'>⚠️ Akses DevTools Dilarang! Aplikasi Dikunci Demi Keamanan.</div>";
+        }
+    }, 100);
+})();
+</script>
+
+    
     <script>
         // Logika Pengendali Pop-up Modal Sedekah DANA
         const openSedekahBtn = document.getElementById('openSedekahBtn');
