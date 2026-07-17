@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - High Detail Secure AI (v8.3)</title>
+    <title>Exam Master Suite - Production Direct Secure AI (v8.5)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -29,22 +29,50 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v8.3)
+                    🛠️ Exam Master Suite (v8.5)
                 </h1>
-                <p class="text-indigo-100 text-sm mt-1">Guru RPL dan DKV SMKN 1 Semparuk dengan Penuh Cinta Mempersembahkan Aplikasi Pembuat Soal Otomatis </p>
+                <p class="text-indigo-100 text-sm mt-1">Guru RPL dan DKV SMKN 1 SEMPARUK dengan Bangga Mempersembahkan Aplikasi Pembuat Soal Otomatis</p>
             </div>
-            <div class="bg-indigo-700/50 border border-indigo-500/30 px-4 py-2.5 rounded-xl text-xs space-y-1 w-full md:w-auto">
-                <div class="flex justify-between md:justify-start gap-4">
-                    <span class="text-indigo-200">Total Penggunaan Global:</span>
-                    <span id="globalCounter" class="font-bold text-yellow-300">Online</span>
-                </div>
-                <div class="flex justify-between md:justify-start gap-4">
-                    <span class="text-indigo-200">Penggunaan Anda:</span>
-                    <span id="localCounter" class="font-bold text-emerald-300">0 kali</span>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-stretch sm:items-center">
+                <!-- TOMBOL MODAL SEDEKAH DANA DIRECT -->
+                <button id="openSedekahBtn" class="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs border border-amber-400/30 transition-all shadow-sm transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer">
+                    💝 Sedekah / Apresiasi DANA
+                </button>
+
+                <div class="bg-indigo-700/50 border border-indigo-500/30 px-4 py-2.5 rounded-xl text-xs space-y-1 flex-1 sm:flex-none">
+                    <div class="flex justify-between md:justify-start gap-4">
+                        <span class="text-indigo-200">Total Penggunaan Global:</span>
+                        <span id="globalCounter" class="font-bold text-yellow-300">Online</span>
+                    </div>
+                    <div class="flex justify-between md:justify-start gap-4">
+                        <span class="text-indigo-200">Penggunaan Anda:</span>
+                        <span id="localCounter" class="font-bold text-emerald-300">0 kali</span>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- POP-UP MODAL SEDEKAH DANA -->
+    <div id="sedekahModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center space-y-4 transform scale-95 transition-all">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="text-sm font-bold text-slate-700">💝 Dukung Pengembang Aplikasi</h3>
+                <button id="closeSedekahBtn" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">&times;</button>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Jika aplikasi ini membantu pekerjaan Anda, Anda dapat memberikan sedekah/penghargaan langsung via **DANA** melalui QRIS di bawah ini. Terima kasih!
+            </p>
+            <!-- QR CODE DANA BAPAK -->
+            <div class="bg-slate-50 p-3 rounded-2xl inline-block border border-slate-200 shadow-inner">
+                <img src="dana-qr.png" alt="QRIS DANA Pengembang" class="w-48 h-48 mx-auto object-contain rounded-xl">
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl py-2 px-3 text-[11px] font-semibold text-emerald-700">
+                ✓ Scan menggunakan aplikasi DANA / E-Wallet Lainnya
+            </div>
+        </div>
+    </div>
 
     <!-- SISTEM TAB NAVIGASI UTAMA -->
     <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
@@ -65,7 +93,7 @@
         <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
             <h2 class="text-sm font-bold mb-1 text-slate-700">📋 Petunjuk Format Dokumen</h2>
             <p class="text-slate-600 text-xs mb-3">
-                Sistem mendukung Pilihan Ganda hemat kertas tanpa kode kognitif pada naskah soal dan kuota tingkat kesulitan (C1 - C6) berbasis AI nyata.
+                Sistem mendukung naskah rapi hemat kertas tanpa kode kognitif serta batasan jumlah soal fleksibel untuk Mode 1 dan Mode 2.
             </p>
             <div class="flex flex-wrap gap-2">
                 <button id="downloadTemplateEBtn" class="px-4 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 transition-colors">
@@ -77,7 +105,7 @@
             </div>
         </section>
 
-        <!-- PANEL PARAMETER KOP GAMBAR & ATRIBUT DINAMIS -->
+        <!-- PANEL PARAMETER KOP SURAT & LAYOUT -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-3">
                 <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🖼️ File Gambar Kop Surat</h3>
@@ -132,7 +160,6 @@
             </div>
         </section>
 
-        <!-- ================= PANEL MODE 1 ================= -->
         <!-- ================= PANEL MODE 1: PENGACAK SOAL EXCEL ================= -->
         <section id="panelAcak" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-center">
@@ -153,7 +180,6 @@
                             <option value="4">4 Paket (Paket A, B, C, D)</option>
                         </select>
                     </div>
-                    <!-- FITUR BARU: BATASAN JUMLAH SOAL -->
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <label class="block">
                             <span class="text-slate-600 font-semibold block mb-1">Jumlah Soal PG</span>
@@ -170,7 +196,9 @@
                     📝 Acak & Ekspor ke ZIP
                 </button>
             </div>
-        </section>        <!-- ================= PANEL MODE 2 ================= -->
+        </section>
+
+        <!-- ================= PANEL MODE 2: PEMBUAT SOAL AI ================= -->
         <section id="panelBuat" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
             <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🤖 Modul Ekstraksi & Pembuat Soal AI</h3>
 
@@ -246,15 +274,33 @@
     </main>
 
     <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
-        Exam Master Suite Edition | Dibuat dengan cinta oleh U.Heri Mukti.
+        Exam Master Suite Edition | Dibuat dengan cinta oleh U.Heri Mukti,S.Tr.Kom.
     </footer>
 
+    <!-- LOGIKA JAVASCRIPT DETIL DAN LENGKAP -->
     <script>
+        // Logika Pengendali Pop-up Modal Sedekah DANA
+        const openSedekahBtn = document.getElementById('openSedekahBtn');
+        const closeSedekahBtn = document.getElementById('closeSedekahBtn');
+        const sedekahModal = document.getElementById('sedekahModal');
+
+        openSedekahBtn.addEventListener('click', () => {
+            sedekahModal.classList.remove('hidden');
+        });
+        closeSedekahBtn.addEventListener('click', () => {
+            sedekahModal.classList.add('hidden');
+        });
+        sedekahModal.addEventListener('click', (e) => {
+            if(e.target === sedekahModal) sedekahModal.classList.add('hidden');
+        });
+
+        // DOM Elements Tab Manajemen
         const tabAcakBtn = document.getElementById('tabAcakBtn');
         const tabBuatBtn = document.getElementById('tabBuatBtn');
         const panelAcak = document.getElementById('panelAcak');
         const panelBuat = document.getElementById('panelBuat');
 
+        // DOM Inputs Umum
         const excelInput = document.getElementById('excelInput');
         const fileStatus = document.getElementById('fileStatus');
         const packetCount = document.getElementById('packetCount');
@@ -264,6 +310,7 @@
         const previewTitle = document.getElementById('previewTitle');
         const exportSingleWordBtn = document.getElementById('exportSingleWordBtn');
 
+        // DOM Inputs Khusus Mode 2
         const materiFileInput = document.getElementById('materiFileInput');
         const fileMateriStatus = document.getElementById('fileMateriStatus');
         const materiInputText = document.getElementById('materiInputText');
@@ -387,11 +434,9 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // ================= MODE 2: GENERATE SOAL DENGAN DETAIL SYSTEM PROMPT TINGGI =================
+        // ================= MODE 2: GENERATE SOAL AI =================
         processGenerateBtn.addEventListener('click', async () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
-            
-            // MASUKKAN URL WEB APP ANDA DI SINI
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
             
             if(!materi) return alert("Silakan unggah dokumen atau tempel teks materi terlebih dahulu!");
@@ -409,14 +454,13 @@
             processGenerateBtn.disabled = true;
             processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
-            // PERINTAH EXPERT PROMPT: Menginstruksikan AI berperan sebagai pakar nasional agar menghasilkan soal organik nan luwes
             const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan dan Kurikulum Nasional. Tugas Anda adalah membuat bank soal ujian yang sangat detail, menantang, dan kontekstual dari materi berikut: "${materi.substring(0, 4500)}".
             
             Kriteria Pembuatan Soal:
             1. Total Pilihan Ganda harus berjumlah tepat ${totalPGMinta} dengan pembagian tingkat kognitif: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
-            2. Gaya Kalimat PG & Opsi: Wajib menggunakan variasi kata yang kaya dan kalimat organik alami. Hindari penggunaan pola kata awal yang seragam di setiap opsi jawaban (A sampai E). Pilihan pengecoh harus homogen panjangnya dan berkaitan erat secara konseptual sehingga memaksa siswa berpikir kritis.
+            2. Gaya Kalimat PG & Opsi: Wajib menggunakan variasi kata yang kaya dan kalimat organik alami. Pilihan pengecoh harus homogen panjangnya dan berkaitan erat secara konseptual.
             3. Jumlah Soal Essay harus berjumlah tepat ${generateCountEssay.value} soal berbasis studi kasus pemecahan masalah.
-            4. Respon wajib berupa JSON murni tanpa disertai markdown block (\`\`\`).
+            4. Respon wajib berupa JSON murni tanpa disertai markdown block.
             
             Format Output JSON:
             {
@@ -448,20 +492,9 @@
                 });
 
                 const rawText = await response.text();
-                let data;
-                try {
-                    data = JSON.parse(rawText);
-                } catch (e) {
-                    throw new Error("Gagal membaca struktur kiriman server. Respons mentah: " + rawText.substring(0, 300));
-                }
+                let data = JSON.parse(rawText);
                 
-                if (data.error) {
-                    throw new Error("Pesan dari Jembatan Script: " + JSON.stringify(data.error));
-                }
-                
-                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-                    throw new Error("Respon AI Cloud Kosong. Pastikan API Key Gemini Anda di Google Script sudah aktif dan tidak kedaluwarsa.");
-                }
+                if (data.error) throw new Error(JSON.stringify(data.error));
 
                 const cleanJsonText = data.candidates[0].content.parts[0].text.trim();
                 const parsedData = JSON.parse(cleanJsonText);
@@ -613,8 +646,8 @@
                     } else {
                         const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
                         if (index % 2 === 0) {
-                            const runChildren = [new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), new TextRun({ text: ` ${q.newKey || q.kunciOriginal}${infoKog} `, bold: true, font: customFont, size: customSize })];
-                            if (index + 1 < pgData.length) { const nextQ = pgData[index + 1]; const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : ""; runChildren.push(new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }), new TextRun({ text: ` ${nextQ.newKey || nextQ.kunciOriginal}${nextInfoKog} `, bold: true, font: customFont, size: customSize })); }
+                            const runChildren = [new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), new TextRun({ text: ` ${q.newKey || q.kunciOriginal || q.kunci}${infoKog} `, bold: true, font: customFont, size: customSize })];
+                            if (index + 1 < pgData.length) { const nextQ = pgData[index + 1]; const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : ""; runChildren.push(new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }), new TextRun({ text: ` ${nextQ.newKey || nextQ.kunciOriginal || nextQ.kunci}${nextInfoKog} `, bold: true, font: customFont, size: customSize })); }
                             children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
                         }
                     }
@@ -635,8 +668,6 @@
         processAcakBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
             const zip = new JSZip(); const labels = ['A', 'B', 'C', 'D', 'E'];
-            
-            // Mengambil nilai batasan jumlah soal dari input UI baru
             const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
             const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
             
@@ -645,63 +676,42 @@
 
             for (let p = 0; p < numPackets; p++) {
                 const packetLetter = String.fromCharCode(65 + p);
-                
-                // 1. Acak total bank soal terlebih dahulu secara organik
                 let shuffledPG = shuffleArray(originalPGQuestions); 
                 let shuffledEssay = shuffleArray(originalEssayQuestions); 
                 
-                // 2. Batasi jumlah soal jika user mengisi kotak input limit
-                if (limitPG !== null && limitPG > 0) {
-                    shuffledPG = shuffledPG.slice(0, limitPG);
-                }
-                if (limitEssay !== null && limitEssay > 0) {
-                    shuffledEssay = shuffledEssay.slice(0, limitEssay);
-                }
+                if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
+                if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
 
-                // 3. Proses pengacakan opsi jawaban di dalam PG yang sudah dibatasi
                 const processedPG = shuffledPG.map(q => {
                     const shuffledOptions = shuffleArray(q.opsi); let newKey = '';
                     shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
                     return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
                 });
 
-                // 4. Bungkus ke dalam file Word .docx
                 const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
                 zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
                 const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, [], true);
                 zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
             }
 
-            // 5. Generate berkas ZIP massal
             zip.generateAsync({ type: 'blob' }).then((content) => {
                 const element = document.createElement('a'); element.href = URL.createObjectURL(content);
                 element.download = "Paket_Ujian_Massal_Final.zip"; document.body.appendChild(element); element.click();
-                document.body.removeChild(element); 
-                processAcakBtn.disabled = false;
+                document.body.removeChild(element); processAcakBtn.disabled = false;
                 processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
             });
         });
+
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
-            
-            // PERBAIKAN: Memastikan properti kunci terbaca dengan benar dari output JSON AI (q.kunci)
-            const formattedPG = originalPGQuestions.map(q => { 
-                return { 
-                    soal: q.soal, 
-                    shuffledOptions: q.opsi, 
-                    newKey: q.kunci || q.kunciOriginal, // <--- Membaca properti 'kunci' dari Gemini
-                    kognitif: q.kognitif 
-                }; 
-            });
+            const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal || q.kunci, kognitif: q.kognitif }; });
             
             try {
-                // 1. Cetak naskah soal ujian (.docx)
                 const blobSoal = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
                 const elementSoal = document.createElement('a'); elementSoal.href = URL.createObjectURL(blobSoal);
                 elementSoal.download = "Hasil_AI_Soal_Ujian.docx"; document.body.appendChild(elementSoal); elementSoal.click();
                 document.body.removeChild(elementSoal);
 
-                // 2. Cetak naskah kunci jawaban ujian (.docx) setelah jeda singkat
                 setTimeout(async () => {
                     const blobKunci = await createDocxBlob("Kunci Jawaban Ujian - Hasil AI", formattedPG, [], true);
                     const elementKunci = document.createElement('a'); elementKunci.href = URL.createObjectURL(blobKunci);
@@ -709,11 +719,8 @@
                     document.body.removeChild(elementKunci);
                 }, 400);
 
-            } catch(e) { 
-                alert("Kegagalan Cetak: " + e.message); 
-            } finally { 
-                exportSingleWordBtn.disabled = false; 
-            }
+            } catch(e) { alert("Kegagalan Cetak: " + e.message); }
+            finally { exportSingleWordBtn.disabled = false; }
         });
     </script>
 </body>
