@@ -133,6 +133,7 @@
         </section>
 
         <!-- ================= PANEL MODE 1 ================= -->
+        <!-- ================= PANEL MODE 1: PENGACAK SOAL EXCEL ================= -->
         <section id="panelAcak" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-center">
                 <label class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition-colors block">
@@ -143,21 +144,33 @@
                 </label>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between gap-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Jumlah Paket Ujian</label>
-                    <select id="packetCount" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none">
-                        <option value="2">2 Paket (Paket A, Paket B)</option>
-                        <option value="3">3 Paket (Paket A, B, C)</option>
-                        <option value="4">4 Paket (Paket A, B, C, D)</option>
-                    </select>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Jumlah Paket Ujian</label>
+                        <select id="packetCount" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:outline-none">
+                            <option value="2">2 Paket (Paket A, Paket B)</option>
+                            <option value="3">3 Paket (Paket A, B, C)</option>
+                            <option value="4">4 Paket (Paket A, B, C, D)</option>
+                        </select>
+                    </div>
+                    <!-- FITUR BARU: BATASAN JUMLAH SOAL -->
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <label class="block">
+                            <span class="text-slate-600 font-semibold block mb-1">Jumlah Soal PG</span>
+                            <input type="number" id="limitCountPG" placeholder="Semua" min="1" class="w-full border p-2 rounded-lg text-center focus:outline-indigo-500">
+                        </label>
+                        <label class="block">
+                            <span class="text-slate-600 font-semibold block mb-1">Jumlah Soal Essay</span>
+                            <input type="number" id="limitCountEssay" placeholder="Semua" min="1" class="w-full border p-2 rounded-lg text-center focus:outline-indigo-500">
+                        </label>
+                    </div>
+                    <span class="text-[10px] text-slate-400 block mt-0.5">*Kosongkan jika ingin mengambil seluruh soal dari Excel.</span>
                 </div>
                 <button id="processAcakBtn" disabled class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-colors shadow-sm cursor-pointer">
                     📝 Acak & Ekspor ke ZIP
                 </button>
             </div>
-        </section>
-
-        <!-- ================= PANEL MODE 2 ================= -->
+        </section>        <!-- ================= PANEL MODE 2 ================= -->
         <section id="panelBuat" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
             <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🤖 Modul Ekstraksi & Pembuat Soal AI</h3>
 
@@ -622,27 +635,52 @@
         processAcakBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
             const zip = new JSZip(); const labels = ['A', 'B', 'C', 'D', 'E'];
+            
+            // Mengambil nilai batasan jumlah soal dari input UI baru
+            const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
+            const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
+            
             processAcakBtn.disabled = true;
+            processAcakBtn.textContent = "Sedang mengacak...";
+
             for (let p = 0; p < numPackets; p++) {
                 const packetLetter = String.fromCharCode(65 + p);
-                const shuffledPG = shuffleArray(originalPGQuestions); const staticEssay = [...originalEssayQuestions];
+                
+                // 1. Acak total bank soal terlebih dahulu secara organik
+                let shuffledPG = shuffleArray(originalPGQuestions); 
+                let shuffledEssay = shuffleArray(originalEssayQuestions); 
+                
+                // 2. Batasi jumlah soal jika user mengisi kotak input limit
+                if (limitPG !== null && limitPG > 0) {
+                    shuffledPG = shuffledPG.slice(0, limitPG);
+                }
+                if (limitEssay !== null && limitEssay > 0) {
+                    shuffledEssay = shuffledEssay.slice(0, limitEssay);
+                }
+
+                // 3. Proses pengacakan opsi jawaban di dalam PG yang sudah dibatasi
                 const processedPG = shuffledPG.map(q => {
                     const shuffledOptions = shuffleArray(q.opsi); let newKey = '';
                     shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
                     return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
                 });
-                const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, staticEssay, false);
+
+                // 4. Bungkus ke dalam file Word .docx
+                const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
                 zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
                 const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, [], true);
                 zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
             }
+
+            // 5. Generate berkas ZIP massal
             zip.generateAsync({ type: 'blob' }).then((content) => {
                 const element = document.createElement('a'); element.href = URL.createObjectURL(content);
                 element.download = "Paket_Ujian_Massal_Final.zip"; document.body.appendChild(element); element.click();
-                document.body.removeChild(element); processAcakBtn.disabled = false;
+                document.body.removeChild(element); 
+                processAcakBtn.disabled = false;
+                processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
             });
         });
-
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
             const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal || q.kunci, kognitif: q.kognitif }; });
