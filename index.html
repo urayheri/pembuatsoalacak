@@ -694,10 +694,20 @@
                 zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
             }
 
-            zip.generateAsync({ type: 'blob' }).then((content) => {
-                const element = document.createElement('a'); element.href = URL.createObjectURL(content);
-                element.download = "Paket_Ujian_Massal_Final.zip"; document.body.appendChild(element); element.click();
-                document.body.removeChild(element); processAcakBtn.disabled = false;
+            // GANTI BAGIAN GENERATE ZIP PADA MODE 1 DENGAN INI:
+            zip.generateAsync({ type: 'base64' }).then((base64Content) => {
+                const dataUri = "data:application/zip;base64," + base64Content;
+                
+                // Trik Paksa Buka di Browser Eksternal jika di dalam APK Android
+                const element = document.createElement('a');
+                element.href = dataUri;
+                element.download = "Paket_Ujian_Massal_Final.zip";
+                element.target = "_blank"; // Memaksa lompat ke browser HP
+                document.body.appendChild(element); 
+                element.click();
+                document.body.removeChild(element); 
+                
+                processAcakBtn.disabled = false;
                 processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
             });
         });
@@ -707,20 +717,45 @@
             const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal || q.kunci, kognitif: q.kognitif }; });
             
             try {
+                // 1. Cetak naskah soal ujian (.docx)
                 const blobSoal = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
-                const elementSoal = document.createElement('a'); elementSoal.href = URL.createObjectURL(blobSoal);
-                elementSoal.download = "Hasil_AI_Soal_Ujian.docx"; document.body.appendChild(elementSoal); elementSoal.click();
-                document.body.removeChild(elementSoal);
+                
+                // Konversi Blob Soal ke Base64
+                const readerSoal = new FileReader();
+                readerSoal.onloadend = function() {
+                    const elementSoal = document.createElement('a');
+                    elementSoal.href = readerSoal.result;
+                    elementSoal.download = "Hasil_AI_Soal_Ujian.docx";
+                    elementSoal.target = "_blank";
+                    document.body.appendChild(elementSoal); 
+                    elementSoal.click();
+                    document.body.removeChild(elementSoal);
+                }
+                readerSoal.readAsDataURL(blobSoal);
 
+                // 2. Cetak naskah kunci jawaban ujian (.docx) setelah jeda singkat
                 setTimeout(async () => {
                     const blobKunci = await createDocxBlob("Kunci Jawaban Ujian - Hasil AI", formattedPG, [], true);
-                    const elementKunci = document.createElement('a'); elementKunci.href = URL.createObjectURL(blobKunci);
-                    elementKunci.download = "Hasil_AI_Kunci_Jawaban.docx"; document.body.appendChild(elementKunci); elementKunci.click();
-                    document.body.removeChild(elementKunci);
-                }, 400);
+                    
+                    // Konversi Blob Kunci ke Base64
+                    const readerKunci = new FileReader();
+                    readerKunci.onloadend = function() {
+                        const elementKunci = document.createElement('a');
+                        elementKunci.href = readerKunci.result;
+                        elementKunci.download = "Hasil_AI_Kunci_Jawaban.docx";
+                        elementKunci.target = "_blank";
+                        document.body.appendChild(elementKunci); 
+                        elementKunci.click();
+                        document.body.removeChild(elementKunci);
+                    }
+                    readerKunci.readAsDataURL(blobKunci);
+                }, 800);
 
-            } catch(e) { alert("Kegagalan Cetak: " + e.message); }
-            finally { exportSingleWordBtn.disabled = false; }
+            } catch(e) { 
+                alert("Kegagalan Cetak: " + e.message); 
+            } finally { 
+                exportSingleWordBtn.disabled = false; 
+            }
         });
     </script>
 </body>
