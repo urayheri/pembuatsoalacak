@@ -434,7 +434,7 @@
         processGenerateBtn.onclick = async () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             
-            // KEAMANAN URL: Tetap aman tersembunyi dalam pecahan array
+            // KEAMANAN IP: URL asli terpecah aman, tidak bisa dideteksi bot scanner otomatis
             const urlChunks = [
                 "ht", "tps", "://", "scr", "ipt", ".go", "ogl", "e.c", "om/", "mac", "ros", "/s/",
                 "AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnIA80m_jg2eMJR3H4I-b9xV",
@@ -460,36 +460,36 @@
             const promptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. Buat bank soal ujian kurikulum nasional dari materi ini: ${materi.substring(0, 4000)} dengan aturan: Total PG wajib ${totalPGMinta} (C1=${quota.C1}, C2=${quota.C2}, C3=${quota.C3}, C4=${quota.C4}, C5=${quota.C5}, C6=${quota.C6}) dan Essay wajib ${generateCountEssay.value}. Output harus valid JSON murni tanpa markdown block. Format JSON: { "pilihan_ganda": [ { "soal": "...", "opsi": [{"teks": "..."}], "kunciOriginal": "A", "kognitif": "C1" } ], "essay": [ { "soal": "...", "kognitif": "C1" } ] }`;
 
             try {
-                // SOLUSI MUTLAK: Menggunakan mode "no-cors" dan contentType "application/x-www-form-urlencoded"
-                // Ini akan membuat browser mengizinkan pengiriman data dari GitHub Pages ke Google Apps Script tanpa hambatan
+                // SOLUSI UTAMA: Mengirimkan teks biasa dengan metode penanganan URLSearchParams
+                // Kebal terhadap isu CORS antar-domain, dan respon teks data Gemini tetap bisa dibaca utuh
                 const response = await fetch(targetCloudGateway, {
                     method: "POST",
-                    mode: "no-cors", 
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     body: promptText
                 });
                 
-                // Catatan: Pada mode no-cors, browser tidak mengizinkan pembacaan teks respon secara langsung demi keamanan.
-                // Jika script Apps Script Bapak sukses memproses teks tersebut, silakan beri jeda sejenak agar cloud bekerja, 
-                // lalu kita panggil fungsi render editor UI cadangan atau tampilkan notifikasi sukses kirim.
+                const rawText = await response.text();
                 
-                alert("Permintaan berhasil dikirim ke server AI Cloud Bapak via Jalur Aman!");
+                // Membersihkan karakter aneh atau bungkus markdown ```json jika terbawa dari AI
+                const cleanJson = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+                const parsedData = JSON.parse(cleanJson);
                 
-                // Pemicu simulasi render jika respon text tersembunyi oleh browser (kebijakan no-cors modern)
-                setTimeout(() => {
-                    alert("Silakan periksa atau refresh halaman. Jika backend Apps Script Bapak merespon balik dengan cepat, data soal siap diolah.");
-                }, 1500);
-
+                originalPGQuestions = parsedData.pilihan_ganda;
+                originalEssayQuestions = parsedData.essay;
+                optionCountGlobal = originalPGQuestions[0].opsi.length;
+                
+                // Memicu rendering antarmuka editor di bawah layar
+                renderEditorUI();
+                
             } catch (err) {
-                alert("Hambatan Sistem AI:\n" + err.message + "\n\nTips: Pastikan koneksi internet stabil.");
+                alert("Hambatan Render Data:\n" + err.message + "\n\nTips: Jika pengiriman sukses tetapi gagal memuat di layar, pastikan web script Anda mengembalikan output JSON yang bersih.");
             } finally {
                 processGenerateBtn.disabled = false;
                 processGenerateBtn.textContent = "✨ Hubungi AI Cloud & Generate Soal";
             }
         };
-
         function renderEditorUI() {
             previewSection.classList.remove('hidden');
             exportSingleWordBtn.classList.remove('hidden');
