@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Production Direct Secure AI (v8.9)</title>
+    <title>Exam Master Suite - Production Direct Secure AI (v9.0)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -30,7 +30,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v8.9)
+                    🛠️ Exam Master Suite (v9.0)
                 </h1>
                 <p class="text-indigo-100 text-sm mt-1">Guru RPL dan DKV SMKN 1 SEMPARUK dengan Bangga Mempersembahkan Aplikasi Pembuat Soal Otomatis</p>
             </div>
@@ -209,15 +209,24 @@
         <section id="panelBuat" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
             <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🤖 Modul Ekstraksi & Pembuat Soal AI</h3>
 
+            <!-- DROP-DOWN DINAMIS UNTUK MEMILIH TIPE INPUT DOKUMEN -->
+            <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100/60 text-xs">
+                <label class="block font-bold text-indigo-700 mb-1">📁 Pilih Jenis Dokumen yang Diunggah:</label>
+                <select id="documentTypeMode" class="w-full border border-indigo-200 bg-white p-2 rounded-lg text-xs font-medium focus:outline-indigo-500">
+                    <option value="materi">Dokumen Rangkuman / Buku Teks Materi Pelajaran (Buat Soal Baru dari Awal)</option>
+                    <option value="soal_lama">Dokumen Kumpulan Soal-Soal Lama (Buat Soal Turunan / Modifikasi Variasi Baru)</option>
+                </select>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1">
-                    <label class="block text-xs font-semibold text-slate-600">Opsi A: Unggah File Materi (PDF / Word .docx)</label>
+                    <label class="block text-xs font-semibold text-slate-600">Opsi A: Unggah Berkas Berkas (PDF / Word .docx)</label>
                     <input type="file" id="materiFileInput" accept=".pdf, .docx" class="w-full border border-slate-200 rounded-xl p-2 text-xs file:bg-slate-100 file:border-0 file:px-2 file:py-1 file:rounded file:text-xs file:font-semibold">
                     <span id="fileMateriStatus" class="text-[10px] text-slate-400 block mt-0.5">Mendukung ekstraksi otomatis lokal.</span>
                 </div>
                 <div class="space-y-1">
-                    <label class="block text-xs font-semibold text-slate-600">Opsi B: Atau Tempel Teks Materi Langsung</label>
-                    <textarea id="materiInputText" rows="3" placeholder="Tempel materi di sini..." class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-indigo-500"></textarea>
+                    <label class="block text-xs font-semibold text-slate-600">Opsi B: Atau Tempel Teks Materi/Soal Lama Langsung</label>
+                    <textarea id="materiInputText" rows="3" placeholder="Tempel teks materi pelajaran atau daftar soal lama di sini..." class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-indigo-500"></textarea>
                 </div>
             </div>
 
@@ -386,6 +395,7 @@
         const generateCountPG = document.getElementById('generateCountPG');
         const generateCountEssay = document.getElementById('generateCountEssay');
         const processGenerateBtn = document.getElementById('processGenerateBtn');
+        const documentTypeMode = document.getElementById('documentTypeMode');
 
         let originalPGQuestions = [];
         let originalEssayQuestions = [];
@@ -562,19 +572,27 @@
             processGenerateBtn.disabled = true;
             processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
-            // PERBAIKAN STRATEGI PROMPT ENGINE (v8.9) - DETAIL LEVEL KOGNITIF SECARA TEGAS
-            const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan dan Kurikulum Nasional. Tugas Anda adalah membuat bank soal ujian yang sangat detail, menantang, dan kontekstual dari materi berikut: "${materi.substring(0, 4500)}".
-           
-            ATURAN PENULISAN KETIKA ADA SOAL LAMA YANG DIUPLOAD USER
-            Tugas Anda adalah **membuatkan soal-soal BARU yang merupakan variasi atau turunan langsung** dari soal-soal lama tersebut dengan ketentuan:
-            1. Jika soal lama berupa matematika/hitungan, ganti angkanya dan ubah sedikit narasinya tanpa mengubah rumus dasarnya.
-            2. Jika soal lama berupa teori/konsep, ganti studi kasus atau sudut pandang pertanyaannya (contoh: jika soal lama menanyakan kelebihan, soal baru menanyakan implementasi atau karakteristiknya).
-            3. Jaga agar tingkat kognitif (C1-C6) soal baru tetap setara dengan soal lama yang bersesuaian.
-            4. Jangan gunakan tanda caret (^) untuk pangkat, gunakan unicode superscript asli (m², x³).
+            // LOGIKA DINAMIS PROMPT ENGINE BERDASARKAN MODE DROPDOWN (v9.0)
+            let coreTaskInstruction = "";
+            const modeDipilih = documentTypeMode.value;
+
+            if (modeDipilih === "soal_lama") {
+                coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4500)}".
+                Anda harus membuatkan rangkaian soal-soal BARU yang merupakan variasi atau turunan langsung (clone question) dari soal lama tersebut dengan ketentuan:
+                1. Jika soal lama bertipe hitungan/matematika, ubah/ganti angkanya dan kembangkan narasi kasus baru tanpa mengubah formula matematis intinya.
+                2. Jika soal lama bertipe teori/konseptual, ganti objek studi kasus atau sudut pandang pertanyaan (misal: jika soal lama menanyakan fungsi X, buat soal baru tentang skenario implementasi X atau perbedaannya dengan Y).
+                3. Pastikan tingkat kesulitan soal baru seimbang dan relevan dengan indikator soal lama.`;
+            } else {
+                coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal ujian evaluasi mandiri yang baru, detail, menantang, dan kontekstual dengan menyaring inti sari dokumen MATERI PELAJARAN berikut: "${materi.substring(0, 4500)}".`;
+            }
+
+            const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan dan Kurikulum Nasional. 
+            
+            ${coreTaskInstruction}
             
             ATURAN PENULISAN NOTASI MATEMATIKA / FISIKA / TEKNIK:
             - Dilarang keras menggunakan tanda caret atau simbol topi segitiga \`^\` untuk merepresentasikan pangkat.
-            - Wajib menggunakan simbol unicode superscript asli (m², x³, 10⁻⁵).
+            - Wajib menggunakan simbol unicode superscript asli (m², x³, 10⁻⁵, x²).
             
             PANDUAN KLASIFIKASI KOGNITIF YANG KETAT DAN SPESIFIK:
             - LEVEL C1 (Mengingat): Soal HARUS berskala mendasar/mudah. Hanya meminta siswa menyebutkan istilah, mengenali definisi dasar, mencocokkan fungsi utama, atau mengidentifikasi fakta langsung yang tertulis pada teks materi. TIDAK BOLEH ada analisis, studi kasus kompleks, atau penalaran tingkat tinggi untuk soal C1!
@@ -837,7 +855,7 @@
                 if (!isAnswerKey) {
                     children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
                     essayData.forEach((eq, eIndex) => {
-                        const lbl = getEssayLabel(eIndex, currentStyle);
+                        const lbl = getEssayLabel(eIndex, customStyle);
                         children.push(new Paragraph({
                             alignment: AlignmentType.JUSTIFIED,
                             indent: { left: 360, hanging: 360 },
@@ -849,7 +867,7 @@
                     children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN SOAL ESSAY / URAIAN:", bold: true, font: customFont, size: titleSize })], spacing: { before: 400, after: 150 } }));
                     essayData.forEach((eq, eIndex) => {
                         const infoKog = eq.kognitif ? ` [${eq.kognitif}]` : "";
-                        const lbl = getEssayLabel(eIndex, currentStyle);
+                        const lbl = getEssayLabel(eIndex, customStyle);
                         
                         children.push(new Paragraph({
                             alignment: AlignmentType.JUSTIFIED,
