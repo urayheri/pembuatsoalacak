@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Production Direct Secure AI (v8.6)</title>
+    <title>Exam Master Suite - Production Direct Secure AI (v8.8)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -30,7 +30,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v8.6)
+                    🛠️ Exam Master Suite (v8.8)
                 </h1>
                 <p class="text-indigo-100 text-sm mt-1">Guru RPL dan DKV SMKN 1 SEMPARUK dengan Bangga Mempersembahkan Aplikasi Pembuat Soal Otomatis</p>
             </div>
@@ -65,7 +65,6 @@
             <p class="text-xs text-slate-500 leading-relaxed">
                 Jika aplikasi ini membantu pekerjaan Anda, Anda dapat memberikan sedekah/penghargaan langsung via **DANA** melalui QRIS di bawah ini. Terima kasih!
             </p>
-            <!-- QR CODE DANA BAPAK -->
             <div class="bg-slate-50 p-3 rounded-2xl inline-block border border-slate-200 shadow-inner">
                 <img src="qr.jpeg" alt="QRIS DANA Pengembang" class="w-48 h-48 mx-auto object-contain rounded-xl">
             </div>
@@ -136,7 +135,7 @@
                                 <span class="text-slate-500 text-[10px] block mb-0.5">Jenis Huruf (Font)</span>
                                 <select id="fontFamily" class="w-full border border-slate-200 rounded p-1 bg-white text-xs">
                                     <option value="Arial">Arial</option>
-                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Times New Roman" selected>Times New Roman</option>
                                     <option value="Calibri">Calibri</option>
                                 </select>
                             </label>
@@ -181,6 +180,13 @@
                             <option value="4">4 Paket (Paket A, B, C, D)</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Format Penomoran Esai</label>
+                        <select id="essayLabelStyle" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 text-xs focus:outline-none">
+                            <option value="angka">Angka Biasa (1, 2, 3...)</option>
+                            <option value="huruf">Huruf Kapital (A, B, C...)</option>
+                        </select>
+                    </div>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <label class="block">
                             <span class="text-slate-600 font-semibold block mb-1">Jumlah Soal PG</span>
@@ -215,8 +221,9 @@
                 </div>
             </div>
 
+            <!-- DISTRIBUSI KOGNITIF SOAL PG -->
             <div class="pt-3 border-t border-slate-100 space-y-2">
-                <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1">📊 Tentukan Jumlah Soal Per Tingkat Kognitif (C1 - C6)</h4>
+                <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1">📊 Tentukan Jumlah Soal PG Per Tingkat Kognitif (C1 - C6)</h4>
                 <div class="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
                     <label class="block bg-slate-50 p-2 rounded-lg border border-slate-100">
                         <span class="text-slate-500 font-bold block text-center mb-0.5">C1 (Mengingat)</span>
@@ -245,14 +252,52 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2 border-t border-slate-50">
+            <!-- BARU: DISTRIBUSI KOGNITIF SOAL ESSAY -->
+            <div class="pt-3 border-t border-slate-100 space-y-2">
+                <h4 class="text-xs font-bold text-emerald-700 flex items-center gap-1">📝 Tentukan Jumlah Soal Essay Per Tingkat Kognitif (C1 - C6)</h4>
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
+                    <label class="block bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                        <span class="text-emerald-600 font-bold block text-center mb-0.5">Essay C1</span>
+                        <input type="number" id="countEssayC1" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-emerald-500 essay-cog-input">
+                    </label>
+                    <label class="block bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                        <span class="text-emerald-600 font-bold block text-center mb-0.5">Essay C2</span>
+                        <input type="number" id="countEssayC2" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-emerald-500 essay-cog-input">
+                    </label>
+                    <label class="block bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                        <span class="text-emerald-600 font-bold block text-center mb-0.5">Essay C3</span>
+                        <input type="number" id="countEssayC3" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-emerald-500 essay-cog-input">
+                    </label>
+                    <label class="block bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                        <span class="text-emerald-600 font-bold block text-center mb-0.5">Essay C4</span>
+                        <input type="number" id="countEssayC4" value="1" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-emerald-500 essay-cog-input">
+                    </label>
+                    <label class="block bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                        <span class="text-emerald-600 font-bold block text-center mb-0.5">Essay C5</span>
+                        <input type="number" id="countEssayC5" value="1" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-emerald-500 essay-cog-input">
+                    </label>
+                    <label class="block bg-emerald-50/50 p-2 rounded-lg border border-emerald-100">
+                        <span class="text-emerald-600 font-bold block text-center mb-0.5">Essay C6</span>
+                        <input type="number" id="countEssayC6" value="0" min="0" class="w-full border bg-white p-1 rounded text-center text-xs font-bold text-slate-700 focus:outline-emerald-500 essay-cog-input">
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs pt-2 border-t border-slate-50">
                 <label class="block">
                     <span class="text-slate-600 font-semibold block mb-1">Total Soal PG Diinginkan</span>
                     <input type="text" id="generateCountPG" value="5" readonly class="w-full border p-2 rounded-lg text-sm bg-slate-100 font-bold text-slate-600 cursor-not-allowed text-center">
                 </label>
                 <label class="block">
-                    <span class="text-slate-600 font-semibold block mb-1">Jumlah Keseluruhan Soal Essay</span>
-                    <input type="number" id="generateCountEssay" value="2" class="w-full border p-2 rounded-lg text-sm focus:outline-indigo-500 text-center">
+                    <span class="text-slate-600 font-semibold block mb-1">Total Soal Essay Diinginkan</span>
+                    <input type="text" id="generateCountEssay" value="2" readonly class="w-full border p-2 rounded-lg text-sm bg-slate-100 font-bold text-slate-600 cursor-not-allowed text-center">
+                </label>
+                <label class="block">
+                    <span class="text-slate-600 font-semibold block mb-1">Gaya Label Uraian</span>
+                    <select id="generateEssayLabelStyle" class="w-full border p-2 rounded-lg text-sm bg-white focus:outline-indigo-500">
+                        <option value="angka">Angka Biasa (1, 2...)</option>
+                        <option value="huruf">Huruf Kapital (A, B...)</option>
+                    </select>
                 </label>
                 <div class="flex items-end">
                     <button id="processGenerateBtn" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm transition-colors shadow-sm cursor-pointer">
@@ -281,32 +326,24 @@
     <!-- KODE ENGINE ENKRIPSI & KEAMANAN WEBSITE -->
     <script>
     (function() {
-        // 1. HARDENED DOMAIN PROTECTOR MATRIX (Base64 Whitelist)
         const allowedHosts = [
-            atob("dXJheWhlcmkuZ2l0aHViLmlv"), // urayheri.github.io
-            atob("bG9jYWxob3N0"),             // localhost
-            atob("MTI3LjAuMC4x"),           // 127.0.0.1
-            ""                               // Mengizinkan file lokal/APK Bapak
+            atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
+            atob("bG9jYWxob3N0"),             
+            atob("MTI3LjAuMC4x"),           
+            ""                               
         ];
-        
         if (!allowedHosts.includes(window.location.hostname)) {
             document.documentElement.innerHTML = "";
             window.location.replace("https://google.com");
             throw new Error("Akses Ilegal!");
         }
-
-        // 2. ANTI-RIGHT CLICK (Blokir total klik kanan)
         document.addEventListener('contextmenu', e => e.preventDefault());
-
-        // 3. ANTI-KEYBOARD SHORTCUTS (View Source, F12, Inspect Element)
         document.onkeydown = function(e) {
             if (e.keyCode === 123) return false;
             if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
             if (e.ctrlKey && e.keyCode === 85) return false;
             if (e.ctrlKey && e.keyCode === 83) return false;
         };
-
-        // 4. DEVTOOLS DETECTOR & CONSOLE FREEZER
         setInterval(function() {
             console.clear();
             const startTime = +new Date();
@@ -321,28 +358,19 @@
 
     <!-- CORE LOGIKA APLIKASI (EXCEL & AI INTEGRATION) -->
     <script>
-        // Logika Pengendali Pop-up Modal Sedekah DANA
         const openSedekahBtn = document.getElementById('openSedekahBtn');
         const closeSedekahBtn = document.getElementById('closeSedekahBtn');
         const sedekahModal = document.getElementById('sedekahModal');
 
-        openSedekahBtn.addEventListener('click', () => {
-            sedekahModal.classList.remove('hidden');
-        });
-        closeSedekahBtn.addEventListener('click', () => {
-            sedekahModal.classList.add('hidden');
-        });
-        sedekahModal.addEventListener('click', (e) => {
-            if(e.target === sedekahModal) sedekahModal.classList.add('hidden');
-        });
+        openSedekahBtn.addEventListener('click', () => { sedekahModal.classList.remove('hidden'); });
+        closeSedekahBtn.addEventListener('click', () => { sedekahModal.classList.add('hidden'); });
+        sedekahModal.addEventListener('click', (e) => { if(e.target === sedekahModal) sedekahModal.classList.add('hidden'); });
 
-        // DOM Elements Tab Manajemen
         const tabAcakBtn = document.getElementById('tabAcakBtn');
         const tabBuatBtn = document.getElementById('tabBuatBtn');
         const panelAcak = document.getElementById('panelAcak');
         const panelBuat = document.getElementById('panelBuat');
 
-        // DOM Inputs Umum
         const excelInput = document.getElementById('excelInput');
         const fileStatus = document.getElementById('fileStatus');
         const packetCount = document.getElementById('packetCount');
@@ -352,7 +380,6 @@
         const previewTitle = document.getElementById('previewTitle');
         const exportSingleWordBtn = document.getElementById('exportSingleWordBtn');
 
-        // DOM Inputs Khusus Mode 2
         const materiFileInput = document.getElementById('materiFileInput');
         const fileMateriStatus = document.getElementById('fileMateriStatus');
         const materiInputText = document.getElementById('materiInputText');
@@ -376,9 +403,24 @@
             generateCountPG.value = c1 + c2 + c3 + c4 + c5 + c6;
         }
 
+        function updateTotalEssay() {
+            const ec1 = parseInt(document.getElementById('countEssayC1').value) || 0;
+            const ec2 = parseInt(document.getElementById('countEssayC2').value) || 0;
+            const ec3 = parseInt(document.getElementById('countEssayC3').value) || 0;
+            const ec4 = parseInt(document.getElementById('countEssayC4').value) || 0;
+            const ec5 = parseInt(document.getElementById('countEssayC5').value) || 0;
+            const ec6 = parseInt(document.getElementById('countEssayC6').value) || 0;
+            generateCountEssay.value = ec1 + ec2 + ec3 + ec4 + ec5 + ec6;
+        }
+
         document.querySelectorAll('.cog-input').forEach(input => {
             input.addEventListener('input', updateTotalPG);
             input.addEventListener('change', updateTotalPG);
+        });
+
+        document.querySelectorAll('.essay-cog-input').forEach(input => {
+            input.addEventListener('input', updateTotalEssay);
+            input.addEventListener('change', updateTotalEssay);
         });
 
         tabAcakBtn.addEventListener('click', () => {
@@ -395,6 +437,7 @@
             tabAcakBtn.className = "flex-1 py-2.5 text-center text-sm font-bold rounded-xl transition-all cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200";
             panelBuat.classList.remove('hidden'); panelAcak.classList.add('hidden');
             updateTotalPG();
+            updateTotalEssay();
         });
 
         materiFileInput.addEventListener('change', async (e) => {
@@ -442,7 +485,7 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const ws = workbook.Sheets[workbook.SheetNames[0]];
                     const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    const header = rows[0]; let keyIndex = -1, cogIndex = -1, essayKeyIndex = -1;
+                    const header = rows[0]; let keyIndex = -1, cogIndex = -1;
                     
                     for(let i=0; i<header.length; i++) {
                         if(header[i] && header[i].toString().toLowerCase().includes('kunci')) keyIndex = i;
@@ -460,7 +503,6 @@
                             let isEssay = true;
                             for(let j = 1; j <= optionCountGlobal; j++) { if (r[j] && r[j].toString().trim() !== "") { isEssay = false; break; } }
                             if (r[keyIndex] && r[keyIndex].toString().trim() !== "" && isEssay) {
-                                // Ini adalah Essay yang memiliki kunci jawaban di kolom Kunci
                                 isEssay = true;
                             } else if (r[keyIndex] && r[keyIndex].toString().trim() !== "") {
                                 isEssay = false;
@@ -505,16 +547,31 @@
             };
             const totalPGMinta = Object.values(kuotaKognitif).reduce((a, b) => a + b, 0);
 
+            const kuotaEssayKognitif = {
+                "C1": parseInt(document.getElementById('countEssayC1').value) || 0,
+                "C2": parseInt(document.getElementById('countEssayC2').value) || 0,
+                "C3": parseInt(document.getElementById('countEssayC3').value) || 0,
+                "C4": parseInt(document.getElementById('countEssayC4').value) || 0,
+                "C5": parseInt(document.getElementById('countEssayC5').value) || 0,
+                "C6": parseInt(document.getElementById('countEssayC6').value) || 0
+            };
+            const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
+
+            if(totalPGMinta === 0 && totalEssayMinta === 0) return alert("Jumlah soal yang diminta tidak boleh kosong semuanya!");
+
             processGenerateBtn.disabled = true;
             processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
-            // MODIFIKASI: Memaksa AI menyertakan field "kunci" berisi jawaban panjang untuk soal essay
             const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan dan Kurikulum Nasional. Tugas Anda adalah membuat bank soal ujian yang sangat detail, menantang, dan kontekstual dari materi berikut: "${materi.substring(0, 4500)}".
+            
+            ATURAN PENULISAN NOTASI MATEMATIKA / FISIKA / TEKNIK:
+            - Dilarang keras menggunakan tanda caret atau simbol topi segitiga \`^\` untuk merepresentasikan pangkat.
+            - Wajib menggunakan simbol unicode superscript asli. Contoh: Tulis m² jangan m^2, tulis x³ jangan x^3, tulis 10⁻⁵ jangan 10^-5.
             
             Kriteria Pembuatan Soal:
             1. Total Pilihan Ganda harus berjumlah tepat ${totalPGMinta} dengan pembagian tingkat kognitif: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
             2. Gaya Kalimat PG & Opsi: Wajib menggunakan variasi kata yang kaya dan kalimat organik alami. Pilihan pengecoh harus homogen panjangnya dan berkaitan erat secara konseptual.
-            3. Jumlah Soal Essay harus berjumlah tepat ${generateCountEssay.value} soal berbasis studi kasus pemecahan masalah.
+            3. Total Soal Essay harus berjumlah tepat ${totalEssayMinta} dengan pembagian tingkat kognitif: C1=${kuotaEssayKognitif.C1}, C2=${kuotaEssayKognitif.C2}, C3=${kuotaEssayKognitif.C3}, C4=${kuotaEssayKognitif.C4}, C5=${kuotaEssayKognitif.C5}, C6=${kuotaEssayKognitif.C6}.
             4. Setiap soal essay WAJIB memiliki pembahasan atau kunci jawaban ideal yang ditaruh pada properti "kunci".
             5. Respon wajib berupa JSON murni tanpa disertai markdown block.
             
@@ -537,9 +594,7 @@
                ]
             }`;
 
-            const promptInstruction = {
-                contents: [{ parts: [{ text: rawPromptText }] }]
-            };
+            const promptInstruction = { contents: [{ parts: [{ text: rawPromptText }] }] };
 
             try {
                 const response = await fetch(proxyUrl, {
@@ -550,14 +605,13 @@
 
                 const rawText = await response.text();
                 let data = JSON.parse(rawText);
-                
                 if (data.error) throw new Error(JSON.stringify(data.error));
 
                 const cleanJsonText = data.candidates[0].content.parts[0].text.trim();
                 const parsedData = JSON.parse(cleanJsonText);
 
-                originalPGQuestions = parsedData.pilihan_ganda;
-                originalEssayQuestions = parsedData.essay;
+                originalPGQuestions = parsedData.pilihan_ganda || [];
+                originalEssayQuestions = parsedData.essay || [];
 
                 renderEditorUI();
             } catch (err) {
@@ -568,10 +622,19 @@
             }
         });
 
+        function getEssayLabel(index, style) {
+            if (style === "huruf") {
+                return String.fromCharCode(65 + (index % 26)) + ". ";
+            }
+            return (index + 1) + ". ";
+        }
+
         function renderEditorUI() {
             previewSection.classList.remove('hidden'); exportSingleWordBtn.classList.remove('hidden');
             previewTitle.textContent = "Editor Pembuatan Soal & Level Kognitif (Dapat Diedit)"; soalContainer.innerHTML = "";
             
+            const currentStyle = (activeTab === "buat") ? document.getElementById('generateEssayLabelStyle').value : document.getElementById('essayLabelStyle').value;
+
             if (originalPGQuestions && originalPGQuestions.length > 0) {
                 originalPGQuestions.forEach((q, idx) => {
                     const block = document.createElement('div'); block.className = "py-4 space-y-2";
@@ -602,17 +665,17 @@
                 });
             }
             if (originalEssayQuestions && originalEssayQuestions.length > 0) {
-                // Beri penanda pemisah tulisan Essay
                 const pemisah = document.createElement('div');
                 pemisah.className = "pt-4 font-bold text-slate-700 text-xs border-t border-slate-200 mt-4";
                 pemisah.textContent = "KOMPONEN SOAL URAIAN / ESSAY";
                 soalContainer.appendChild(pemisah);
 
                 originalEssayQuestions.forEach((q, idx) => {
+                    const lbl = getEssayLabel(idx, currentStyle);
                     const block = document.createElement('div'); block.className = "py-3 space-y-2";
                     block.innerHTML = `
                         <div class="flex gap-2 items-start">
-                            <span class="font-bold text-indigo-600">${idx+1}.</span>
+                            <span class="font-bold text-indigo-600">${lbl}</span>
                             <textarea class="w-full border border-slate-200 rounded-lg p-1.5 text-xs focus:outline-indigo-400 font-medium" onchange="originalEssayQuestions[${idx}].soal = this.value">${q.soal}</textarea>
                             <select class="border p-1 rounded text-[11px] bg-amber-50 text-amber-800 font-bold" onchange="originalEssayQuestions[${idx}].kognitif = this.value">
                                 ${["C1","C2","C3","C4","C5","C6"].map(c => `<option value="${c}" ${q.kognitif === c ? 'selected' : ''}>${c}</option>`).join('')}
@@ -647,6 +710,8 @@
             const dxaWidth = Math.round((sizeMode === "F4" ? 215 : 210) * 56.7);
             const dxaHeight = Math.round((sizeMode === "F4" ? 330 : 297) * 56.7);
             const visualKopWidth = sizeMode === "F4" ? 620 : 600;
+
+            const currentStyle = (activeTab === "buat") ? document.getElementById('generateEssayLabelStyle').value : document.getElementById('essayLabelStyle').value;
 
             if (!isAnswerKey) {
                 const kopGambarFile = document.getElementById('kopGambarInput').files[0];
@@ -698,7 +763,7 @@
 
             const labels = ['A', 'B', 'C', 'D', 'E'];
             
-            // RENDERING KUNCI / SOAL PILIHAN GANDA
+            // RENDERING PILIHAN GANDA (JUSTIFIED)
             if (pgData && pgData.length > 0) {
                 if (!isAnswerKey) children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
                 pgData.forEach((q, index) => {
@@ -706,6 +771,7 @@
 
                     if (!isAnswerKey) {
                         children.push(new Paragraph({
+                            alignment: AlignmentType.JUSTIFIED,
                             indent: { left: 360, hanging: 360 },
                             children: [new TextRun({ text: (index + 1) + ". ", bold: true, font: customFont, size: customSize }), new TextRun({ text: q.soal, font: customFont, size: customSize })],
                             spacing: { before: 120, after: 80 }
@@ -721,22 +787,21 @@
                             const tabStops = [];
                             const colWidth = Math.floor(8500 / targetOptions.length);
                             for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
-                            children.push(new Paragraph({ tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
+                            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
                         } else if (totalOptLen >= 80 && totalOptLen < 160) {
                             for(let i = 0; i < targetOptions.length; i += 2) {
                                 const runChildren = [new TextRun({ text: labels[i] + ". ", bold: true, font: customFont, size: customSize }), new TextRun({ text: targetOptions[i].teks, font: customFont, size: customSize })];
                                 if (i + 1 < targetOptions.length) {
                                     runChildren.push(new TextRun({ text: "\t" + labels[i+1] + ". ", bold: true, font: customFont, size: customSize }), new TextRun({ text: targetOptions[i+1].teks, font: customFont, size: customSize }));
                                 }
-                                children.push(new Paragraph({ tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
+                                children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
                             }
                         } else {
                             targetOptions.forEach((opt, oIdx) => {
-                                children.push(new Paragraph({ indent: { left: 720, hanging: 360 }, children: [new TextRun({ text: labels[oIdx] + ". ", bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize })], spacing: { after: 60 } }));
+                                children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 720, hanging: 360 }, children: [new TextRun({ text: labels[oIdx] + ". ", bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize })], spacing: { after: 60 } }));
                             });
                         }
                     } else {
-                        // Cetak Lembar Kunci Jawaban PG
                         const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
                         if (index % 2 === 0) {
                             const runChildren = [new TextRun({ text: "Nomor " + (index + 1) + " : ", font: customFont, size: customSize }), new TextRun({ text: " " + (q.newKey || q.kunciOriginal || q.kunci || "-") + infoKog + " ", bold: true, font: customFont, size: customSize })];
@@ -745,43 +810,44 @@
                                 const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : "";
                                 runChildren.push(new TextRun({ text: "\tNomor " + (index + 2) + " : ", font: customFont, size: customSize }), new TextRun({ text: " " + (nextQ.newKey || nextQ.kunciOriginal || nextQ.kunci || "-") + nextInfoKog + " ", bold: true, font: customFont, size: customSize }));
                             }
-                            children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
+                            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
                         }
                     }
                 });
             }
 
-            // RENDERING PERBAIKAN: SOAL & KUNCI ESSAY YANG SEBENARNYA
+            // RENDERING ESSAY / URAIAN (JUSTIFIED)
             if (essayData && essayData.length > 0) {
                 if (!isAnswerKey) {
-                    // Cetak Soal Essay Lembar Ujian Biasa
                     children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
                     essayData.forEach((eq, eIndex) => {
+                        const lbl = getEssayLabel(eIndex, currentStyle);
                         children.push(new Paragraph({
+                            alignment: AlignmentType.JUSTIFIED,
                             indent: { left: 360, hanging: 360 },
-                            children: [new TextRun({ text: (eIndex + 1) + ". ", bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize })],
+                            children: [new TextRun({ text: lbl, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize })],
                             spacing: { before: 120, after: 120 }
                         }));
                     });
                 } else {
-                    // PERBAIKAN MUTLAK: Cetak Soal DAN Kunci Jawaban Essay Sebenarnya di Lembar Kunci Jawaban
                     children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN SOAL ESSAY / URAIAN:", bold: true, font: customFont, size: titleSize })], spacing: { before: 400, after: 150 } }));
                     essayData.forEach((eq, eIndex) => {
                         const infoKog = eq.kognitif ? ` [${eq.kognitif}]` : "";
+                        const lbl = getEssayLabel(eIndex, currentStyle);
                         
-                        // Cetak Pertanyaan Soalnya
                         children.push(new Paragraph({
+                            alignment: AlignmentType.JUSTIFIED,
                             indent: { left: 360, hanging: 360 },
                             children: [
-                                new TextRun({ text: "Soal Uraian " + (eIndex + 1) + infoKog + ": ", bold: true, font: customFont, size: customSize }),
+                                new TextRun({ text: "Soal Uraian " + lbl.trim() + infoKog + ": ", bold: true, font: customFont, size: customSize }),
                                 new TextRun({ text: eq.soal, font: customFont, size: customSize })
                             ],
                             spacing: { before: 120, after: 60 }
                         }));
                         
-                        // Cetak Kunci Jawaban Sebenarnya (Diwarnai abu gelap dan miring agar rapi)
                         const teksKunciNyata = eq.kunci || eq.jawaban || "[ Tidak ada kunci jawaban essay yang disertakan ]";
                         children.push(new Paragraph({
+                            alignment: AlignmentType.JUSTIFIED,
                             indent: { left: 540 },
                             children: [
                                 new TextRun({ text: "Kunci Jawaban Ideal: ", bold: true, color: "475569", font: customFont, size: customSize }),
@@ -823,14 +889,12 @@
                 const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
                 zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
                 
-                // Meneruskan data shuffledEssay ke berkas kunci paket massal
                 const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
                 zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
             }
 
             zip.generateAsync({ type: 'base64' }).then((base64Content) => {
                 const dataUri = "data:application/zip;base64," + base64Content;
-                
                 const element = document.createElement('a');
                 element.href = dataUri;
                 element.download = "Paket_Ujian_Massal_Final.zip";
@@ -849,9 +913,7 @@
             const formattedPG = originalPGQuestions.map(q => { return { soal: q.soal, shuffledOptions: q.opsi, newKey: q.kunciOriginal || q.kunci, kognitif: q.kognitif }; });
             
             try {
-                // 1. Cetak naskah soal ujian (.docx)
                 const blobSoal = await createDocxBlob("Hasil Pembuatan Soal AI", formattedPG, originalEssayQuestions, false);
-                
                 const readerSoal = new FileReader();
                 readerSoal.onloadend = function() {
                     const elementSoal = document.createElement('a');
@@ -864,9 +926,7 @@
                 }
                 readerSoal.readAsDataURL(blobSoal);
 
-                // 2. Cetak naskah kunci jawaban ujian (.docx) setelah jeda singkat
                 setTimeout(async () => {
-                    // Melemparkan data originalEssayQuestions agar teks soal & KUNCI JAWABAN REAL ikut tercetak
                     const blobKunci = await createDocxBlob("Kunci Jawaban AI", originalPGQuestions, originalEssayQuestions, true);
                     const readerKunci = new FileReader();
                     readerKunci.onloadend = function() {
