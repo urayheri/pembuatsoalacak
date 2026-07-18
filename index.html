@@ -564,6 +564,13 @@
 
             // PERBAIKAN STRATEGI PROMPT ENGINE (v8.9) - DETAIL LEVEL KOGNITIF SECARA TEGAS
             const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan dan Kurikulum Nasional. Tugas Anda adalah membuat bank soal ujian yang sangat detail, menantang, dan kontekstual dari materi berikut: "${materi.substring(0, 4500)}".
+           
+            ATURAN PENULISAN KETIKA ADA SOAL LAMA YANG DIUPLOAD USER
+            Tugas Anda adalah **membuatkan soal-soal BARU yang merupakan variasi atau turunan langsung** dari soal-soal lama tersebut dengan ketentuan:
+            1. Jika soal lama berupa matematika/hitungan, ganti angkanya dan ubah sedikit narasinya tanpa mengubah rumus dasarnya.
+            2. Jika soal lama berupa teori/konsep, ganti studi kasus atau sudut pandang pertanyaannya (contoh: jika soal lama menanyakan kelebihan, soal baru menanyakan implementasi atau karakteristiknya).
+            3. Jaga agar tingkat kognitif (C1-C6) soal baru tetap setara dengan soal lama yang bersesuaian.
+            4. Jangan gunakan tanda caret (^) untuk pangkat, gunakan unicode superscript asli (m², x³).
             
             ATURAN PENULISAN NOTASI MATEMATIKA / FISIKA / TEKNIK:
             - Dilarang keras menggunakan tanda caret atau simbol topi segitiga \`^\` untuk merepresentasikan pangkat.
