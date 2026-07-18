@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Production Direct Secure AI (v8.8)</title>
+    <title>Exam Master Suite - Production Direct Secure AI (v8.9)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -30,7 +30,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v8.8)
+                    🛠️ Exam Master Suite (v8.9)
                 </h1>
                 <p class="text-indigo-100 text-sm mt-1">Guru RPL dan DKV SMKN 1 SEMPARUK dengan Bangga Mempersembahkan Aplikasi Pembuat Soal Otomatis</p>
             </div>
@@ -252,7 +252,7 @@
                 </div>
             </div>
 
-            <!-- BARU: DISTRIBUSI KOGNITIF SOAL ESSAY -->
+            <!-- DISTRIBUSI KOGNITIF SOAL ESSAY -->
             <div class="pt-3 border-t border-slate-100 space-y-2">
                 <h4 class="text-xs font-bold text-emerald-700 flex items-center gap-1">📝 Tentukan Jumlah Soal Essay Per Tingkat Kognitif (C1 - C6)</h4>
                 <div class="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
@@ -562,12 +562,21 @@
             processGenerateBtn.disabled = true;
             processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
+            // PERBAIKAN STRATEGI PROMPT ENGINE (v8.9) - DETAIL LEVEL KOGNITIF SECARA TEGAS
             const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan dan Kurikulum Nasional. Tugas Anda adalah membuat bank soal ujian yang sangat detail, menantang, dan kontekstual dari materi berikut: "${materi.substring(0, 4500)}".
             
             ATURAN PENULISAN NOTASI MATEMATIKA / FISIKA / TEKNIK:
             - Dilarang keras menggunakan tanda caret atau simbol topi segitiga \`^\` untuk merepresentasikan pangkat.
-            - Wajib menggunakan simbol unicode superscript asli. Contoh: Tulis m² jangan m^2, tulis x³ jangan x^3, tulis 10⁻⁵ jangan 10^-5.
+            - Wajib menggunakan simbol unicode superscript asli (m², x³, 10⁻⁵).
             
+            PANDUAN KLASIFIKASI KOGNITIF YANG KETAT DAN SPESIFIK:
+            - LEVEL C1 (Mengingat): Soal HARUS berskala mendasar/mudah. Hanya meminta siswa menyebutkan istilah, mengenali definisi dasar, mencocokkan fungsi utama, atau mengidentifikasi fakta langsung yang tertulis pada teks materi. TIDAK BOLEH ada analisis, studi kasus kompleks, atau penalaran tingkat tinggi untuk soal C1!
+            - LEVEL C2 (Memahami): Soal meminta penjelasan konsep, mengklasifikasikan kategori dasar, atau menerjemahkan maksud/tujuan dari sebuah prosedur/fungsi dasar.
+            - LEVEL C3 (Menerapkan): Soal berupa skenario praktis pendek untuk mengimplementasikan suatu rumus atau kode/langkah kerja.
+            - LEVEL C4 (Menganalisis): Soal berupa troubleshooting kerusakan sistem, analisis perbedaan bug, atau menguraikan struktur masalah.
+            - LEVEL C5 (Evaluasi): Soal kritik performa sistem, membandingkan efisiensi dua metode/algoritma, atau mendeteksi letak kesalahan arsitektur.
+            - LEVEL C6 (Mencipta): Soal merancang solusi baru, membuat alur logika/algoritma, atau memformulasikan hipotesis perbaikan.
+
             Kriteria Pembuatan Soal:
             1. Total Pilihan Ganda harus berjumlah tepat ${totalPGMinta} dengan pembagian tingkat kognitif: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
             2. Gaya Kalimat PG & Opsi: Wajib menggunakan variasi kata yang kaya dan kalimat organik alami. Pilihan pengecoh harus homogen panjangnya dan berkaitan erat secara konseptual.
