@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Master Suite - Production Direct Secure AI (v9.0)</title>
+    <title>Exam Master Suite - Production Direct Secure AI (v9.1)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -30,7 +30,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    🛠️ Exam Master Suite (v9.0)
+                    🛠️ Exam Master Suite (v9.1)
                 </h1>
                 <p class="text-indigo-100 text-sm mt-1">Guru RPL dan DKV SMKN 1 SEMPARUK dengan Bangga Mempersembahkan Aplikasi Pembuat Soal Otomatis</p>
             </div>
@@ -209,7 +209,6 @@
         <section id="panelBuat" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
             <h3 class="text-sm font-bold text-indigo-600 flex items-center gap-1">🤖 Modul Ekstraksi & Pembuat Soal AI</h3>
 
-            <!-- DROP-DOWN DINAMIS UNTUK MEMILIH TIPE INPUT DOKUMEN -->
             <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100/60 text-xs">
                 <label class="block font-bold text-indigo-700 mb-1">📁 Pilih Jenis Dokumen yang Diunggah:</label>
                 <select id="documentTypeMode" class="w-full border border-indigo-200 bg-white p-2 rounded-lg text-xs font-medium focus:outline-indigo-500">
@@ -572,7 +571,6 @@
             processGenerateBtn.disabled = true;
             processGenerateBtn.textContent = "AI sedang menyusun soal...";
 
-            // LOGIKA DINAMIS PROMPT ENGINE BERDASARKAN MODE DROPDOWN (v9.0)
             let coreTaskInstruction = "";
             const modeDipilih = documentTypeMode.value;
 
@@ -850,12 +848,12 @@
                 });
             }
 
-            // RENDERING ESSAY / URAIAN (JUSTIFIED)
+            // RENDERING ESSAY / URAIAN (JUSTIFIED) - VARIABEL FIX: MENGGUNAKAN CURRENTSTYLE
             if (essayData && essayData.length > 0) {
                 if (!isAnswerKey) {
                     children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
                     essayData.forEach((eq, eIndex) => {
-                        const lbl = getEssayLabel(eIndex, customStyle);
+                        const lbl = getEssayLabel(eIndex, currentStyle);
                         children.push(new Paragraph({
                             alignment: AlignmentType.JUSTIFIED,
                             indent: { left: 360, hanging: 360 },
@@ -867,7 +865,7 @@
                     children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN SOAL ESSAY / URAIAN:", bold: true, font: customFont, size: titleSize })], spacing: { before: 400, after: 150 } }));
                     essayData.forEach((eq, eIndex) => {
                         const infoKog = eq.kognitif ? ` [${eq.kognitif}]` : "";
-                        const lbl = getEssayLabel(eIndex, customStyle);
+                        const lbl = getEssayLabel(eIndex, currentStyle);
                         
                         children.push(new Paragraph({
                             alignment: AlignmentType.JUSTIFIED,
