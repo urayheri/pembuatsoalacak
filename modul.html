@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Modul Ajar & ATP AI Nasional (v1.0)</title>
+    <title>Asisten Modul Ajar & ATP AI Nasional (v1.2 - Secured)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -63,8 +63,8 @@
                     <input type="text" id="modulWaktu" value="4 JP (4 x 45 Menit)" class="w-full border p-2 rounded-lg bg-slate-50 focus:outline-emerald-500">
                 </div>
 
-                <!-- BARIS 3 (FITUR KRUSIAL NASIONAL: ADAPTASI INFRASTRUKTUR) -->
-                <div class="space-y-1">
+                <!-- BARIS 3: ADAPTASI INFRASTRUKTUR -->
+                <div class="space-y-1 md:col-span-2">
                     <label class="block font-bold text-amber-600">🏢 Kondisi Fasilitas & Infrastruktur Sekolah</label>
                     <select id="modulFasilitas" class="w-full border border-amber-200 bg-amber-50/30 p-2 rounded-lg font-medium focus:outline-amber-500">
                         <option value="Digital Lengkap (Akses internet cepat, proyektor, komputer praktek siswa memadai)">Fasilitas Lengkap Kota (Internet + Lab Komputer Lengkap)</option>
@@ -73,15 +73,43 @@
                     </select>
                 </div>
 
-                <!-- BARIS 4 (TARGET PROFIL PELAJAR PANCASILA) -->
-                <div class="space-y-1">
-                    <label class="block font-semibold text-slate-600">Dimensi Utama P5 yang Disasar</label>
-                    <select id="modulP5" class="w-full border p-2 rounded-lg bg-white focus:outline-emerald-500">
-                        <option value="Mandiri dan Kreatif">Mandiri dan Kreatif</option>
-                        <option value="Gotong Royong dan Bernalar Kritis" selected>Gotong Royong dan Bernalar Kritis</option>
-                        <option value="Berkebinekaan Global">Berkebinekaan Global</option>
-                        <option value="Beriman, Bertakwa Kepada Tuhan YME, dan Berakhlak Mulia">Beriman, Bertakwa, dan Berakhlak Mulia</option>
-                    </select>
+                <!-- BARIS 4: MULTI-CHECKBOX 8 DIMENSI PROFIL LULUSAN -->
+                <div class="md:col-span-2 space-y-2 border border-slate-100 p-4 rounded-xl bg-slate-50/50">
+                    <label class="block font-bold text-slate-700 text-xs">🎯 Target Dimensi Profil Lulusan (Bisa Centang Lebih dari Satu):</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Keimanan" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" checked>
+                            <span class="text-[11px] font-medium text-slate-600">Keimanan</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Kewargaan" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[11px] font-medium text-slate-600">Kewargaan</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Penalaran Kritis" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" checked>
+                            <span class="text-[11px] font-medium text-slate-600">Penalaran Kritis</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Kreativitas" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[11px] font-medium text-slate-600">Kreativitas</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Kolaborasi" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" checked>
+                            <span class="text-[11px] font-medium text-slate-600">Kolaborasi</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Kemandirian" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[11px] font-medium text-slate-600">Kemandirian</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Kesehatan" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[11px] font-medium text-slate-600">Kesehatan</span>
+                        </label>
+                        <label class="flex items-start gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs hover:bg-emerald-50/20 cursor-pointer select-none">
+                            <input type="checkbox" name="dimensiProfil" value="Komunikasi" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-[11px] font-medium text-slate-600">Komunikasi</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -110,6 +138,39 @@
         Super Teacher Suite Edition | Dikembangkan Bersama U.Heri Mukti,S.Tr.Kom.
     </footer>
 
+    <!-- KODE ENGINE ENKRIPSI & KEAMANAN WEBSITE (ANTI INSPECT) -->
+    <script>
+    (function() {
+        const allowedHosts = [
+            atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
+            atob("bG9jYWxob3N0"),             
+            atob("MTI3LjAuMC4x"),           
+            ""                               
+        ];
+        if (!allowedHosts.includes(window.location.hostname)) {
+            document.documentElement.innerHTML = "";
+            window.location.replace("https://google.com");
+            throw new Error("Akses Ilegal!");
+        }
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = function(e) {
+            if (e.keyCode === 123) return false;
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
+            if (e.ctrlKey && e.keyCode === 85) return false;
+            if (e.ctrlKey && e.keyCode === 83) return false;
+        };
+        setInterval(function() {
+            console.clear();
+            const startTime = +new Date();
+            debugger;
+            const endTime = +new Date();
+            if (endTime - startTime > 100) {
+                document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f8fafc;padding:20px;text-align:center;'>⚠️ Akses DevTools Dilarang! Aplikasi Dikunci Demi Keamanan.</div>";
+            }
+        }, 100);
+    })();
+    </script>
+
     <!-- LOGIKA CORE GENERATOR MODUL AI LOKAL -->
     <script>
         const generateModulBtn = document.getElementById('generateModulBtn');
@@ -125,27 +186,31 @@
             const topik = document.getElementById('modulTopik').value.trim();
             const waktu = document.getElementById('modulWaktu').value.trim();
             const fasilitas = document.getElementById('modulFasilitas').value;
-            const p5 = document.getElementById('modulP5').value;
+
+            // Ambil semua checkbox profil lulusan yang dicentang oleh guru
+            const checkboxes = document.querySelectorAll('input[name="dimensiProfil"]:checked');
+            const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
 
             if(!topik) return alert("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!");
+            if(checkboxes.length === 0) return alert("Silakan centang minimal satu Target Dimensi Profil Lulusan!");
 
             generateModulBtn.disabled = true;
             generateModulBtn.textContent = "AI sedang merancang Modul Ajar & ATP...";
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
 
-            // PROMPT ENGINE KHUSUS PENYUSUNAN MODUL AJAR ADAPTIF NASIONAL
+            // PROMPT ENGINE PENYUSUNAN MODUL AJAR ADAPTIF 8 DIMENSI
             const promptContent = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI. Buatkan naskah rangkuman ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR yang lengkap, terstruktur, sistematis, dan siap pakai berdasarkan data berikut:
             
             - Mata Pelajaran: ${mapel}
             - Jenjang / Fase: ${fase}
             - Topik Pokok Pembahasan: ${topik}
             - Alokasi Waktu: ${waktu}
-            - Dimensi P5 Target: ${p5}
+            - Dimensi Profil Lulusan Target: ${profilTerpilih}
             - Kondisi Fasilitas Sekolah Realistis: ${fasilitas}
 
             KETENTUAN KHUSUS ADAPTASI WILAYAH:
-            Jika kondisi fasilitas sekolah "Minim & Pelosok 3T", Anda WAJIB merancang metode pembelajaran, langkah-langkah kerja, dan media ajar yang TIDAK bergantung pada internet/komputer/listrik (misal: menggunakan papan tulis, diskusi kelompok, simulasi manual kertas, kartu peran, atau buku teks). Hindari instruksi "buka website X" atau "tonton video Y" jika fasilitas minim!
+            Jika kondisi fasilitas sekolah "Minim & Pelosok 3T", Anda WAJIB merancang metode pembelajaran, langkah langkah kerja, dan media ajar yang TIDAK bergantung pada internet/komputer/listrik (misal: menggunakan papan tulis, diskusi kelompok, simulasi manual kertas, kartu peran, atau buku teks). Hindari instruksi "buka website X" atau "tonton video Y" jika fasilitas minim!
 
             STRUKTUR FORMAT OUTPUT NASKAH:
             Harus ditulis dalam bentuk teks deskriptif rapi dengan penomoran yang jelas (tanpa blok JSON, langsung naskah teks dokumen). Struktur dokumen terdiri atas:
@@ -156,7 +221,7 @@
                 - Tujuan Pembelajaran
                 - Pemahaman Bermakna
                 - Pertanyaan Pemantik
-            IV. KEGIATAN PEMBELAJARAN (Langkah-Langkah: Pendahuluan, Inti, Penutup yang sesuai dengan kondisi fasilitas sekolah)
+            IV. KEGIATAN PEMBELAJARAN (Langkah-Langkah: Pendahuluan, Inti, Penutup yang sesuai dengan kondisi fasilitas sekolah serta mengintegrasikan nilai kompetensi profil lulusan yang dicentang)
             V. ASESMEN / PENILAIAN (Formatif dan Sumatif singkat)
             VI. LEMBAR KERJA PESERTA DIDIK (LKPD) RINGKAS`;
 
@@ -195,12 +260,10 @@
             const { Document, Paragraph, TextRun, Packer, AlignmentType } = window.docx;
             const docParagraphs = [];
 
-            // Memproses setiap baris teks agar tercetak rapi di Word
             lines.forEach(line => {
                 let isBold = false;
                 let cleanLine = line.trim();
 
-                // Deteksi judul utama / sub-bab untuk ditebalkan otomatis
                 if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('VI.') || cleanLine.startsWith('-')) {
                     isBold = true;
                 }
@@ -211,7 +274,7 @@
                         new TextRun({
                             text: line,
                             font: "Times New Roman",
-                            size: 22, // Setara dengan 11pt
+                            size: 22, 
                             bold: isBold
                         })
                     ],
@@ -223,8 +286,8 @@
                 sections: [{
                     properties: {
                         page: {
-                            size: { width: Math.round(210 * 56.7), height: Math.round(297 * 56.7) }, // A4 Standard
-                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } // Margin 2cm
+                            size: { width: Math.round(210 * 56.7), height: Math.round(297 * 56.7) }, 
+                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } 
                         }
                     },
                     children: docParagraphs
