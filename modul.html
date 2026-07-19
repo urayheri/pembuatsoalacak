@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Modul Ajar & ATP AI Nasional (v1.3 - Clean Text)</title>
+    <title>Asisten Modul Ajar & ATP AI Nasional (v1.4 - Ultra Detail)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -198,8 +198,8 @@
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
 
-            // STRIKTUR PROMPT v1.3: MELARANG KERAS SEMUA BENTUK MARKDOWN / BINTANG BINTANG
-            const promptContent = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI. Buatkan naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR yang lengkap, terstruktur, sistematis, dan siap pakai berdasarkan data berikut:
+            // STRIKTUR PROMPT v1.4: ULTRA DETAIL ENGINE TANPA MARKDOWN
+            const promptContent = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI yang sangat teliti, perfeksionis, dan berwawasan luas. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) yang komprehensif, mendalam, dan siap cetak untuk parameter berikut:
             
             - Mata Pelajaran: ${mapel}
             - Jenjang / Fase: ${fase}
@@ -208,35 +208,71 @@
             - Dimensi Profil Lulusan Target: ${profilTerpilih}
             - Kondisi Fasilitas Sekolah Realistis: ${fasilitas}
 
-            ATURAN PENULISAN TEKS DAN STRUKTUR (SANGAT KETAT):
-            1. DILARANG KERAS menggunakan simbol Markdown tebal (tanda bintang ganda seperti **teks**). Jika ingin menegaskan kata, cukup tulis dengan huruf kapital biasa atau biarkan polos tanpa simbol apapun!
-            2. DILARANG KERAS menggunakan simbol Markdown miring (tanda bintang tunggal seperti *teks*).
-            3. DILARANG KERAS menggunakan tanda pagar (#, ##, ###) untuk judul bab. Tulis judul bab langsung menggunakan angka romawi (Contoh: I. IDENTITAS MODUL).
-            4. DILARANG KERAS menggunakan tanda strip tiga (---) sebagai pemisah garis.
-            5. Gunakan penomoran normal (1, 2, 3) atau huruf (a, b, c) untuk poin-poin daftar. Jangan gunakan tanda asteris (*) sebagai peluru daftar.
-            6. Hasil harus berupa teks narasi bersih, rapi, formal, tanpa ada satu pun karakter simbol markdown yang mengotori naskah!
+            ATURAN PENULISAN TEKS DAN STRUKTUR (WAJIB DIPATUHI):
+            1. JANGAN PERNAH gunakan simbol Markdown tebal (tanda bintang ganda seperti **teks**), simbol miring (*teks*), tanda pagar (#, ##), maupun garis horizontal (---).
+            2. Tulis judul bab langsung menggunakan angka romawi (Contoh: I. IDENTITAS MODUL).
+            3. Gunakan penomoran normal (1, 2, 3) atau huruf (a, b, c) untuk poin-poin daftar. Jangan gunakan tanda asteris (*) sebagai peluru daftar.
+            4. Hasil harus berupa teks narasi bersih, rapi, formal, tanpa ada satu pun karakter simbol markdown yang mengotori naskah!
 
-            KETENTUAN KHUSUS ADAPTASI WILAYAH:
-            Jika kondisi fasilitas sekolah "Minim & Pelosok 3T", Anda WAJIB merancang metode pembelajaran, langkah langkah kerja, dan media ajar yang TIDAK bergantung pada internet/komputer/listrik (misal: menggunakan papan tulis, diskusi kelompok, simulasi manual kertas, kartu peran, atau buku teks). Hindari instruksi "buka website X" atau "tonton video Y" jika fasilitas minim!
+            PANDUAN KEDALAMAN MATERI (JANGAN ADA YANG TERLEWAT):
+            - Uraikan materi esensial dari topik tersebut secara eksplisit dan lengkap. Jangan memberikan ringkasan malas seperti "Guru menjelaskan materi X...". Sebaliknya, tuliskan teks bahan bacaan materi utuhnya di dalam dokumen ini agar guru langsung bisa menggunakannya tanpa mencari referensi luar.
+            - Masukkan skenario alternatif, potensi miskonsepsi siswa pada topik tersebut, serta cara penanganannya.
 
-            STRUKTUR FORMAT OUTPUT NASKAH:
+            STRUKTUR FORMAT OUTPUT NASKAH YANG SAH DAN STANDAR:
+
             I. IDENTITAS MODUL
-            (Tuliskan poin: Nama Penyusun: [Nama Guru], Institusi: [Nama Sekolah], Tahun Penyusunan, Jenjang Sekolah, Fase/Kelas, Mata Pelajaran, Elemen CP, Materi Pokok, Alokasi Waktu, dan Target Profil Lulusan)
-            
-            II. CAPAIAN PEMBELAJARAN DAN ALUR TUJUAN PEMBELAJARAN SINGKAT
-            
+            Nama Penyusun: [Nama Guru]
+            Institusi: [Nama Sekolah]
+            Tahun Penyusunan: 2026
+            Jenjang Sekolah: Jenjang Sesuai Fase
+            Fase / Kelas: ${fase}
+            Mata Pelajaran: ${mapel}
+            Elemen CP: Tuliskan elemen Capaian Pembelajaran yang relevan dengan topik ini
+            Materi Pokok: ${topik}
+            Alokasi Waktu: ${waktu}
+            Target Profil Lulusan: ${profilTerpilih}
+            Sarana dan Prasarana: ${fasilitas}
+            Target Peserta Didik: Reguler / Tipikal
+            Model Pembelajaran: Tatap Muka / Problem Based Learning (Sesuaikan dengan kondisi fasilitas)
+
+            II. CAPAIAN PEMBELAJARAN DAN ALUR TUJUAN PEMBELAJARAN
+            1. Capaian Pembelajaran Akhir Fase: (Gambarkan kalimat kompetensi utuh untuk fase ini)
+            2. Alur Tujuan Pembelajaran (ATP): (Jabarkan tahapan logis pencapaian kompetensi dari awal hingga akhir pertemuan secara terperinci)
+
             III. KOMPONEN INTI
-            - Tujuan Pembelajaran
-            - Pemahaman Bermakna
-            - Pertanyaan Pemantik
-            
+            1. Tujuan Pembelajaran: (Tuliskan minimal 3 tujuan pembelajaran spesifik mencakup aspek Kognitif, Afektif, dan Psikomotor menggunakan kata kerja operasional)
+            2. Pemahaman Bermakna: (Manfaat rill materi ini dalam kehidupan sehari-hari atau dunia kerja siswa)
+            3. Pertanyaan Pemantik: (Minimal 3 pertanyaan kritis dan menantang untuk memancing rasa ingin tahu siswa sebelum kelas dimulai)
+
             IV. KEGIATAN PEMBELAJARAN
-            (Rancang Langkah-Langkah secara detail: Kegiatan Pendahuluan, Kegiatan Inti, dan Kegiatan Penutup yang realistis sesuai kondisi fasilitas sekolah)
-            
-            V. ASESMEN DAN PENILAIAN
-            (Asesmen Formatif dan Sumatif singkat)
-            
-            VI. LEMBAR KERJA PESERTA DIDIK (LKPD) RINGKAS`;
+            1. Kegiatan Pendahuluan (Sebutkan durasi dalam menit):
+            a. Orientasi dan Kondisikan Kelas
+            b. Apersepsi (Mengaitkan materi lama dengan topik ${topik})
+            c. Motivasi dan Penyampaian Tujuan Pembelajaran
+            2. Kegiatan Inti (Sebutkan durasi dalam menit - Rancang langkah operasional mendetail yang mencerminkan model pembelajaran terpilih dan integrasi dimensi profil lulusan):
+            a. Orientasi siswa pada masalah
+            b. Mengorganisasi siswa untuk belajar
+            c. Membimbing penyelidikan individu maupun kelompok
+            d. Mengembangkan dan menyajikan hasil karya
+            e. Menganalisis dan mengevaluasi proses pemecahan masalah
+            (Catatan: Jika fasilitas sekolah minim/3T, pastikan instruksi kegiatan sepenuhnya menggunakan media fisik, papan tulis, atau cetak tanpa menuntut perangkat digital)
+            3. Kegiatan Penutup (Sebutkan durasi dalam menit):
+            a. Refleksi Bersama Siswa (Apa yang dipelajari hari ini)
+            b. Kesimpulan Materi Pembahasan
+            c. Tindak Lanjut / Penugasan Rumah Rumah / Doa Penutup
+
+            V. MATERI AJAR LENGKAP (BAHAN BACAAN GURU DAN SISWA)
+            (Jabarkan seluruh materi esensial secara utuh di sini! Tuliskan konsepnya, teorinya, rumusnya, atau kode program/studi kasusnya secara lengkap dan terurai panjang lebar agar tidak ada konten yang terlewat).
+
+            VI. ASESMEN DAN PENILAIAN
+            1. Asesmen Diagnostik (Non-kognitif awal)
+            2. Asesmen Formatif (Rubrik pengamatan sikap dan proses performa saat diskusi/praktek)
+            3. Asesmen Sumatif (Berikan minimal 3 butir contoh soal evaluasi pilihan ganda atau esai beserta kunci jawabannya secara langsung)
+
+            VII. LEMBAR KERJA PESERTA DIDIK (LKPD)
+            (Sediakan format Lembar Kerja Ringkas yang memuat Judul Aktivitas, Petunjuk Pengerjaan, Tugas/Kasus yang harus diselesaikan siswa, dan tempat pengisian jawaban)
+
+            Wujudkan dokumen ini dalam tata bahasa Indonesia baku yang formal, anggun, sangat detail, dan profesional.`;
 
             const promptInstruction = { contents: [{ parts: [{ text: promptContent }] }] };
 
@@ -253,7 +289,7 @@
 
                 rawAiResponseText = data.candidates[0].content.parts[0].text.trim();
                 
-                // Tambahan filter regex di sisi client sebagai pengaman berlapis untuk menghapus sisa markdown
+                // Pembersihan ekspresi reguler (regex) berlapis untuk memastikan tidak ada simbol bintang markdown tersisa
                 rawAiResponseText = rawAiResponseText.replace(/\*\*/g, "").replace(/\*/g, "");
 
                 modulResultTextarea.value = rawAiResponseText;
@@ -279,8 +315,8 @@
                 let isBold = false;
                 let cleanLine = line.trim();
 
-                // Otomatis menebalkan teks di Word jika mendeteksi Bab Utama Angka Romawi atau Sub-Bab Poin Utama
-                if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('VI.') || cleanLine.startsWith('-')) {
+                // Format otomatis penebalan judul bab romawi maupun penomoran penting di Word
+                if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('VI.') || cleanLine.startsWith('VII.') || cleanLine.startsWith('-')) {
                     isBold = true;
                 }
 
@@ -290,7 +326,7 @@
                         new TextRun({
                             text: line,
                             font: "Times New Roman",
-                            size: 22, // Setara 11pt standar dokumen dinas
+                            size: 22, // Setara 11pt standar kedinasan
                             bold: isBold
                         })
                     ],
@@ -303,7 +339,7 @@
                     properties: {
                         page: {
                             size: { width: Math.round(210 * 56.7), height: Math.round(297 * 56.7) }, // A4
-                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } // 2cm
+                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } // Margin 2cm
                         }
                     },
                     children: docParagraphs
@@ -315,7 +351,7 @@
                 reader.onloadend = function() {
                     const link = document.createElement('a');
                     link.href = reader.result;
-                    link.download = "Modul_Ajar_Kurikulum_Merdeka.docx";
+                    link.download = "Modul_Ajar_Kurikulum_Merdeka_Lengkap.docx";
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
