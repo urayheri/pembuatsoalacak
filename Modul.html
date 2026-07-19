@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asisten Modul Ajar & ATP AI Nasional (v1.0)</title>
+    <!-- Favicon menggunakan Emoji -->
+    <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <!-- Tailwind CSS v4 untuk UI Modern -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Pustaka Pembuat File Word (.docx) -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- HEADER & IDENTITAS PLATFORM -->
+    <header class="bg-emerald-600 text-white py-6 shadow-md">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    📚 Super Teacher Suite: Modul & ATP AI
+                </h1>
+                <p class="text-emerald-100 text-sm mt-1">Platform Pembuat Perangkat Ajar Kurikulum Merdeka Otomatis Berbasis Adaptasi Wilayah</p>
+            </div>
+            <a href="index.html" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl text-xs border border-emerald-500/30 transition-all shadow-sm">
+                🔙 Kembali ke Pembuat Soal
+            </a>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA INTEGRASI AI -->
+    <main class="container mx-auto px-4 py-6 flex-1 max-w-4xl space-y-6">
+        
+        <!-- FORM PARAMETER MODUL AJAR -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+            <h3 class="text-sm font-bold text-emerald-600 flex items-center gap-1">🛠️ Konfigurasi Perangkat Ajar (Kurikulum Merdeka)</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <!-- BARIS 1 -->
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-600">Nama Mata Pelajaran</label>
+                    <input type="text" id="modulMapel" value="Pemrograman Web" class="w-full border p-2 rounded-lg bg-slate-50 focus:outline-emerald-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-600">Pilih Jenjang & Fase</label>
+                    <select id="modulFase" class="w-full border p-2 rounded-lg bg-white focus:outline-emerald-500">
+                        <option value="Fase A (Kelas 1-2 SD)">Fase A (Kelas 1-2 SD)</option>
+                        <option value="Fase B (Kelas 3-4 SD)">Fase B (Kelas 3-4 SD)</option>
+                        <option value="Fase C (Kelas 5-6 SD)">Fase C (Kelas 5-6 SD)</option>
+                        <option value="Fase D (Kelas 7-9 SMP)">Fase D (Kelas 7-9 SMP)</option>
+                        <option value="Fase E (Kelas 10 SMA/SMK)">Fase E (Kelas 10 SMA/SMK)</option>
+                        <option value="Fase F (Kelas 11-12 SMA/SMK)" selected>Fase F (Kelas 11-12 SMA/SMK)</option>
+                    </select>
+                </div>
+
+                <!-- BARIS 2 -->
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-600">Topik / Materi Pokok Pembahasan</label>
+                    <input type="text" id="modulTopik" placeholder="Contoh: Pengenalan Sintaks Dasar HTML" class="w-full border p-2 rounded-lg bg-slate-50 focus:outline-emerald-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-600">Alokasi Waktu (Jam Pelajaran / JP)</label>
+                    <input type="text" id="modulWaktu" value="4 JP (4 x 45 Menit)" class="w-full border p-2 rounded-lg bg-slate-50 focus:outline-emerald-500">
+                </div>
+
+                <!-- BARIS 3 (FITUR KRUSIAL NASIONAL: ADAPTASI INFRASTRUKTUR) -->
+                <div class="space-y-1">
+                    <label class="block font-bold text-amber-600">🏢 Kondisi Fasilitas & Infrastruktur Sekolah</label>
+                    <select id="modulFasilitas" class="w-full border border-amber-200 bg-amber-50/30 p-2 rounded-lg font-medium focus:outline-amber-500">
+                        <option value="Digital Lengkap (Akses internet cepat, proyektor, komputer praktek siswa memadai)">Fasilitas Lengkap Kota (Internet + Lab Komputer Lengkap)</option>
+                        <option value="Fasilitas Sedang (Proyektor terbatas, komputer bergantian, internet kadang tidak stabil)">Fasilitas Sedang (Komputer Bergantian / Internet Terbatas)</option>
+                        <option value="Minim & Pelosok 3T (Tidak ada internet konstan, listrik sering padam, berbasis media cetak/buku paket)">Sekolah Pelosok / 3T (Tanpa Internet / Minim Alat Peraga)</option>
+                    </select>
+                </div>
+
+                <!-- BARIS 4 (TARGET PROFIL PELAJAR PANCASILA) -->
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-600">Dimensi Utama P5 yang Disasar</label>
+                    <select id="modulP5" class="w-full border p-2 rounded-lg bg-white focus:outline-emerald-500">
+                        <option value="Mandiri dan Kreatif">Mandiri dan Kreatif</option>
+                        <option value="Gotong Royong dan Bernalar Kritis" selected>Gotong Royong dan Bernalar Kritis</option>
+                        <option value="Berkebinekaan Global">Berkebinekaan Global</option>
+                        <option value="Beriman, Bertakwa Kepada Tuhan YME, dan Berakhlak Mulia">Beriman, Bertakwa, dan Berakhlak Mulia</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button id="generateModulBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm cursor-pointer">
+                    ✨ Susun Perangkat Ajar Bersama AI
+                </button>
+            </div>
+        </section>
+
+        <!-- PREVIEW & EDIT SECTION -->
+        <section id="modulPreviewSection" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-100 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-slate-600">Pratinjau Modul Ajar & ATP (Dapat Diedit)</h3>
+                <button id="exportModulWordBtn" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer">
+                    📥 Ekspor Perangkat ke Word (.DOCX)
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <textarea id="modulResultTextarea" class="w-full h-120 border border-slate-200 rounded-xl p-4 text-xs font-mono bg-slate-50 focus:outline-emerald-500 leading-relaxed" placeholder="Hasil rancangan AI akan tampil di sini..."></textarea>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-8">
+        Super Teacher Suite Edition | Dikembangkan Bersama U.Heri Mukti,S.Tr.Kom.
+    </footer>
+
+    <!-- LOGIKA CORE GENERATOR MODUL AI LOKAL -->
+    <script>
+        const generateModulBtn = document.getElementById('generateModulBtn');
+        const modulPreviewSection = document.getElementById('modulPreviewSection');
+        const modulResultTextarea = document.getElementById('modulResultTextarea');
+        const exportModulWordBtn = document.getElementById('exportModulWordBtn');
+
+        let rawAiResponseText = "";
+
+        generateModulBtn.addEventListener('click', async () => {
+            const mapel = document.getElementById('modulMapel').value.trim();
+            const fase = document.getElementById('modulFase').value;
+            const topik = document.getElementById('modulTopik').value.trim();
+            const waktu = document.getElementById('modulWaktu').value.trim();
+            const fasilitas = document.getElementById('modulFasilitas').value;
+            const p5 = document.getElementById('modulP5').value;
+
+            if(!topik) return alert("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!");
+
+            generateModulBtn.disabled = true;
+            generateModulBtn.textContent = "AI sedang merancang Modul Ajar & ATP...";
+
+            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
+
+            // PROMPT ENGINE KHUSUS PENYUSUNAN MODUL AJAR ADAPTIF NASIONAL
+            const promptContent = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI. Buatkan naskah rangkuman ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR yang lengkap, terstruktur, sistematis, dan siap pakai berdasarkan data berikut:
+            
+            - Mata Pelajaran: ${mapel}
+            - Jenjang / Fase: ${fase}
+            - Topik Pokok Pembahasan: ${topik}
+            - Alokasi Waktu: ${waktu}
+            - Dimensi P5 Target: ${p5}
+            - Kondisi Fasilitas Sekolah Realistis: ${fasilitas}
+
+            KETENTUAN KHUSUS ADAPTASI WILAYAH:
+            Jika kondisi fasilitas sekolah "Minim & Pelosok 3T", Anda WAJIB merancang metode pembelajaran, langkah-langkah kerja, dan media ajar yang TIDAK bergantung pada internet/komputer/listrik (misal: menggunakan papan tulis, diskusi kelompok, simulasi manual kertas, kartu peran, atau buku teks). Hindari instruksi "buka website X" atau "tonton video Y" jika fasilitas minim!
+
+            STRUKTUR FORMAT OUTPUT NASKAH:
+            Harus ditulis dalam bentuk teks deskriptif rapi dengan penomoran yang jelas (tanpa blok JSON, langsung naskah teks dokumen). Struktur dokumen terdiri atas:
+            
+            I. IDENTITAS MODUL
+            II. CAPAIAN PEMBELAJARAN (CP) & ALUR TUJUAN PEMBELAJARAN (ATP) SINGKAT
+            III. KOMPONEN INTI
+                - Tujuan Pembelajaran
+                - Pemahaman Bermakna
+                - Pertanyaan Pemantik
+            IV. KEGIATAN PEMBELAJARAN (Langkah-Langkah: Pendahuluan, Inti, Penutup yang sesuai dengan kondisi fasilitas sekolah)
+            V. ASESMEN / PENILAIAN (Formatif dan Sumatif singkat)
+            VI. LEMBAR KERJA PESERTA DIDIK (LKPD) RINGKAS`;
+
+            const promptInstruction = { contents: [{ parts: [{ text: promptContent }] }] };
+
+            try {
+                const response = await fetch(proxyUrl, {
+                    method: "POST",
+                    contentType: "text/plain",
+                    body: JSON.stringify(promptInstruction)
+                });
+
+                const rawText = await response.text();
+                let data = JSON.parse(rawText);
+                if (data.error) throw new Error(JSON.stringify(data.error));
+
+                rawAiResponseText = data.candidates[0].content.parts[0].text.trim();
+                
+                // Tampilkan hasil ke textarea preview
+                modulResultTextarea.value = rawAiResponseText;
+                modulPreviewSection.classList.remove('hidden');
+                modulPreviewSection.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (err) {
+                alert("Gagal menghubungi AI Cloud: " + err.message);
+            } finally {
+                generateModulBtn.disabled = false;
+                generateModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI";
+            }
+        });
+
+        // ================= DOWNLOAD AS WORD (.DOCX) LOKAL ENGINE =================
+        exportModulWordBtn.addEventListener('click', async () => {
+            const textToExport = modulResultTextarea.value;
+            const lines = textToExport.split('\n');
+            const { Document, Paragraph, TextRun, Packer, AlignmentType } = window.docx;
+            const docParagraphs = [];
+
+            // Memproses setiap baris teks agar tercetak rapi di Word
+            lines.forEach(line => {
+                let isBold = false;
+                let cleanLine = line.trim();
+
+                // Deteksi judul utama / sub-bab untuk ditebalkan otomatis
+                if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('VI.') || cleanLine.startsWith('-')) {
+                    isBold = true;
+                }
+
+                docParagraphs.push(new Paragraph({
+                    alignment: AlignmentType.JUSTIFIED,
+                    children: [
+                        new TextRun({
+                            text: line,
+                            font: "Times New Roman",
+                            size: 22, // Setara dengan 11pt
+                            bold: isBold
+                        })
+                    ],
+                    spacing: { after: 100 }
+                }));
+            });
+
+            const doc = new Document({
+                sections: [{
+                    properties: {
+                        page: {
+                            size: { width: Math.round(210 * 56.7), height: Math.round(297 * 56.7) }, // A4 Standard
+                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } // Margin 2cm
+                        }
+                    },
+                    children: docParagraphs
+                }]
+            });
+
+            Packer.toBlob(doc).then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const link = document.createElement('a');
+                    link.href = reader.result;
+                    link.download = "Modul_Ajar_Kurikulum_Merdeka.docx";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                reader.readAsDataURL(blob);
+            });
+        });
+    </script>
+</body>
+</html>
