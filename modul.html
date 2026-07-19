@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Modul Ajar & ATP AI Nasional (v1.2 - Secured)</title>
+    <title>Asisten Modul Ajar & ATP AI Nasional (v1.3 - Clean Text)</title>
     <!-- Favicon menggunakan Emoji -->
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     <!-- Tailwind CSS v4 untuk UI Modern -->
@@ -129,7 +129,7 @@
                 </button>
             </div>
             <div class="p-6 space-y-4">
-                <textarea id="modulResultTextarea" class="w-full h-120 border border-slate-200 rounded-xl p-4 text-xs font-mono bg-slate-50 focus:outline-emerald-500 leading-relaxed" placeholder="Hasil rancangan AI akan tampil di sini..."></textarea>
+                <textarea id="modulResultTextarea" class="w-full h-120 border border-slate-200 rounded-xl p-4 text-xs font-sans bg-slate-50 focus:outline-emerald-500 leading-relaxed" placeholder="Hasil rancangan AI akan tampil di sini..."></textarea>
             </div>
         </section>
     </main>
@@ -187,7 +187,6 @@
             const waktu = document.getElementById('modulWaktu').value.trim();
             const fasilitas = document.getElementById('modulFasilitas').value;
 
-            // Ambil semua checkbox profil lulusan yang dicentang oleh guru
             const checkboxes = document.querySelectorAll('input[name="dimensiProfil"]:checked');
             const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
 
@@ -199,8 +198,8 @@
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
 
-            // PROMPT ENGINE PENYUSUNAN MODUL AJAR ADAPTIF 8 DIMENSI
-            const promptContent = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI. Buatkan naskah rangkuman ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR yang lengkap, terstruktur, sistematis, dan siap pakai berdasarkan data berikut:
+            // STRIKTUR PROMPT v1.3: MELARANG KERAS SEMUA BENTUK MARKDOWN / BINTANG BINTANG
+            const promptContent = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI. Buatkan naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR yang lengkap, terstruktur, sistematis, dan siap pakai berdasarkan data berikut:
             
             - Mata Pelajaran: ${mapel}
             - Jenjang / Fase: ${fase}
@@ -209,20 +208,34 @@
             - Dimensi Profil Lulusan Target: ${profilTerpilih}
             - Kondisi Fasilitas Sekolah Realistis: ${fasilitas}
 
+            ATURAN PENULISAN TEKS DAN STRUKTUR (SANGAT KETAT):
+            1. DILARANG KERAS menggunakan simbol Markdown tebal (tanda bintang ganda seperti **teks**). Jika ingin menegaskan kata, cukup tulis dengan huruf kapital biasa atau biarkan polos tanpa simbol apapun!
+            2. DILARANG KERAS menggunakan simbol Markdown miring (tanda bintang tunggal seperti *teks*).
+            3. DILARANG KERAS menggunakan tanda pagar (#, ##, ###) untuk judul bab. Tulis judul bab langsung menggunakan angka romawi (Contoh: I. IDENTITAS MODUL).
+            4. DILARANG KERAS menggunakan tanda strip tiga (---) sebagai pemisah garis.
+            5. Gunakan penomoran normal (1, 2, 3) atau huruf (a, b, c) untuk poin-poin daftar. Jangan gunakan tanda asteris (*) sebagai peluru daftar.
+            6. Hasil harus berupa teks narasi bersih, rapi, formal, tanpa ada satu pun karakter simbol markdown yang mengotori naskah!
+
             KETENTUAN KHUSUS ADAPTASI WILAYAH:
             Jika kondisi fasilitas sekolah "Minim & Pelosok 3T", Anda WAJIB merancang metode pembelajaran, langkah langkah kerja, dan media ajar yang TIDAK bergantung pada internet/komputer/listrik (misal: menggunakan papan tulis, diskusi kelompok, simulasi manual kertas, kartu peran, atau buku teks). Hindari instruksi "buka website X" atau "tonton video Y" jika fasilitas minim!
 
             STRUKTUR FORMAT OUTPUT NASKAH:
-            Harus ditulis dalam bentuk teks deskriptif rapi dengan penomoran yang jelas (tanpa blok JSON, langsung naskah teks dokumen). Struktur dokumen terdiri atas:
-            
             I. IDENTITAS MODUL
-            II. CAPAIAN PEMBELAJARAN (CP) & ALUR TUJUAN PEMBELAJARAN (ATP) SINGKAT
+            (Tuliskan poin: Nama Penyusun: [Nama Guru], Institusi: [Nama Sekolah], Tahun Penyusunan, Jenjang Sekolah, Fase/Kelas, Mata Pelajaran, Elemen CP, Materi Pokok, Alokasi Waktu, dan Target Profil Lulusan)
+            
+            II. CAPAIAN PEMBELAJARAN DAN ALUR TUJUAN PEMBELAJARAN SINGKAT
+            
             III. KOMPONEN INTI
-                - Tujuan Pembelajaran
-                - Pemahaman Bermakna
-                - Pertanyaan Pemantik
-            IV. KEGIATAN PEMBELAJARAN (Langkah-Langkah: Pendahuluan, Inti, Penutup yang sesuai dengan kondisi fasilitas sekolah serta mengintegrasikan nilai kompetensi profil lulusan yang dicentang)
-            V. ASESMEN / PENILAIAN (Formatif dan Sumatif singkat)
+            - Tujuan Pembelajaran
+            - Pemahaman Bermakna
+            - Pertanyaan Pemantik
+            
+            IV. KEGIATAN PEMBELAJARAN
+            (Rancang Langkah-Langkah secara detail: Kegiatan Pendahuluan, Kegiatan Inti, dan Kegiatan Penutup yang realistis sesuai kondisi fasilitas sekolah)
+            
+            V. ASESMEN DAN PENILAIAN
+            (Asesmen Formatif dan Sumatif singkat)
+            
             VI. LEMBAR KERJA PESERTA DIDIK (LKPD) RINGKAS`;
 
             const promptInstruction = { contents: [{ parts: [{ text: promptContent }] }] };
@@ -240,7 +253,9 @@
 
                 rawAiResponseText = data.candidates[0].content.parts[0].text.trim();
                 
-                // Tampilkan hasil ke textarea preview
+                // Tambahan filter regex di sisi client sebagai pengaman berlapis untuk menghapus sisa markdown
+                rawAiResponseText = rawAiResponseText.replace(/\*\*/g, "").replace(/\*/g, "");
+
                 modulResultTextarea.value = rawAiResponseText;
                 modulPreviewSection.classList.remove('hidden');
                 modulPreviewSection.scrollIntoView({ behavior: 'smooth' });
@@ -264,6 +279,7 @@
                 let isBold = false;
                 let cleanLine = line.trim();
 
+                // Otomatis menebalkan teks di Word jika mendeteksi Bab Utama Angka Romawi atau Sub-Bab Poin Utama
                 if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('VI.') || cleanLine.startsWith('-')) {
                     isBold = true;
                 }
@@ -274,7 +290,7 @@
                         new TextRun({
                             text: line,
                             font: "Times New Roman",
-                            size: 22, 
+                            size: 22, // Setara 11pt standar dokumen dinas
                             bold: isBold
                         })
                     ],
@@ -286,8 +302,8 @@
                 sections: [{
                     properties: {
                         page: {
-                            size: { width: Math.round(210 * 56.7), height: Math.round(297 * 56.7) }, 
-                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } 
+                            size: { width: Math.round(210 * 56.7), height: Math.round(297 * 56.7) }, // A4
+                            margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } // 2cm
                         }
                     },
                     children: docParagraphs
