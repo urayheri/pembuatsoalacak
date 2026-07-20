@@ -58,12 +58,31 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* ANIMASI POPUP CHATBOT */
+        @keyframes floatBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: floatBounce 3s ease-in-out infinite;
+        }
+
+        .chat-popup-enter {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .chat-popup-enter-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     </style>
 </head>
 <body class="text-xs antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-50 selection:text-emerald-800">
 
     <!-- MINIMALIST CLASSROOM HEADER -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-6 h-16 flex items-center justify-between">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl font-bold shadow-sm shadow-emerald-600/10">
                 👨‍🏫
@@ -406,7 +425,7 @@
                 </div>
                 <div id="soalContainer" class="p-6 space-y-6 max-h-[500px] overflow-y-auto divide-y divide-slate-100 text-slate-700 text-xs"></div>
             </section>
-        </main>
+        </section>
     </main>
 
     <!-- VOLUNTARY SUPPORT DIALOG -->
@@ -426,6 +445,58 @@
                 ✓ Validasi QRIS Interkoneksi Universal
             </div>
         </div>
+    </div>
+
+    <!-- WIDGET CHATBOT AI INTERAKTIF MELAYANG (FLOATING AI ASSISTANT) -->
+    <div id="chatbotContainer" class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+        
+        <!-- POPUP WINDOW CHATBOT -->
+        <div id="chatbotWindow" class="hidden mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col chat-popup-enter" style="height: 460px;">
+            <!-- CHAT HEADER -->
+            <div class="bg-emerald-600 p-3.5 text-white flex justify-between items-center shadow-xs">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                        🤖
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xs tracking-wide">Asisten Guru AI</h4>
+                        <p class="text-[9px] text-emerald-100">Konsultasi Mengajar & Soal Instan</p>
+                    </div>
+                </div>
+                <button id="closeChatbotBtn" class="text-white/80 hover:text-white font-bold text-lg leading-none cursor-pointer px-1">&times;</button>
+            </div>
+
+            <!-- CHAT MESSAGES CONTAINER -->
+            <div id="chatMessages" class="flex-1 p-3.5 space-y-3 overflow-y-auto text-[11px] bg-slate-50/50">
+                <!-- AI WELCOME MESSAGE -->
+                <div class="flex gap-2 items-start">
+                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">🤖</div>
+                    <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-xs text-slate-700 shadow-2xs max-w-[85%] leading-relaxed">
+                        Halo Bapak/Ibu Guru! 👋 Ada yang bisa saya bantu terkait penyusunan soal, perumusan materi, atau Kurikulum Merdeka hari ini?
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK SUGGESTIONS -->
+            <div class="px-3 py-1.5 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto text-[9px]">
+                <button onclick="sendQuickPrompt('Buatkan 1 contoh soal HOTS C5')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2 py-1 rounded-full whitespace-nowrap cursor-pointer border border-slate-200 transition-colors">💡 Contoh Soal HOTS</button>
+                <button onclick="sendQuickPrompt('Ide esensial ice breaking kelas')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2 py-1 rounded-full whitespace-nowrap cursor-pointer border border-slate-200 transition-colors">🧊 Ice Breaking</button>
+            </div>
+
+            <!-- CHAT INPUT FORM -->
+            <form id="chatForm" class="p-2.5 bg-white border-t border-slate-200 flex gap-2 items-center">
+                <input type="text" id="chatInput" placeholder="Ketik pertanyaan atau instruksi..." class="flex-1 app-input rounded-xl px-3 py-2 text-xs focus:outline-none" required>
+                <button type="submit" id="chatSubmitBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2 rounded-xl transition-colors cursor-pointer shrink-0">
+                    🚀
+                </button>
+            </form>
+        </div>
+
+        <!-- FLOATING BUTTON CHATBOT -->
+        <button id="toggleChatbotBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center gap-2 group animate-float border-2 border-white">
+            <span class="text-lg">💬</span>
+            <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap text-xs font-bold pr-1">Tanya Asisten AI</span>
+        </button>
     </div>
 
     <!-- STABLE FOOTER -->
@@ -900,7 +971,7 @@
 
         // DOWNLOAD AS WORD (.DOCX) INTEGRATED LOKAL ENGINE
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
-                        const { Document, Paragraph, TextRun, AlignmentType } = window.docx;
+            const { Document, Paragraph, TextRun, AlignmentType } = window.docx;
             const docParagraphs = [];
             const customFont = document.getElementById('fontFamily').value;
             const customSize = parseInt(document.getElementById('fontSize').value) * 2;
@@ -979,6 +1050,99 @@
                 reader.readAsDataURL(blob);
             } catch(e) { alert("Gagal mengunduh berkas: " + e.message); }
             finally { exportSingleWordBtn.disabled = false; }
+        });
+
+        // LOGIKA CHATBOT AI INTERAKTIF MELAYANG
+        const toggleChatbotBtn = document.getElementById('toggleChatbotBtn');
+        const closeChatbotBtn = document.getElementById('closeChatbotBtn');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+
+        toggleChatbotBtn.addEventListener('click', () => {
+            if (chatbotWindow.classList.contains('hidden')) {
+                chatbotWindow.classList.remove('hidden');
+                setTimeout(() => chatbotWindow.classList.add('chat-popup-enter-active'), 10);
+            } else {
+                chatbotWindow.classList.remove('chat-popup-enter-active');
+                setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
+            }
+        });
+
+        closeChatbotBtn.addEventListener('click', () => {
+            chatbotWindow.classList.remove('chat-popup-enter-active');
+            setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
+        });
+
+        function appendUserMessage(msg) {
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.className = "flex gap-2 items-start justify-end";
+            userMsgDiv.innerHTML = `
+                <div class="bg-emerald-600 text-white p-2.5 rounded-2xl rounded-tr-xs shadow-2xs max-w-[85%] leading-relaxed">
+                    ${msg}
+                </div>
+            `;
+            chatMessages.appendChild(userMsgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function appendAiMessage(msg) {
+            const aiMsgDiv = document.createElement('div');
+            aiMsgDiv.className = "flex gap-2 items-start";
+            aiMsgDiv.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">🤖</div>
+                <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-xs text-slate-700 shadow-2xs max-w-[85%] leading-relaxed">
+                    ${msg}
+                </div>
+            `;
+            chatMessages.appendChild(aiMsgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendQuickPrompt(promptText) {
+            chatInput.value = promptText;
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if(!text) return;
+
+            appendUserMessage(text);
+            chatInput.value = "";
+
+            // Loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = "flex gap-2 items-start loading-msg";
+            loadingDiv.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5 animate-spin">🌀</div>
+                <div class="bg-white border border-slate-200 p-2 rounded-2xl text-slate-400 italic text-[10px]">
+                    Sistem AI sedang berpikir...
+                </div>
+            `;
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
+            const chatPrompt = `Bertindaklah sebagai Konsultan Pendidikan AI yang ramah, ringkas, dan sangat membantu guru sekolah. Jawab pertanyaan guru berikut dalam waktu singkat tanpa simbol markdown berlebihan: ${text}`;
+
+            try {
+                const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: chatPrompt }] }] }) });
+                const rawText = await response.text();
+                let reply = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
+                reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
+
+                const loader = chatMessages.querySelector('.loading-msg');
+                if(loader) loader.remove();
+
+                appendAiMessage(reply);
+            } catch (err) {
+                const loader = chatMessages.querySelector('.loading-msg');
+                if(loader) loader.remove();
+                appendAiMessage("Maaf, koneksi server AI sedang padat. Silakan coba tanyakan kembali.");
+            }
         });
 
         // MULTI-LANGUAGE ENGINE ARCHITECTURE
