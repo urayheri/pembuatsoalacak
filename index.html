@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Assistant</title>
+    <title>Asisten Guru Indonesia</title>
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -110,7 +110,7 @@
             </div>
 
             <button id="openSedekahBtn" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-xs cursor-pointer text-[11px]">
-                💝 Apresiasi
+                💝 Apresiasi Dana
             </button>
         </div>
     </header>
@@ -122,7 +122,7 @@
         <section class="lg:col-span-4 space-y-6">
             <!-- WORKSPACE SELECTION TABS -->
             <div class="app-card p-4 space-y-2">
-                <p id="lblWorkspaceModes" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 mb-2">Panel Kerja Mengajar</p>
+                <p id="lblWorkspaceModes" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 mb-2">Menu Asisten Guru</p>
                 
                 <button id="tabAcakBtn" class="w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs">
                     <span id="txtTabAcak" class="flex items-center gap-3 text-xs"><span>📊</span> Mode 1: Pengacak Paket Soal</span>
@@ -1150,8 +1150,8 @@
         // MULTI-LANGUAGE ENGINE ARCHITECTURE
         const i18n = {
             id: {
-                btnDonate: "💝 Apresiasi", lblTerminalStatus: "Sistem: Aktif", lblSessionSync: "Sinkronisasi: OK",
-                lblWorkspaceModes: "Panel Kerja Mengajar", txtTabAcak: "Mode 1: Pengacak Paket Soal", txtTabBuat: "Mode 2: Pembuat Soal AI",
+                btnDonate: "💝 Apresiasi Dana", lblTerminalStatus: "Sistem: Aktif", lblSessionSync: "Sinkronisasi: OK",
+                lblWorkspaceModes: "Menu Asistent Guru", txtTabAcak: "Mode 1: Pengacak Paket Soal", txtTabBuat: "Mode 2: Pembuat Soal AI",
                 lblLayoutConfig: "Format Margin & Dokumen Cetak", lblTypography: "Jenis Font Dokumen", lblFontSize: "Ukuran (pt)",
                 lblMargin: "Margin Kertas (cm)", lblCanvasGeo: "Ukuran Kertas Lembar Kerja", lblBlueprints: "Unduh Master Template Excel",
                 lblInstitutionalManifest: "Atribut Kepala Surat / Kop Lembar Kerja", btnProcessAcak: "⚡ Proses & Unduh Paket Soal Acak",
@@ -1159,8 +1159,8 @@
                 previewTitle: "Pratinjau Hasil Penyusunan Dokumen", btnExportSingleWord: "📥 Download File Word (.docx)"
             },
             en: {
-                btnDonate: "💝 Appreciate", lblTerminalStatus: "System: Active", lblSessionSync: "Synchronization: OK",
-                lblWorkspaceModes: "Teaching Work Panel", txtTabAcak: "Mode 1: Question Packet Shuffler", txtTabBuat: "Mode 2: AI Question Generator",
+                btnDonate: "💝 Dana Appreciate", lblTerminalStatus: "System: Active", lblSessionSync: "Synchronization: OK",
+                lblWorkspaceModes: " Teacher Assistant Menu", txtTabAcak: "Mode 1: Question Packet Shuffler", txtTabBuat: "Mode 2: AI Question Generator",
                 lblLayoutConfig: "Margin & Document Print Format", lblTypography: "Document Font Family", lblFontSize: "Size (pt)",
                 lblMargin: "Paper Margin (cm)", lblCanvasGeo: "Worksheet Paper Geometry", lblBlueprints: "Download Master Excel Sheets",
                 lblInstitutionalManifest: "Header Attributes / Worksheet Kop", btnProcessAcak: "⚡ Process & Download Shuffled Packets",
