@@ -507,10 +507,12 @@
     <script>
     (function() {
         const allowedHosts = [
-            atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
-            atob("bG9jYWxob3N0"),             
-            atob("MTI3LjAuMC4x"),           
-            ""                               
+        atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
+        atob("bG9jYWxob3N0"),             
+        atob("MTI3LjAuMC4x"),            
+        "asistenguruindonesia.my.id",     // <-- Tambahkan domain baru di sini
+        "www.asistenguruindonesia.my.id", // <-- Tambahkan versi www di sini
+        ""                 
         ];
         if (!allowedHosts.includes(window.location.hostname)) {
             document.documentElement.innerHTML = "";
