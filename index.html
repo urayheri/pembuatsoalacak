@@ -19,6 +19,10 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
     
+    <!-- KATEX FOR MATH RENDERING IN WEB PREVIEW -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
@@ -682,6 +686,7 @@
             }
             return arr;
         }
+        
         // LOGIKA UNDUH TEMPLATE EXCEL DENGAN SHEETJS (XLSX)
         const downloadTemplateEBtn = document.getElementById('downloadTemplateEBtn');
         const downloadTemplateDBtn = document.getElementById('downloadTemplateDBtn');
@@ -758,6 +763,143 @@
 
     <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT) -->
     <script>
+        /**
+         * Memecah string teks menjadi potongan (runs) teks biasa dan ekspresi matematika (LaTeX).
+         * @param {string} text - Teks masukan yang memuat notasi matematika ($...$ atau $$...$$)
+         * @returns {Array<{type: 'text'|'math-inline'|'math-block', value: string}>}
+         */
+        function parseMathTextRuns(text) {
+          if (!text) return [];
+
+          const runs = [];
+          // Regex untuk mencocokkan $$...$$ (block) dan $...$ (inline)
+          const regex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$)/g;
+          let lastIndex = 0;
+          let match;
+
+          while ((match = regex.exec(text)) !== null) {
+            // Teks biasa sebelum simbol $
+            if (match.index > lastIndex) {
+              runs.push({
+                type: 'text',
+                value: text.slice(lastIndex, match.index)
+              });
+            }
+
+            const matchedStr = match[0];
+            if (matchedStr.startsWith('$$') && matchedStr.endsWith('$$')) {
+              // Block math ($$ ... $$)
+              runs.push({
+                type: 'math-block',
+                value: matchedStr.slice(2, -2).trim()
+              });
+            } else {
+              // Inline math ($ ... $)
+              runs.push({
+                type: 'math-inline',
+                value: matchedStr.slice(1, -1).trim()
+              });
+            }
+
+            lastIndex = regex.lastIndex;
+          }
+
+          // Sisa teks setelah match terakhir
+          if (lastIndex < text.length) {
+            runs.push({
+              type: 'text',
+              value: text.slice(lastIndex)
+            });
+          }
+
+          return runs;
+        }
+
+        /**
+         * Mengonversi teks yang memuat matematika LaTeX menjadi larik docx.TextRun
+         * yang mendukung superskrip (^), subskrip (_), dan simbol matematika untuk ekspor Word (.docx).
+         */
+        function formatMathToTextRuns(text, docx, customFont, customSize) {
+          const { TextRun } = docx;
+          const parsed = parseMathTextRuns(text);
+          const runs = [];
+
+          parsed.forEach(item => {
+            if (item.type === 'text') {
+              runs.push(new TextRun({ text: item.value, font: customFont, size: customSize }));
+            } else {
+              // Konversi ekspresi matematika LaTeX menjadi format yang bersih
+              let mathVal = item.value;
+
+              // Penggantian simbol umum LaTeX ke Unicode
+              mathVal = mathVal
+                .replace(/\\times/g, '×')
+                .replace(/\\div/g, '÷')
+                .replace(/\\pm/g, '±')
+                .replace(/\\leq/g, '≤')
+                .replace(/\\geq/g, '≥')
+                .replace(/\\neq/g, '≠')
+                .replace(/\\infty/g, '∞')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\alpha/g, 'α')
+                .replace(/\\beta/g, 'β')
+                .replace(/\\theta/g, 'θ')
+                .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1/$2)');
+
+              // Parsing Pangkat (^) dan Subskrip (_)
+              const subSuperRegex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z]+)|_\{([^}]+)\}|_([0-9a-zA-Z]+))/g;
+              let lastIdx = 0;
+              let subMatch;
+
+              while ((subMatch = subSuperRegex.exec(mathVal)) !== null) {
+                if (subMatch.index > lastIdx) {
+                  runs.push(new TextRun({
+                    text: mathVal.slice(lastIdx, subMatch.index),
+                    font: customFont,
+                    size: customSize,
+                    italics: true
+                  }));
+                }
+
+                const supVal = subMatch[2] || subMatch[3];
+                const subVal = subMatch[4] || subMatch[5];
+
+                if (supVal) {
+                  runs.push(new TextRun({
+                    text: supVal,
+                    font: customFont,
+                    size: customSize,
+                    superScript: true,
+                    italics: true
+                  }));
+                } else if (subVal) {
+                  runs.push(new TextRun({
+                    text: subVal,
+                    font: customFont,
+                    size: customSize,
+                    subScript: true,
+                    italics: true
+                  }));
+                }
+
+                lastIdx = subSuperRegex.lastIndex;
+              }
+
+              if (lastIdx < mathVal.length) {
+                runs.push(new TextRun({
+                  text: mathVal.slice(lastIdx),
+                  font: customFont,
+                  size: customSize,
+                  italics: true
+                }));
+              }
+            }
+          });
+
+          return runs;
+        }
+
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
         const devStatementModal = document.getElementById('devStatementModal');
@@ -1039,11 +1181,12 @@ Kriteria Jumlah Soal:
 - Total Uraian/Essay harus tepat ${totalEssayMinta} soal.
 
 📐 ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
-1. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^ { } dan _ { } atau Unicode asli. Contoh: x^{2}, a_{n}, f(x) = 3x^{3} - 2x + 5, H_{2}O.
-2. PECAHAN & AKAR: Tulis pecahan dengan sintaks tebal/jelas seperti (a/b) atau \\frac{a}{b}, dan akar dengan √x atau \\sqrt{x}.
-3. SIMBOL MATEMATIKA & LOGIKA: Gunakan simbol standar Unicode seperti ×, ÷, ±, ≤, ≥, ≠, ∞, π, θ, α, β, ∑, ∫, lim, log, sin, cos, tan, matrix/vektor.
-4. PERSIAPAN EXPORT DOCX: Pastikan setiap ekspresi matematika, persamaan linear, kuadrat, matriks, trigonometri, limit, dan kalkulus dituliskan secara lengkap dan tidak terpotong.
-5. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid dan tidak error saat di-parse.
+1. Pembungkus Notasi Matematika: Selalu bungkus ekspresi matematika dengan simbol $ ... $ (inline) atau $$ ... $$ (block math). Contoh: $x^2 + 2x - 5 = 0$ atau $\\frac{a}{b}$.
+2. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^{ } dan _{ }. Contoh: $x^{2}$, $a_{n}$, $f(x) = 3x^{3} - 2x + 5$, $H_{2}O$.
+3. PECAHAN & AKAR: Tulis pecahan dengan sintaks \\frac{a}{b}, dan akar dengan \\sqrt{x}.
+4. SIMBOL MATEMATIKA & LOGIKA: Gunakan simbol LaTeX standar seperti \\times, \\div, \\pm, \\leq, \\geq, \\neq, \\infty, \\pi, \\theta, \\alpha, \\beta, \\sum, \\int, \\lim, \\log, \\sin, \\cos, \\tan.
+5. PERSIAPAN EXPORT DOCX: Pastikan setiap ekspresi matematika, persamaan linear, kuadrat, matriks, trigonometri, limit, dan kalkulus dituliskan secara lengkap dan tidak terpotong.
+6. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid dan tidak error saat di-parse.
 
 📋 ATURAN FORMAT OPSI & JSON:
 - Jangan tambahkan prefiks huruf (A, B, C, D, E) pada teks opsi pilihan ganda.
@@ -1119,6 +1262,7 @@ Format Output JSON Harus Seperti Ini:
                 processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
             }
         });
+
         // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         processModulBtn.addEventListener('click', async () => {
             const mapel = document.getElementById('modulMapel').value.trim();
@@ -1229,7 +1373,37 @@ Format Output JSON Harus Seperti Ini:
 
         function getEssayLabel(index, style) { return style === "huruf" ? String.fromCharCode(65 + (index % 26)) + ". " : (index + 1) + ". "; }
 
-       // 1. FUNGSI RENDER EDITOR PREVIEW (DIPERBAIKI)
+        // FUNGSI UNTUK MERENDER KATEX DI DALAM UI WEB PREVIEW
+        function renderMathInElement(container) {
+          if (typeof katex === 'undefined') return;
+          const mathElements = container.querySelectorAll('.katex-render');
+          mathElements.forEach(elem => {
+            const isBlock = elem.dataset.type === 'math-block';
+            try {
+              katex.render(elem.dataset.value, elem, {
+                displayMode: isBlock,
+                throwOnError: false
+              });
+            } catch (e) {
+              elem.textContent = elem.dataset.value;
+            }
+          });
+        }
+
+        // FUNGSI MEMBANTU FORMAT TEKS MATH PADA HTML PREVIEW CANVAS
+        function formatMathHtml(text) {
+          if (!text) return "";
+          const runs = parseMathTextRuns(text);
+          return runs.map(run => {
+            if (run.type === 'text') {
+              return run.value;
+            } else {
+              return `<span class="katex-render" data-type="${run.type}" data-value="${run.value}"></span>`;
+            }
+          }).join('');
+        }
+
+        // 1. FUNGSI RENDER EDITOR PREVIEW (DIPERBAIKI DENGAN METODE KATEX MATH PARSING)
         function renderEditorUI() {
             previewSection.classList.remove('hidden'); 
             exportSingleWordBtn.classList.remove('hidden');
@@ -1257,7 +1431,7 @@ Format Output JSON Harus Seperti Ini:
                             opsiHtml += `
                                 <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
                                     <span class="font-bold text-emerald-700 pl-1 text-[10px]">${String.fromCharCode(65+oIdx)}.</span>
-                                    <input type="text" value="${optText}" class="bg-transparent w-full focus:outline-none p-0.5 text-slate-800 font-medium" onchange="originalPGQuestions[${idx}].opsi[${oIdx}].teks = this.value">
+                                    <input type="text" value="${optText}" class="bg-transparent w-full focus:outline-none p-0.5 text-slate-800 font-medium" onchange="originalPGQuestions[${idx}].opsi[${oIdx}].teks = this.value; renderEditorUI();">
                                 </div>
                             `;
                         });
@@ -1266,7 +1440,10 @@ Format Output JSON Harus Seperti Ini:
                     block.innerHTML = `
                         <div class="flex gap-3 items-start">
                             <span class="font-bold text-emerald-700 text-xs pt-1">${idx+1}.</span>
-                            <textarea class="w-full app-input rounded-lg p-2 font-medium text-xs" rows="2" onchange="originalPGQuestions[${idx}].soal = this.value">${q.soal}</textarea>
+                            <div class="w-full space-y-1">
+                                <textarea class="w-full app-input rounded-lg p-2 font-medium text-xs" rows="2" onchange="originalPGQuestions[${idx}].soal = this.value; renderEditorUI();">${q.soal}</textarea>
+                                <div class="p-2 bg-emerald-50/40 rounded-md border border-emerald-100/60 text-slate-700 font-serif text-xs">${formatMathHtml(q.soal)}</div>
+                            </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5 pt-1">${opsiHtml}</div>
                     `;
@@ -1282,17 +1459,22 @@ Format Output JSON Harus Seperti Ini:
                     block.innerHTML = `
                         <div class="flex gap-3 items-start">
                             <span class="font-bold text-emerald-700 text-xs pt-1">${getEssayLabel(idx, currentStyle)}</span>
-                            <textarea class="w-full app-input rounded-lg p-2 font-medium text-xs" rows="2" onchange="originalEssayQuestions[${idx}].soal = this.value">${q.soal}</textarea>
+                            <div class="w-full space-y-1">
+                                <textarea class="w-full app-input rounded-lg p-2 font-medium text-xs" rows="2" onchange="originalEssayQuestions[${idx}].soal = this.value; renderEditorUI();">${q.soal}</textarea>
+                                <div class="p-2 bg-emerald-50/40 rounded-md border border-emerald-100/60 text-slate-700 font-serif text-xs">${formatMathHtml(q.soal)}</div>
+                            </div>
                         </div>
                     `;
                     soalContainer.appendChild(block);
                 });
             }
 
+            // Render rumus matematika dengan KaTeX di halaman web
+            renderMathInElement(soalContainer);
             previewSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // FUNGSI CREATEDOCXBLOB PERBAIKAN: SANITASI OPSI GANDA & KOP SURAT RAPI
+        // FUNGSI CREATEDOCXBLOB PERBAIKAN: INTEGRASI PARSEMATH UNTUK DOKUMEN WORD (.DOCX)
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
             const children = []; 
@@ -1324,7 +1506,7 @@ Format Output JSON Harus Seperti Ini:
                     }
                     children.push(new Paragraph({
                         alignment: AlignmentType.JUSTIFIED,
-                        children: [new TextRun({ text: line, font: customFont, size: customSize, bold: isBold })],
+                        children: formatMathToTextRuns(line, window.docx, customFont, customSize),
                         spacing: { after: 100 }
                     }));
                 });
@@ -1418,12 +1600,13 @@ Format Output JSON Harus Seperti Ini:
                     if (essayData && essayData.length > 0) {
                         children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN / PEDOMAN ESSAY", bold: true, font: customFont, size: titleSize })], spacing: { before: 200, after: 150 } }));
                         essayData.forEach((eq, eIndex) => {
+                            const kunciRuns = formatMathToTextRuns(eq.kunci || "Jawaban mengacu pada ketepatan analisis siswa.", window.docx, customFont, customSize);
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.JUSTIFIED,
                                 indent: { left: 360, hanging: 360 }, 
                                 children: [
                                     new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), 
-                                    new TextRun({ text: eq.kunci || "Jawaban mengacu pada ketepatan analisis siswa.", font: customFont, size: customSize })
+                                    ...kunciRuns
                                 ], 
                                 spacing: { after: 100 } 
                             }));
@@ -1441,13 +1624,14 @@ Format Output JSON Harus Seperti Ini:
                             // Bersihkan huruf opsi ganda bawaan
                             const targetOptions = rawOptions.map(o => typeof o === 'object' ? cleanOptionText(o.teks) : cleanOptionText(o));
 
-                            // Teks Soal -> ALIGNMENT: JUSTIFIED
+                            // Teks Soal -> ALIGNMENT: JUSTIFIED (DENGAN PARSEMATH)
+                            const soalRuns = formatMathToTextRuns(q.soal, window.docx, customFont, customSize);
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.JUSTIFIED,
                                 indent: { left: 360, hanging: 360 }, 
                                 children: [
                                     new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), 
-                                    new TextRun({ text: q.soal, font: customFont, size: customSize })
+                                    ...soalRuns
                                 ], 
                                 spacing: { before: 120, after: 80 } 
                             }));
@@ -1458,10 +1642,9 @@ Format Output JSON Harus Seperti Ini:
                                 // Opsi Menyamping 1 Baris
                                 const runChildren = []; 
                                 targetOptions.forEach((optText, oIdx) => { 
-                                    runChildren.push(
-                                        new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), 
-                                        new TextRun({ text: optText, font: customFont, size: customSize })
-                                    ); 
+                                    runChildren.push(new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }));
+                                    const optRuns = formatMathToTextRuns(optText, window.docx, customFont, customSize);
+                                    runChildren.push(...optRuns);
                                     if (oIdx < targetOptions.length - 1) runChildren.push(new TextRun({ text: "\t" })); 
                                 });
                                 const tabStops = []; 
@@ -1475,13 +1658,13 @@ Format Output JSON Harus Seperti Ini:
                                     const optText1 = targetOptions[i];
                                     const runChildren = [
                                         new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }), 
-                                        new TextRun({ text: optText1, font: customFont, size: customSize })
+                                        ...formatMathToTextRuns(optText1, window.docx, customFont, customSize)
                                     ];
                                     if (i + 1 < targetOptions.length) {
                                         const optText2 = targetOptions[i+1];
                                         runChildren.push(
                                             new TextRun({ text: `\t${labels[i+1]}. `, bold: true, font: customFont, size: customSize }), 
-                                            new TextRun({ text: optText2, font: customFont, size: customSize })
+                                            ...formatMathToTextRuns(optText2, window.docx, customFont, customSize)
                                         );
                                     }
                                     children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
@@ -1494,7 +1677,7 @@ Format Output JSON Harus Seperti Ini:
                                         indent: { left: 720, hanging: 360 }, 
                                         children: [
                                             new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), 
-                                            new TextRun({ text: optText, font: customFont, size: customSize })
+                                            ...formatMathToTextRuns(optText, window.docx, customFont, customSize)
                                         ], 
                                         spacing: { after: 60 } 
                                     })); 
@@ -1506,12 +1689,13 @@ Format Output JSON Harus Seperti Ini:
                     if (essayData && essayData.length > 0) {
                         children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
                         essayData.forEach((eq, eIndex) => {
+                            const essayRuns = formatMathToTextRuns(eq.soal, window.docx, customFont, customSize);
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.JUSTIFIED,
                                 indent: { left: 360, hanging: 360 }, 
                                 children: [
                                     new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), 
-                                    new TextRun({ text: eq.soal, font: customFont, size: customSize })
+                                    ...essayRuns
                                 ], 
                                 spacing: { before: 120, after: 120 } 
                             }));
@@ -1556,12 +1740,13 @@ Format Output JSON Harus Seperti Ini:
 
                     if (essayData && essayData.length > 0) {
                         essayData.forEach((eq, eIndex) => {
+                            const kunciRuns = formatMathToTextRuns(eq.kunci || "Jawaban bervariasi sesuai ketepatan analisis siswa.", window.docx, customFont, customSize);
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.JUSTIFIED,
                                 indent: { left: 360, hanging: 360 }, 
                                 children: [
                                     new TextRun({ text: `Essay ${eIndex + 1}: `, bold: true, font: customFont, size: customSize }), 
-                                    new TextRun({ text: eq.kunci || "Jawaban bervariasi sesuai ketepatan analisis siswa.", font: customFont, size: customSize })
+                                    ...kunciRuns
                                 ], 
                                 spacing: { after: 60 } 
                             }));
@@ -1583,6 +1768,7 @@ Format Output JSON Harus Seperti Ini:
             });
             return await window.docx.Packer.toBlob(doc);
         }
+        
         // EVENT LISTENER MODE 1 (PERBAIKAN LENGKAP DENGAN TRY CATCH FINALLY)
         processAcakBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
