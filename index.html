@@ -682,6 +682,7 @@
             }
             return arr;
         }
+        
         // LOGIKA UNDUH TEMPLATE EXCEL DENGAN SHEETJS (XLSX)
         const downloadTemplateEBtn = document.getElementById('downloadTemplateEBtn');
         const downloadTemplateDBtn = document.getElementById('downloadTemplateDBtn');
@@ -721,7 +722,7 @@
         }
     </script>
 
-    <!-- DOMAIN PROTECTION LOCK SCRIPT -->
+    <!-- DOMAIN PROTECTION LOCK SCRIPT (SAFEGUARDED) -->
     <script>
         (function() {
             const allowedHosts = [
@@ -735,7 +736,7 @@
             if (!allowedHosts.includes(window.location.hostname)) {
                 document.documentElement.innerHTML = "";
                 window.location.replace("https://google.com");
-                throw new Error("Akses Ilegal!");
+                return;
             }
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.onkeydown = function(e) {
@@ -744,15 +745,6 @@
                 if (e.ctrlKey && e.keyCode === 85) return false;
                 if (e.ctrlKey && e.keyCode === 83) return false;
             };
-            setInterval(function() {
-                console.clear();
-                const startTime = +new Date();
-                debugger;
-                const endTime = +new Date();
-                if (endTime - startTime > 100) {
-                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f4f6f9;padding:20px;text-align:center;'>⚠️ OPERASI DIHENTIKAN. SECURITY BREACH OVERRIDE TRIGGERED.</div>";
-                }
-            }, 100);
         })();
     </script>
 
@@ -762,7 +754,6 @@
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
         const devStatementModal = document.getElementById('devStatementModal');
         const heroMascotTrigger = document.getElementById('heroMascotTrigger');
-        const openDevStatementBtn = document.getElementById('openDevStatementBtn');
         const footerAboutLink = document.getElementById('footerAboutLink');
 
         function openKeunggulanModal() {
@@ -772,7 +763,6 @@
         }
 
         if (heroMascotTrigger) heroMascotTrigger.addEventListener('click', openKeunggulanModal);
-        if (openDevStatementBtn) openDevStatementBtn.addEventListener('click', openKeunggulanModal);
         if (footerAboutLink) footerAboutLink.addEventListener('click', (e) => { e.preventDefault(); openKeunggulanModal(); });
 
         if (closeDevStatementBtn) closeDevStatementBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
@@ -978,7 +968,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // ACTION BUTTON 2: AI QUESTION GENERATION (FIXED PARSING & SANITIZATION)
+        // ACTION BUTTON 2: AI QUESTION GENERATION
         processGenerateBtn.addEventListener('click', async () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
@@ -1007,7 +997,6 @@
 
             if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
 
-            // TAMPILKAN PREVIEW AREA DENGAN INDIKATOR LOADING LANGSUNG
             previewSection.classList.remove('hidden');
             exportSingleWordBtn.classList.add('hidden');
             previewTitle.textContent = "Sedang Memproses Naskah Soal...";
@@ -1068,18 +1057,20 @@
                 cleanJsonText = cleanJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
 
                 const parsedData = JSON.parse(cleanJsonText);
+                const labels = ['A', 'B', 'C', 'D', 'E'];
                 
                 originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
-                    const cleanOpsi = (q.opsi || []).map(opt => {
+                    const cleanOpsi = (q.opsi || []).map((opt, oIdx) => {
                         let text = typeof opt === 'object' ? (opt.teks || "") : opt;
                         text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
-                        return { teks: text };
+                        return { teks: text, labelOriginal: labels[oIdx] || 'A' };
                     });
-                    return { ...q, opsi: cleanOpsi };
+                    return { ...q, opsi: cleanOpsi, kunciOriginal: (q.kunciOriginal || 'A').toUpperCase() };
                 });
 
                 originalEssayQuestions = parsedData.essay || [];
                 renderEditorUI();
+                processAcakBtn.disabled = false;
 
             } catch (err) { 
                 soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal memuat preview: ${err.message}</div>`;
@@ -1089,6 +1080,7 @@
                 processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
             }
         });
+
         // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         processModulBtn.addEventListener('click', async () => {
             const mapel = document.getElementById('modulMapel').value.trim();
@@ -1199,7 +1191,7 @@
 
         function getEssayLabel(index, style) { return style === "huruf" ? String.fromCharCode(65 + (index % 26)) + ". " : (index + 1) + ". "; }
 
-       // 1. FUNGSI RENDER EDITOR PREVIEW (DIPERBAIKI)
+        // FUNGSI RENDER EDITOR PREVIEW
         function renderEditorUI() {
             previewSection.classList.remove('hidden'); 
             exportSingleWordBtn.classList.remove('hidden');
@@ -1208,7 +1200,6 @@
             
             const currentStyle = document.getElementById('generateEssayLabelStyle').value;
 
-            // Jika kedua data kosong
             if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
                 soalContainer.innerHTML = `<div class="text-center py-8 text-slate-400 font-medium">⚠️ Tidak ada data soal yang berhasil dimuat. Silakan coba buat ulang.</div>`;
                 return;
@@ -1261,450 +1252,445 @@
 
             previewSection.scrollIntoView({ behavior: 'smooth' });
         }
-// 1. HELPER PARSING PANGKAT, SUBSKRIP & SIMBOL MATEMATIKA
-function parseMathTextRuns(rawText, customFont, customSize, isBold = false) {
-    const { TextRun } = window.docx;
-    if (!rawText) return [new TextRun({ text: "", font: customFont, size: customSize, bold: isBold })];
 
-    let text = rawText.toString()
-        .replace(/<=/g, "≤")
-        .replace/>=/g, "≥")
-        .replace(/!=/g, "≠")
-        .replace(/\* /g, "× ")
-        .replace(/\*/g, "×");
+        // HELPER PARSING PANGKAT, SUBSKRIP & SIMBOL MATEMATIKA
+        function parseMathTextRuns(rawText, customFont, customSize, isBold = false) {
+            const { TextRun } = window.docx;
+            if (!rawText) return [new TextRun({ text: "", font: customFont, size: customSize, bold: isBold })];
 
-    const runs = [];
-    const regex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z+-]+)|_\{([^}]+)\}|_([0-9a-zA-Z+-]+))/g;
-    let lastIndex = 0;
-    let match;
+            let text = rawText.toString()
+                .replace(/<=/g, "≤")
+                .replace/>=/g, "≥")
+                .replace(/!=/g, "≠")
+                .replace(/\* /g, "× ")
+                .replace(/\*/g, "×");
 
-    while ((match = regex.exec(text)) !== null) {
-        if (match.index > lastIndex) {
-            runs.push(new TextRun({
-                text: text.substring(lastIndex, match.index),
-                font: customFont,
-                size: customSize,
-                bold: isBold
-            }));
+            const runs = [];
+            const regex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z+-]+)|_\{([^}]+)\}|_([0-9a-zA-Z+-]+))/g;
+            let lastIndex = 0;
+            let match;
+
+            while ((match = regex.exec(text)) !== null) {
+                if (match.index > lastIndex) {
+                    runs.push(new TextRun({
+                        text: text.substring(lastIndex, match.index),
+                        font: customFont,
+                        size: customSize,
+                        bold: isBold
+                    }));
+                }
+
+                const superVal = match[2] || match[3];
+                if (superVal !== undefined) {
+                    runs.push(new TextRun({
+                        text: superVal,
+                        font: customFont,
+                        size: customSize,
+                        superScript: true,
+                        bold: isBold
+                    }));
+                }
+
+                const subVal = match[4] || match[5];
+                if (subVal !== undefined) {
+                    runs.push(new TextRun({
+                        text: subVal,
+                        font: customFont,
+                        size: customSize,
+                        subScript: true,
+                        bold: isBold
+                    }));
+                }
+
+                lastIndex = regex.lastIndex;
+            }
+
+            if (lastIndex < text.length) {
+                runs.push(new TextRun({
+                    text: text.substring(lastIndex),
+                    font: customFont,
+                    size: customSize,
+                    bold: isBold
+                }));
+            }
+
+            return runs.length > 0 ? runs : [new TextRun({ text: text, font: customFont, size: customSize, bold: isBold })];
         }
 
-        const superVal = match[2] || match[3];
-        if (superVal !== undefined) {
-            runs.push(new TextRun({
-                text: superVal,
-                font: customFont,
-                size: customSize,
-                superScript: true,
-                bold: isBold
-            }));
-        }
+        // HELPER KONVERSI TEKS TABEL MARKDOWN KE TABEL WORD (.DOCX)
+        function convertMarkdownTableToDocx(tableText, customFont, customSize) {
+            const { Table, TableRow, TableCell, Paragraph, WidthType, BorderStyle, AlignmentType } = window.docx;
+            
+            const lines = tableText.trim().split('\n').filter(line => line.includes('|'));
+            if (lines.length < 1) return null;
 
-        const subVal = match[4] || match[5];
-        if (subVal !== undefined) {
-            runs.push(new TextRun({
-                text: subVal,
-                font: customFont,
-                size: customSize,
-                subScript: true,
-                bold: isBold
-            }));
-        }
+            const rows = [];
+            lines.forEach((line, index) => {
+                if (line.includes('---')) return;
 
-        lastIndex = regex.lastIndex;
-    }
+                let cells = line.split('|').map(c => c.trim());
+                if (cells.length > 0 && cells[0] === '') cells.shift();
+                if (cells.length > 0 && cells[cells.length - 1] === '') cells.pop();
+                
+                const isHeader = (index === 0);
 
-    if (lastIndex < text.length) {
-        runs.push(new TextRun({
-            text: text.substring(lastIndex),
-            font: customFont,
-            size: customSize,
-            bold: isBold
-        }));
-    }
+                const tableCells = cells.map(cellText => {
+                    return new TableCell({
+                        children: [
+                            new Paragraph({
+                                alignment: isHeader ? AlignmentType.CENTER : AlignmentType.LEFT,
+                                children: parseMathTextRuns(cellText, customFont, customSize, isHeader)
+                            })
+                        ],
+                        shading: isHeader ? { fill: "F1F5F9" } : undefined,
+                        margins: { top: 100, bottom: 100, left: 150, right: 150 }
+                    });
+                });
 
-    return runs.length > 0 ? runs : [new TextRun({ text: text, font: customFont, size: customSize, bold: isBold })];
-}
-
-// 2. HELPER KONVERSI TEKS TABEL MARKDOWN KE TABEL WORD (.DOCX)
-function convertMarkdownTableToDocx(tableText, customFont, customSize) {
-    const { Table, TableRow, TableCell, Paragraph, WidthType, BorderStyle, AlignmentType } = window.docx;
-    
-    const lines = tableText.trim().split('\n').filter(line => line.includes('|'));
-    if (lines.length < 1) return null;
-
-    const rows = [];
-    lines.forEach((line, index) => {
-        if (line.includes('---')) return; // Abaikan garis pemisah markdown
-
-        const cells = line.split('|').slice(1, -1).map(c => c.trim());
-        const isHeader = (index === 0);
-
-        const tableCells = cells.map(cellText => {
-            return new TableCell({
-                children: [
-                    new Paragraph({
-                        alignment: isHeader ? AlignmentType.CENTER : AlignmentType.LEFT,
-                        children: parseMathTextRuns(cellText, customFont, customSize, isHeader)
-                    })
-                ],
-                shading: isHeader ? { fill: "F1F5F9" } : undefined,
-                margins: { top: 100, bottom: 100, left: 150, right: 150 }
+                if (tableCells.length > 0) {
+                    rows.push(new TableRow({ children: tableCells }));
+                }
             });
-        });
 
-        rows.push(new TableRow({ children: tableCells }));
-    });
+            if (rows.length === 0) return null;
 
-    if (rows.length === 0) return null;
+            return new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                borders: {
+                    top: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
+                    bottom: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
+                    left: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
+                    right: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
+                    insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: "E2E8F0" },
+                    insideVertical: { style: BorderStyle.SINGLE, size: 4, color: "E2E8F0" }
+                },
+                rows: rows
+            });
+        }
 
-    return new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        borders: {
-            top: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
-            bottom: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
-            left: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
-            right: { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" },
-            insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: "E2E8F0" },
-            insideVertical: { style: BorderStyle.SINGLE, size: 4, color: "E2E8F0" }
-        },
-        rows: rows
-    });
-}
-        // FUNGSI CREATEDOCXBLOB PERBAIKAN: SANITASI OPSI GANDA & KOP SURAT RAPI
+        // FUNGSI CREATEDOCXBLOB: EKSPOR DOKUMEN WORD RAPI
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
-    const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
-    const children = []; 
-    const customFont = document.getElementById('fontFamily').value;
-    const customSize = parseInt(document.getElementById('fontSize').value) * 2; 
-    const titleSize = customSize + 2;
-    const customMargin = Math.round(parseFloat(document.getElementById('marginCm').value) * 567);
-    const sizeMode = document.getElementById('pageSize').value;
+            const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
+            const children = []; 
+            const customFont = document.getElementById('fontFamily').value;
+            const customSize = parseInt(document.getElementById('fontSize').value) * 2; 
+            const titleSize = customSize + 2;
+            const customMargin = Math.round(parseFloat(document.getElementById('marginCm').value) * 567);
+            const sizeMode = document.getElementById('pageSize').value;
 
-    const dxaWidth = Math.round((sizeMode === "F4" ? 215 : 210) * 56.7);
-    const dxaHeight = Math.round((sizeMode === "F4" ? 330 : 297) * 56.7);
-    const visualKopWidth = sizeMode === "F4" ? 620 : 600;
+            const dxaWidth = Math.round((sizeMode === "F4" ? 215 : 210) * 56.7);
+            const dxaHeight = Math.round((sizeMode === "F4" ? 330 : 297) * 56.7);
+            const visualKopWidth = sizeMode === "F4" ? 620 : 600;
 
-    // Pembersih prefiks huruf ganda pada opsi (misal: "A. Hypertext..." -> "Hypertext...")
-    const cleanOptionText = (text) => {
-        if (!text) return "";
-        let str = text.toString().trim();
-        return str.replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
-    };
+            const cleanOptionText = (text) => {
+                if (!text) return "";
+                let str = text.toString().trim();
+                return str.replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
+            };
 
-    // ==========================================
-    // A. PENANGANAN MODE 3: MODUL AJAR
-    // ==========================================
-    if (typeof activeTab !== 'undefined' && activeTab === "modul") {
-        const lines = (modulAjarGeneratedContent || "").split('\n');
-        let tableBuffer = [];
+            // A. MODE 3: MODUL AJAR
+            if (typeof activeTab !== 'undefined' && activeTab === "modul") {
+                const lines = (modulAjarGeneratedContent || "").split('\n');
+                let tableBuffer = [];
 
-        lines.forEach((line) => {
-            const cleanLine = line.trim();
+                lines.forEach((line) => {
+                    const cleanLine = line.trim();
 
-            // Pengecekan Baris Tabel
-            if (cleanLine.includes('|') && cleanLine.split('|').length > 2) {
-                tableBuffer.push(cleanLine);
-            } else {
-                // Jika ada buffer tabel yang belum diproses
+                    if (cleanLine.includes('|') && cleanLine.split('|').length > 2) {
+                        tableBuffer.push(cleanLine);
+                    } else {
+                        if (tableBuffer.length > 0) {
+                            const docxTable = convertMarkdownTableToDocx(tableBuffer.join('\n'), customFont, customSize);
+                            if (docxTable) {
+                                children.push(docxTable);
+                                children.push(new Paragraph({ spacing: { after: 100 } }));
+                            }
+                            tableBuffer = [];
+                        }
+
+                        if (cleanLine) {
+                            let isBold = false;
+                            if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('BAB')) {
+                                isBold = true;
+                            }
+                            children.push(new Paragraph({
+                                alignment: AlignmentType.JUSTIFIED,
+                                children: parseMathTextRuns(cleanLine, customFont, customSize, isBold),
+                                spacing: { after: 100 }
+                            }));
+                        }
+                    }
+                });
+
                 if (tableBuffer.length > 0) {
                     const docxTable = convertMarkdownTableToDocx(tableBuffer.join('\n'), customFont, customSize);
                     if (docxTable) {
                         children.push(docxTable);
                         children.push(new Paragraph({ spacing: { after: 100 } }));
                     }
-                    tableBuffer = [];
                 }
-
-                if (cleanLine) {
-                    let isBold = false;
-                    if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('BAB')) {
-                        isBold = true;
+            } 
+            // B. MODE 1 & 2: NASKAH SOAL
+            else {
+                if (!isAnswerKey) {
+                    const kopGambarElem = document.getElementById('kopGambarInput');
+                    const kopGambarFile = kopGambarElem && kopGambarElem.files ? kopGambarElem.files[0] : null;
+                    if (kopGambarFile) {
+                        try {
+                            const bufKop = await kopGambarFile.arrayBuffer();
+                            const uint8Kop = new Uint8Array(bufKop);
+                            children.push(new Paragraph({ 
+                                alignment: AlignmentType.CENTER, 
+                                children: [new ImageRun({ data: uint8Kop, transformation: { width: visualKopWidth, height: 95 } })], 
+                                spacing: { after: 150 } 
+                            }));
+                        } catch(e) {
+                            console.warn("Gagal memuat gambar Kop:", e);
+                        }
+                    } else {
+                        const hUjian = document.getElementById('ujianHeader').value; 
+                        const hTahun = document.getElementById('ujianTahun').value;
+                        children.push(
+                            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hUjian, bold: true, size: titleSize, font: customFont })] }),
+                            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hTahun, bold: true, size: titleSize, font: customFont })], spacing: { after: 150 } })
+                        );
                     }
-                    children.push(new Paragraph({
-                        alignment: AlignmentType.JUSTIFIED,
-                        children: parseMathTextRuns(cleanLine, customFont, customSize, isBold),
-                        spacing: { after: 100 }
-                    }));
-                }
-            }
-        });
-
-        // Proses sisa buffer tabel jika ada di akhir baris
-        if (tableBuffer.length > 0) {
-            const docxTable = convertMarkdownTableToDocx(tableBuffer.join('\n'), customFont, customSize);
-            if (docxTable) {
-                children.push(docxTable);
-                children.push(new Paragraph({ spacing: { after: 100 } }));
-            }
-        }
-    } 
-    // ==========================================
-    // B. PENANGANAN MODE 1 & 2: NASKAH SOAL
-    // ==========================================
-    else {
-        // 1. KOP SURAT & IDENTITAS UJIAN
-        if (!isAnswerKey) {
-            const kopGambarElem = document.getElementById('kopGambarInput');
-            const kopGambarFile = kopGambarElem && kopGambarElem.files ? kopGambarElem.files[0] : null;
-            if (kopGambarFile) {
-                try {
-                    const bufKop = await kopGambarFile.arrayBuffer();
-                    const uint8Kop = new Uint8Array(bufKop);
-                    children.push(new Paragraph({ 
-                        alignment: AlignmentType.CENTER, 
-                        children: [new ImageRun({ data: uint8Kop, transformation: { width: visualKopWidth, height: 95 } })], 
-                        spacing: { after: 150 } 
-                    }));
-                } catch(e) {
-                    console.warn("Gagal memuat gambar Kop:", e);
-                }
-            } else {
-                const hUjian = document.getElementById('ujianHeader').value; 
-                const hTahun = document.getElementById('ujianTahun').value;
-                children.push(
-                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hUjian, bold: true, size: titleSize, font: customFont })] }),
-                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hTahun, bold: true, size: titleSize, font: customFont })], spacing: { after: 150 } })
-                );
-            }
-            
-            const mapel = document.getElementById('attrMapel').value || "-"; 
-            const kelas = document.getElementById('attrKelas').value || "-";
-            const hari = document.getElementById('attrHari').value || "-"; 
-            const waktu = document.getElementById('attrWaktu').value || "-";
-            
-            const attrTable = new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                borders: {
-                    top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                    left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
-                    insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE }
-                },
-                rows: [
-                    new TableRow({
-                        children: [
-                            new TableCell({ width: { size: 55, type: WidthType.PERCENTAGE }, children: [
-                                new Paragraph({ children: [new TextRun({ text: `Mata Pelajaran : ${mapel}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
-                                new Paragraph({ children: [new TextRun({ text: `Kelas / Jurusan : ${kelas}`, font: customFont, size: customSize })], spacing: { after: 40 } })
-                            ]}),
-                            new TableCell({ width: { size: 45, type: WidthType.PERCENTAGE }, children: [
-                                new Paragraph({ children: [new TextRun({ text: `Hari / Tanggal  : ${hari}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
-                                new Paragraph({ children: [new TextRun({ text: `Waktu           : ${waktu}`, font: customFont, size: customSize })], spacing: { after: 40 } })
-                            ]})
+                    
+                    const mapel = document.getElementById('attrMapel').value || "-"; 
+                    const kelas = document.getElementById('attrKelas').value || "-";
+                    const hari = document.getElementById('attrHari').value || "-"; 
+                    const waktu = document.getElementById('attrWaktu').value || "-";
+                    
+                    const attrTable = new Table({
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        borders: {
+                            top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
+                            left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                            insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE }
+                        },
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({ width: { size: 55, type: WidthType.PERCENTAGE }, children: [
+                                        new Paragraph({ children: [new TextRun({ text: `Mata Pelajaran : ${mapel}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
+                                        new Paragraph({ children: [new TextRun({ text: `Kelas / Jurusan : ${kelas}`, font: customFont, size: customSize })], spacing: { after: 40 } })
+                                    ]}),
+                                    new TableCell({ width: { size: 45, type: WidthType.PERCENTAGE }, children: [
+                                        new Paragraph({ children: [new TextRun({ text: `Hari / Tanggal  : ${hari}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
+                                        new Paragraph({ children: [new TextRun({ text: `Waktu           : ${waktu}`, font: customFont, size: customSize })], spacing: { after: 40 } })
+                                    ]})
+                                ]
+                            })
                         ]
-                    })
-                ]
-            });
-            children.push(attrTable);
-            children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "_________________________________________________________________________________", bold: true, font: customFont, size: customSize })], spacing: { after: 250 } }));
-        } else {
-            children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: title.toUpperCase(), bold: true, size: titleSize, font: customFont })], spacing: { after: 250 } }));
-        }
+                    });
+                    children.push(attrTable);
+                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "_________________________________________________________________________________", bold: true, font: customFont, size: customSize })], spacing: { after: 250 } }));
+                } else {
+                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: title.toUpperCase(), bold: true, size: titleSize, font: customFont })], spacing: { after: 250 } }));
+                }
 
-        const labels = ['A', 'B', 'C', 'D', 'E'];
+                const labels = ['A', 'B', 'C', 'D', 'E'];
 
-        // 2. DOKUMEN KHUSUS KUNCI JAWABAN (ZIP SEPARATE)
-        if (isAnswerKey) {
-            if (pgData && pgData.length > 0) {
-                children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { after: 150 } }));
-                pgData.forEach((q, index) => {
-                    const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
-                    const keyVal = q.newKey || q.kunciOriginal || q.kunci || "-";
-                    if (index % 2 === 0) {
-                        const runChildren = [
-                            new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), 
-                            new TextRun({ text: `${keyVal}${infoKog}`, bold: true, font: customFont, size: customSize })
-                        ];
-                        if (index + 1 < pgData.length) { 
-                            const nextQ = pgData[index + 1]; 
-                            const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : ""; 
-                            const nextKeyVal = nextQ.newKey || nextQ.kunciOriginal || nextQ.kunci || "-";
-                            runChildren.push(
-                                new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }), 
-                                new TextRun({ text: `${nextKeyVal}${nextInfoKog}`, bold: true, font: customFont, size: customSize })
-                            ); 
-                        }
-                        children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
-                    }
-                });
-            }
-
-            if (essayData && essayData.length > 0) {
-                children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN / PEDOMAN ESSAY", bold: true, font: customFont, size: titleSize })], spacing: { before: 200, after: 150 } }));
-                essayData.forEach((eq, eIndex) => {
-                    children.push(new Paragraph({ 
-                        alignment: AlignmentType.JUSTIFIED,
-                        indent: { left: 360, hanging: 360 }, 
-                        children: [
-                            new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), 
-                            ...parseMathTextRuns(eq.kunci || "Jawaban mengacu pada ketepatan analisis siswa.", customFont, customSize)
-                        ], 
-                        spacing: { after: 100 } 
-                    }));
-                });
-            }
-        } 
-        // 3. NASKAH SOAL UTAMA
-        else {
-            if (pgData && pgData.length > 0) {
-                children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
-                
-                pgData.forEach((q, index) => {
-                    const rawOptions = q.shuffledOptions || q.opsi || [];
-                    const targetOptions = rawOptions.map(o => typeof o === 'object' ? cleanOptionText(o.teks) : cleanOptionText(o));
-
-                    // Teks Soal (Cek jika ada tabel di dalam teks soal)
-                    if (q.soal.includes('|') && q.soal.split('|').length > 2) {
-                        children.push(new Paragraph({ 
-                            alignment: AlignmentType.JUSTIFIED,
-                            indent: { left: 360, hanging: 360 }, 
-                            children: [
-                                new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize })
-                            ], 
-                            spacing: { before: 120, after: 40 } 
-                        }));
-                        const docxTable = convertMarkdownTableToDocx(q.soal, customFont, customSize);
-                        if (docxTable) children.push(docxTable);
-                    } else {
-                        const soalRuns = [
-                            new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }),
-                            ...parseMathTextRuns(q.soal, customFont, customSize)
-                        ];
-                        children.push(new Paragraph({ 
-                            alignment: AlignmentType.JUSTIFIED,
-                            indent: { left: 360, hanging: 360 }, 
-                            children: soalRuns, 
-                            spacing: { before: 120, after: 80 } 
-                        }));
-                    }
-                    
-                    let totalOptLen = targetOptions.reduce((acc, o) => acc + o.length, 0);
-                    
-                    if (totalOptLen < 80 && targetOptions.length > 0) {
-                        // Opsi Menyamping 1 Baris
-                        const runChildren = []; 
-                        targetOptions.forEach((optText, oIdx) => { 
-                            runChildren.push(new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }));
-                            runChildren.push(...parseMathTextRuns(optText, customFont, customSize));
-                            if (oIdx < targetOptions.length - 1) runChildren.push(new TextRun({ text: "\t" })); 
-                        });
-                        const tabStops = []; 
-                        const colWidth = Math.floor(8500 / targetOptions.length); 
-                        for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
-                        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
-                    
-                    } else if (totalOptLen >= 80 && totalOptLen < 160 && targetOptions.length > 0) {
-                        // Opsi 2 Kolom
-                        for(let i = 0; i < targetOptions.length; i += 2) {
-                            const runChildren = [
-                                new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }),
-                                ...parseMathTextRuns(targetOptions[i], customFont, customSize)
-                            ];
-                            if (i + 1 < targetOptions.length) {
-                                runChildren.push(new TextRun({ text: `\t${labels[i+1]}. `, bold: true, font: customFont, size: customSize }));
-                                runChildren.push(...parseMathTextRuns(targetOptions[i+1], customFont, customSize));
+                // DOKUMEN KUNCI JAWABAN
+                if (isAnswerKey) {
+                    if (pgData && pgData.length > 0) {
+                        children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { after: 150 } }));
+                        pgData.forEach((q, index) => {
+                            const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
+                            const keyVal = q.newKey || q.kunciOriginal || q.kunci || "-";
+                            if (index % 2 === 0) {
+                                const runChildren = [
+                                    new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), 
+                                    new TextRun({ text: `${keyVal}${infoKog}`, bold: true, font: customFont, size: customSize })
+                                ];
+                                if (index + 1 < pgData.length) { 
+                                    const nextQ = pgData[index + 1]; 
+                                    const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : ""; 
+                                    const nextKeyVal = nextQ.newKey || nextQ.kunciOriginal || nextQ.kunci || "-";
+                                    runChildren.push(
+                                        new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }), 
+                                        new TextRun({ text: `${nextKeyVal}${nextInfoKog}`, bold: true, font: customFont, size: customSize })
+                                    ); 
+                                }
+                                children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
                             }
-                            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
-                        }
-                    } else {
-                        // Opsi Ke Bawah
-                        targetOptions.forEach((optText, oIdx) => { 
-                            const optRuns = [
-                                new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }),
-                                ...parseMathTextRuns(optText, customFont, customSize)
+                        });
+                    }
+
+                    if (essayData && essayData.length > 0) {
+                        children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN / PEDOMAN ESSAY", bold: true, font: customFont, size: titleSize })], spacing: { before: 200, after: 150 } }));
+                        essayData.forEach((eq, eIndex) => {
+                            children.push(new Paragraph({ 
+                                alignment: AlignmentType.JUSTIFIED,
+                                indent: { left: 360, hanging: 360 }, 
+                                children: [
+                                    new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), 
+                                    ...parseMathTextRuns(eq.kunci || "Jawaban mengacu pada ketepatan analisis siswa.", customFont, customSize)
+                                ], 
+                                spacing: { after: 100 } 
+                            }));
+                        });
+                    }
+                } 
+                // NASKAH SOAL UTAMA
+                else {
+                    if (pgData && pgData.length > 0) {
+                        children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
+                        
+                        pgData.forEach((q, index) => {
+                            const rawOptions = q.shuffledOptions || q.opsi || [];
+                            const targetOptions = rawOptions.map(o => typeof o === 'object' ? cleanOptionText(o.teks) : cleanOptionText(o));
+
+                            if (q.soal.includes('|') && q.soal.split('|').length > 2) {
+                                children.push(new Paragraph({ 
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    indent: { left: 360, hanging: 360 }, 
+                                    children: [
+                                        new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize })
+                                    ], 
+                                    spacing: { before: 120, after: 40 } 
+                                }));
+                                const docxTable = convertMarkdownTableToDocx(q.soal, customFont, customSize);
+                                if (docxTable) children.push(docxTable);
+                            } else {
+                                const soalRuns = [
+                                    new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }),
+                                    ...parseMathTextRuns(q.soal, customFont, customSize)
+                                ];
+                                children.push(new Paragraph({ 
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    indent: { left: 360, hanging: 360 }, 
+                                    children: soalRuns, 
+                                    spacing: { before: 120, after: 80 } 
+                                }));
+                            }
+                            
+                            let totalOptLen = targetOptions.reduce((acc, o) => acc + o.length, 0);
+                            
+                            if (totalOptLen < 80 && targetOptions.length > 0) {
+                                const runChildren = []; 
+                                targetOptions.forEach((optText, oIdx) => { 
+                                    runChildren.push(new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }));
+                                    runChildren.push(...parseMathTextRuns(optText, customFont, customSize));
+                                    if (oIdx < targetOptions.length - 1) runChildren.push(new TextRun({ text: "\t" })); 
+                                });
+                                const tabStops = []; 
+                                const colWidth = Math.floor(8500 / targetOptions.length); 
+                                for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
+                                children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
+                            
+                            } else if (totalOptLen >= 80 && totalOptLen < 160 && targetOptions.length > 0) {
+                                for(let i = 0; i < targetOptions.length; i += 2) {
+                                    const runChildren = [
+                                        new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }),
+                                        ...parseMathTextRuns(targetOptions[i], customFont, customSize)
+                                    ];
+                                    if (i + 1 < targetOptions.length) {
+                                        runChildren.push(new TextRun({ text: `\t${labels[i+1]}. `, bold: true, font: customFont, size: customSize }));
+                                        runChildren.push(...parseMathTextRuns(targetOptions[i+1], customFont, customSize));
+                                    }
+                                    children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
+                                }
+                            } else {
+                                targetOptions.forEach((optText, oIdx) => { 
+                                    const optRuns = [
+                                        new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }),
+                                        ...parseMathTextRuns(optText, customFont, customSize)
+                                    ];
+                                    children.push(new Paragraph({ 
+                                        alignment: AlignmentType.JUSTIFIED,
+                                        indent: { left: 720, hanging: 360 }, 
+                                        children: optRuns, 
+                                        spacing: { after: 60 } 
+                                    })); 
+                                });
+                            }
+                        });
+                    }
+
+                    if (essayData && essayData.length > 0) {
+                        children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
+                        essayData.forEach((eq, eIndex) => {
+                            const essayRuns = [
+                                new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }),
+                                ...parseMathTextRuns(eq.soal, customFont, customSize)
                             ];
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.JUSTIFIED,
-                                indent: { left: 720, hanging: 360 }, 
-                                children: optRuns, 
-                                spacing: { after: 60 } 
-                            })); 
+                                indent: { left: 360, hanging: 360 }, 
+                                children: essayRuns, 
+                                spacing: { before: 120, after: 120 } 
+                            }));
                         });
                     }
-                });
-            }
 
-            if (essayData && essayData.length > 0) {
-                children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
-                essayData.forEach((eq, eIndex) => {
-                    const essayRuns = [
-                        new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }),
-                        ...parseMathTextRuns(eq.soal, customFont, customSize)
-                    ];
-                    children.push(new Paragraph({ 
-                        alignment: AlignmentType.JUSTIFIED,
-                        indent: { left: 360, hanging: 360 }, 
-                        children: essayRuns, 
-                        spacing: { before: 120, after: 120 } 
-                    }));
-                });
-            }
+                    // LAMPIRAN KUNCI JAWABAN
+                    children.push(
+                        new Paragraph({
+                            children: [new TextRun({ text: "--------------------------------------------------------------------------------------------------", font: customFont, size: customSize })],
+                            spacing: { before: 300, after: 100 }
+                        }),
+                        new Paragraph({
+                            alignment: AlignmentType.CENTER,
+                            children: [new TextRun({ text: "KUNCI JAWABAN & PEDOMAN PENSKORAN", bold: true, font: customFont, size: titleSize })],
+                            spacing: { after: 150 }
+                        })
+                    );
 
-            // LAMPIRAN KUNCI JAWABAN DI HALAMAN BELAKANG
-            children.push(
-                new Paragraph({
-                    children: [new TextRun({ text: "--------------------------------------------------------------------------------------------------", font: customFont, size: customSize })],
-                    spacing: { before: 300, after: 100 }
-                }),
-                new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [new TextRun({ text: "KUNCI JAWABAN & PEDOMAN PENSKORAN", bold: true, font: customFont, size: titleSize })],
-                    spacing: { after: 150 }
-                })
-            );
-
-            if (pgData && pgData.length > 0) {
-                pgData.forEach((q, index) => {
-                    const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
-                    const keyVal = q.newKey || q.kunciOriginal || q.kunci || "-";
-                    if (index % 2 === 0) {
-                        const runChildren = [
-                            new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), 
-                            new TextRun({ text: `${keyVal}${infoKog}`, bold: true, font: customFont, size: customSize })
-                        ];
-                        if (index + 1 < pgData.length) { 
-                            const nextQ = pgData[index + 1]; 
-                            const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : ""; 
-                            const nextKeyVal = nextQ.newKey || nextQ.kunciOriginal || nextQ.kunci || "-";
-                            runChildren.push(
-                                new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }), 
-                                new TextRun({ text: `${nextKeyVal}${nextInfoKog}`, bold: true, font: customFont, size: customSize })
-                            ); 
-                        }
-                        children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
+                    if (pgData && pgData.length > 0) {
+                        pgData.forEach((q, index) => {
+                            const infoKog = q.kognitif ? ` (${q.kognitif})` : "";
+                            const keyVal = q.newKey || q.kunciOriginal || q.kunci || "-";
+                            if (index % 2 === 0) {
+                                const runChildren = [
+                                    new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), 
+                                    new TextRun({ text: `${keyVal}${infoKog}`, bold: true, font: customFont, size: customSize })
+                                ];
+                                if (index + 1 < pgData.length) { 
+                                    const nextQ = pgData[index + 1]; 
+                                    const nextInfoKog = nextQ.kognitif ? ` (${nextQ.kognitif})` : ""; 
+                                    const nextKeyVal = nextQ.newKey || nextQ.kunciOriginal || nextQ.kunci || "-";
+                                    runChildren.push(
+                                        new TextRun({ text: `\tNomor ${index + 2} : `, font: customFont, size: customSize }), 
+                                        new TextRun({ text: `${nextKeyVal}${nextInfoKog}`, bold: true, font: customFont, size: customSize })
+                                    ); 
+                                }
+                                children.push(new Paragraph({ tabStops: [{ type: "left", position: 4000 }], children: runChildren, spacing: { after: 60 } }));
+                            }
+                        });
                     }
-                });
+
+                    if (essayData && essayData.length > 0) {
+                        essayData.forEach((eq, eIndex) => {
+                            children.push(new Paragraph({ 
+                                alignment: AlignmentType.JUSTIFIED,
+                                indent: { left: 360, hanging: 360 }, 
+                                children: [
+                                    new TextRun({ text: `Essay ${eIndex + 1}: `, bold: true, font: customFont, size: customSize }), 
+                                    ...parseMathTextRuns(eq.kunci || "Jawaban bervariasi sesuai ketepatan analisis siswa.", customFont, customSize)
+                                ], 
+                                spacing: { after: 60 } 
+                            }));
+                        });
+                    }
+                }
             }
 
-            if (essayData && essayData.length > 0) {
-                essayData.forEach((eq, eIndex) => {
-                    children.push(new Paragraph({ 
-                        alignment: AlignmentType.JUSTIFIED,
-                        indent: { left: 360, hanging: 360 }, 
-                        children: [
-                            new TextRun({ text: `Essay ${eIndex + 1}: `, bold: true, font: customFont, size: customSize }), 
-                            ...parseMathTextRuns(eq.kunci || "Jawaban bervariasi sesuai ketepatan analisis siswa.", customFont, customSize)
-                        ], 
-                        spacing: { after: 60 } 
-                    }));
-                });
-            }
+            const doc = new Document({ 
+                sections: [{ 
+                    properties: { 
+                        page: { 
+                            size: { width: dxaWidth, height: dxaHeight }, 
+                            margin: { top: customMargin, bottom: customMargin, left: customMargin, right: customMargin } 
+                        } 
+                    }, 
+                    children 
+                }] 
+            });
+            return await window.docx.Packer.toBlob(doc);
         }
-    }
 
-    const doc = new Document({ 
-        sections: [{ 
-            properties: { 
-                page: { 
-                    size: { width: dxaWidth, height: dxaHeight }, 
-                    margin: { top: customMargin, bottom: customMargin, left: customMargin, right: customMargin } 
-                } 
-            }, 
-            children 
-        }] 
-    });
-    return await window.docx.Packer.toBlob(doc);
-}
-        // EVENT LISTENER MODE 1 (PERBAIKAN LENGKAP DENGAN TRY CATCH FINALLY)
+        // EVENT LISTENER MODE 1
         processAcakBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
             const zip = new JSZip(); 
@@ -1727,7 +1713,9 @@ function convertMarkdownTableToDocx(tableText, customFont, customSize) {
                     const processedPG = shuffledPG.map(q => {
                         const shuffledOptions = shuffleArray(q.opsi); 
                         let newKey = '';
-                        shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
+                        shuffledOptions.forEach((opt, idxOpt) => { 
+                            if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; 
+                        });
                         return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
                     });
 
@@ -1758,7 +1746,6 @@ function convertMarkdownTableToDocx(tableText, customFont, customSize) {
                     alert("Gagal memproses acak soal: " + err.message);
                 }
             } finally {
-                // Tombol PASTI kembali aktif walaupun terjadi error
                 processAcakBtn.disabled = false;
                 processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
             }
