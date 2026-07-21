@@ -508,7 +508,7 @@
 
                 <h4 class="font-bold text-slate-800 text-xs">✨ Keunggulan Utama Platform Ini:</h4>
                 <ul class="space-y-2 list-disc list-inside text-slate-700">
-                    <li><strong class="text-slate-800">Pemrosesan Lokal & Aman:</strong> File Excel dan dokumen Anda diproses langsung di browser tanpa menyimpan data kerahasiaan sekolah ke server luar.</li>
+                    <li><strong class="text-slate-800">Pemrosesan Lokal & Aman:</strong> File Excel dan dokumen Anda dipproses langsung di browser tanpa menyimpan data kerahasiaan sekolah ke server luar.</li>
                     <li><strong class="text-slate-800">Integrasi Kurikulum Merdeka:</strong> Penyusunan Modul Ajar dan indikator soal disesuaikan secara dinamis dengan Fase, Capaian Pembelajaran, dan Fasilitas Sekolah.</li>
                     <li><strong class="text-slate-800">Export Siap Cetak (.docx):</strong> Hasil acakan atau rumusan AI langsung dikemas ke dalam format Word lengkap dengan pengaturan margin dan kop resmi.</li>
                     <li><strong class="text-slate-800">100% Gratis & Efisien:</strong> Dapat diakses kapan saja oleh seluruh pendidik di Indonesia tanpa biaya berlangganan.</li>
@@ -522,27 +522,27 @@
             </div>
         </div>
     </div>
+
     <!-- POP-UP NOTIFIKASI & ERROR ANIMASI KEREN -->
-<div id="customToastModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
-    <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-100 text-center transform scale-90 opacity-0 transition-all duration-300 relative" id="customToastBox">
-        
-        <!-- Ikon Animasi Status -->
-        <div id="toastIconBg" class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce">
-            <span id="toastIcon">⚠️</span>
-        </div>
+    <div id="customToastModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-100 text-center transform scale-90 opacity-0 transition-all duration-300 relative" id="customToastBox">
+            <!-- Ikon Animasi Status -->
+            <div id="toastIconBg" class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce">
+                <span id="toastIcon">⚠️</span>
+            </div>
 
-        <!-- Judul & Pesan -->
-        <div class="space-y-1">
-            <h3 id="toastTitle" class="font-extrabold text-slate-800 text-sm">Pemberitahuan Sistem</h3>
-            <p id="toastMessage" class="text-slate-600 text-[11px] leading-relaxed">Pesan notifikasi akan muncul di sini.</p>
-        </div>
+            <!-- Judul & Pesan -->
+            <div class="space-y-1">
+                <h3 id="toastTitle" class="font-extrabold text-slate-800 text-sm">Pemberitahuan Sistem</h3>
+                <p id="toastMessage" class="text-slate-600 text-[11px] leading-relaxed">Pesan notifikasi akan muncul di sini.</p>
+            </div>
 
-        <!-- Tombol Aksi -->
-        <button id="closeToastBtn" type="button" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-md">
-            Paham & Tutup
-        </button>
+            <!-- Tombol Aksi -->
+            <button id="closeToastBtn" type="button" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-md">
+                Paham & Tutup
+            </button>
+        </div>
     </div>
-</div>
 
     <!-- VOLUNTARY SUPPORT DIALOG -->
     <div id="sedekahModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
@@ -625,95 +625,92 @@
         <p>Asisten Guru Indonesia © 2026 | Dibuat oleh U. Heri Mukti, S.Tr.Kom.</p>
     </footer>
 
-    // FUNGSI POP-UP TOAST ANIMASI MODERN
+    <!-- FUNGSI POP-UP TOAST ANIMASI MODERN -->
     <script>
-function showCustomToast(message, type = 'error', title = null) {
-    const toastModal = document.getElementById('customToastModal');
-    const toastBox = document.getElementById('customToastBox');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastIconBg = document.getElementById('toastIconBg');
-    const toastTitle = document.getElementById('toastTitle');
-    const toastMessage = document.getElementById('toastMessage');
-    const closeToastBtn = document.getElementById('closeToastBtn');
+        function showCustomToast(message, type = 'error', title = null) {
+            const toastModal = document.getElementById('customToastModal');
+            const toastBox = document.getElementById('customToastBox');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastIconBg = document.getElementById('toastIconBg');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            const closeToastBtn = document.getElementById('closeToastBtn');
 
-    if (!toastModal) {
-        alert(message); // Fallback jika HTML modal belum terpasang
-        return;
-    }
+            if (!toastModal) {
+                alert(message);
+                return;
+            }
 
-    // Set Variasi Tampilan Berdasarkan Tipe
-    if (type === 'error') {
-        toastIcon.textContent = '❌';
-        toastIconBg.className = 'w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
-        toastTitle.textContent = title || 'Gagal Memproses Data';
-    } else if (type === 'warning') {
-        toastIcon.textContent = '⚠️';
-        toastIconBg.className = 'w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
-        toastTitle.textContent = title || 'Perhatian!';
-    } else {
-        toastIcon.textContent = '🎉';
-        toastIconBg.className = 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
-        toastTitle.textContent = title || 'Berhasil!';
-    }
+            if (type === 'error') {
+                toastIcon.textContent = '❌';
+                toastIconBg.className = 'w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+                toastTitle.textContent = title || 'Gagal Memproses Data';
+            } else if (type === 'warning') {
+                toastIcon.textContent = '⚠️';
+                toastIconBg.className = 'w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+                toastTitle.textContent = title || 'Perhatian!';
+            } else {
+                toastIcon.textContent = '🎉';
+                toastIconBg.className = 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+                toastTitle.textContent = title || 'Berhasil!';
+            }
 
-    toastMessage.textContent = message;
+            toastMessage.textContent = message;
 
-    // Tampilkan Modal dengan Animasi Zoom-In
-    toastModal.classList.remove('hidden');
-    setTimeout(() => {
-        toastBox.classList.remove('scale-90', 'opacity-0');
-        toastBox.classList.add('scale-100', 'opacity-100');
-    }, 10);
+            toastModal.classList.remove('hidden');
+            setTimeout(() => {
+                toastBox.classList.remove('scale-90', 'opacity-0');
+                toastBox.classList.add('scale-100', 'opacity-100');
+            }, 10);
 
-    // Fungsi Tutup
-    const closeAction = () => {
-        toastBox.classList.remove('scale-100', 'opacity-100');
-        toastBox.classList.add('scale-90', 'opacity-0');
-        setTimeout(() => toastModal.classList.add('hidden'), 200);
-    };
+            const closeAction = () => {
+                toastBox.classList.remove('scale-100', 'opacity-100');
+                toastBox.classList.add('scale-90', 'opacity-0');
+                setTimeout(() => toastModal.classList.add('hidden'), 200);
+            };
 
-    closeToastBtn.onclick = closeAction;
-    toastModal.onclick = (e) => { if (e.target === toastModal) closeAction(); };
-}
-</script>
+            closeToastBtn.onclick = closeAction;
+            toastModal.onclick = (e) => { if (e.target === toastModal) closeAction(); };
+        }
+    </script>
+
     <!-- DOMAIN PROTECTION LOCK SCRIPT -->
     <script>
-    (function() {
-        const allowedHosts = [
-            atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
-            atob("bG9jYWxob3N0"),             
-            atob("MTI3LjAuMC4x"),            
-            "asistenguruindonesia.my.id",     
-            "www.asistenguruindonesia.my.id", 
-            ""                 
-        ];
-        if (!allowedHosts.includes(window.location.hostname)) {
-            document.documentElement.innerHTML = "";
-            window.location.replace("https://google.com");
-            throw new Error("Akses Ilegal!");
-        }
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.onkeydown = function(e) {
-            if (e.keyCode === 123) return false;
-            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
-            if (e.ctrlKey && e.keyCode === 85) return false;
-            if (e.ctrlKey && e.keyCode === 83) return false;
-        };
-        setInterval(function() {
-            console.clear();
-            const startTime = +new Date();
-            debugger;
-            const endTime = +new Date();
-            if (endTime - startTime > 100) {
-                document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f4f6f9;padding:20px;text-align:center;'>⚠️ OPERASI DIHENTIKAN. SECURITY BREACH OVERRIDE TRIGGERED.</div>";
+        (function() {
+            const allowedHosts = [
+                atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
+                atob("bG9jYWxob3N0"),             
+                atob("MTI3LjAuMC4x"),            
+                "asistenguruindonesia.my.id",     
+                "www.asistenguruindonesia.my.id", 
+                ""                 
+            ];
+            if (!allowedHosts.includes(window.location.hostname)) {
+                document.documentElement.innerHTML = "";
+                window.location.replace("https://google.com");
+                throw new Error("Akses Ilegal!");
             }
-        }, 100);
-    })();
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.onkeydown = function(e) {
+                if (e.keyCode === 123) return false;
+                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
+                if (e.ctrlKey && e.keyCode === 85) return false;
+                if (e.ctrlKey && e.keyCode === 83) return false;
+            };
+            setInterval(function() {
+                console.clear();
+                const startTime = +new Date();
+                debugger;
+                const endTime = +new Date();
+                if (endTime - startTime > 100) {
+                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f4f6f9;padding:20px;text-align:center;'>⚠️ OPERASI DIHENTIKAN. SECURITY BREACH OVERRIDE TRIGGERED.</div>";
+                }
+            }, 100);
+        })();
     </script>
 
     <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT) -->
     <script>
-        // LOGIKA POPUP PENGEMBANG & KEUNGGULAN WEB (ANTI-ERROR SAFE CHECK)
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
         const devStatementModal = document.getElementById('devStatementModal');
@@ -929,7 +926,7 @@ function showCustomToast(message, type = 'error', title = null) {
                     previewSection.classList.remove('hidden'); 
                     soalContainer.innerHTML = `<p class="text-xs font-bold text-emerald-700">Berhasil memetakan ${originalPGQuestions.length} Pilihan Ganda dan ${originalEssayQuestions.length} Uraian ke dalam aplikasi.</p>`;
                     processAcakBtn.disabled = false;
-                } catch (err) { alert("Ketidakcocokan struktur berkas tabel excel: " + err.message); }
+                } catch (err) { showCustomToast("Ketidakcocokan struktur berkas tabel excel: " + err.message, "error"); }
             };
             reader.readAsArrayBuffer(file);
         });
@@ -939,7 +936,7 @@ function showCustomToast(message, type = 'error', title = null) {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
             
-            if(!materi) return alert("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.");
+            if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
 
             const kuotaKognitif = {
                 "C1": parseInt(document.getElementById('countC1').value) || 0,
@@ -961,7 +958,7 @@ function showCustomToast(message, type = 'error', title = null) {
             };
             const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
 
-            if(totalPGMinta === 0 && totalEssayMinta === 0) return alert("Jumlah target pembuatan soal tidak boleh kosong.");
+            if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
 
             processGenerateBtn.disabled = true;
             processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
@@ -996,7 +993,7 @@ function showCustomToast(message, type = 'error', title = null) {
                 originalPGQuestions = parsedData.pilihan_ganda || [];
                 originalEssayQuestions = parsedData.essay || [];
                 renderEditorUI();
-            } catch (err) { alert("Layanan AI sibuk, silakan coba lagi: " + err.message); }
+            } catch (err) { showCustomToast("Layanan AI sibuk, silakan coba lagi: " + err.message, "error"); }
             finally { processGenerateBtn.disabled = false; processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; }
         });
 
@@ -1011,7 +1008,7 @@ function showCustomToast(message, type = 'error', title = null) {
             const checkboxes = document.querySelectorAll('#panelModul input[name="dimensiProfil"]:checked');
             const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
 
-           if(!topik) return showCustomToast("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!", "warning", "Input Belum Lengkap");
+            if(!topik) return showCustomToast("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!", "warning", "Input Belum Lengkap");
             if(checkboxes.length === 0) return showCustomToast("Silakan centang minimal satu Target Dimensi Profil Lulusan!", "warning", "Input Belum Lengkap");
 
             processModulBtn.disabled = true;
@@ -1019,7 +1016,6 @@ function showCustomToast(message, type = 'error', title = null) {
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            // Prompt disesuaikan agar mewajibkan Bahan Bacaan + Visual Ilustrasi Gambar
             const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) lengkap siap cetak dengan parameter:
             - Mata Pelajaran: ${mapel}
             - Jenjang/Fase: ${fase}
@@ -1077,16 +1073,13 @@ function showCustomToast(message, type = 'error', title = null) {
                         });
                         const parsedJson = JSON.parse(sanitizedJson);
                         modulAjarGeneratedContent = parsedJson.modul_markdown || cleanText;
-                    try {
-                // ...
-            } catch (err) { 
-                showCustomToast("Gagal merumuskan modul: " + err.message, "error", "Gagal Memproses Modul"); 
-            }
+                    } catch (errJson) {
+                        modulAjarGeneratedContent = cleanText;
+                    }
                 } else {
                     modulAjarGeneratedContent = cleanText;
                 }
 
-                // Bersihkan simbol bintang markdown
                 modulAjarGeneratedContent = modulAjarGeneratedContent.replace(/\*\*/g, "").replace(/\*/g, "");
 
                 previewSection.classList.remove('hidden');
@@ -1105,13 +1098,13 @@ function showCustomToast(message, type = 'error', title = null) {
 
                 previewSection.scrollIntoView({ behavior: 'smooth' });
             } catch (err) { 
-                alert("Gagal merumuskan modul: " + err.message); 
-            }
-            finally { 
+                showCustomToast("Gagal merumuskan modul: " + err.message, "error", "Gagal Memproses Modul"); 
+            } finally { 
                 processModulBtn.disabled = false; 
                 processModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI"; 
             }
         });
+
         function getEssayLabel(index, style) { return style === "huruf" ? String.fromCharCode(65 + (index % 26)) + ". " : (index + 1) + ". "; }
 
         function renderEditorUI() {
@@ -1237,7 +1230,7 @@ function showCustomToast(message, type = 'error', title = null) {
                     document.body.appendChild(el); el.click(); document.body.removeChild(el);
                 };
                 reader.readAsDataURL(blob);
-            } catch(e) { alert("Gagal mengunduh berkas: " + e.message); }
+            } catch(e) { showCustomToast("Gagal mengunduh berkas: " + e.message, "error"); }
             finally { exportSingleWordBtn.disabled = false; }
         });
 
