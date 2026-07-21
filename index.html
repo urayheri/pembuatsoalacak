@@ -1578,19 +1578,79 @@ CATATAN FONT & PARAGRAF: Terapkan gaya penulisan narasi formal, rinci, dan rata 
             };
 
             // 1. PENANGANAN MODUL AJAR
-           if (typeof activeTab !== 'undefined' && activeTab === "modul") {
+           // 1. PENANGANAN MODUL AJAR (PARSER PARAGRAF & TABEL MARKDOWN)
+if (typeof activeTab !== 'undefined' && activeTab === "modul") {
     const lines = (modulAjarGeneratedContent || "").split('\n');
+    let tableRowsBuffer = [];
+
+    const flushTableBuffer = () => {
+        if (tableRowsBuffer.length === 0) return;
+        
+        // Buat objek Tabel Word Rapi dari buffer baris markdown
+        const docxRows = tableRowsBuffer.map((rowStr, rowIndex) => {
+            // Pisahkan kolom berdasarkan karakter '|'
+            const cells = rowStr.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+            
+            return new TableRow({
+                children: cells.map(cellText => {
+                    return new TableCell({
+                        children: [new Paragraph({
+                            alignment: AlignmentType.JUSTIFIED,
+                            children: formatMathToTextRuns(cellText.replace(/<br\s*\/?>/gi, '\n'), window.docx, customFont, customSize),
+                            spacing: { before: 40, after: 40, line: 240 }
+                        })],
+                        shading: rowIndex === 0 ? { fill: "F2F2F2" } : undefined, // Header abu-abu lembut
+                        borders: {
+                            top: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+                            bottom: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+                            left: { style: BorderStyle.SINGLE, size: 4, color: "000000" },
+                            right: { style: BorderStyle.SINGLE, size: 4, color: "000000" }
+                        },
+                        margins: { top: 100, bottom: 100, left: 150, right: 150 }
+                    });
+                })
+            });
+        });
+
+        // Masukkan tabel yang sudah rapi ke dalam dokumen Word
+        if (docxRows.length > 0) {
+            children.push(new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: docxRows
+            }));
+            // Tambahkan jarak setelah tabel
+            children.push(new Paragraph({ spacing: { after: 120 } }));
+        }
+
+        tableRowsBuffer = []; // Kosongkan buffer
+    };
+
     lines.forEach(line => {
         let cleanLine = line.trim();
-        if (cleanLine !== "") {
-            // Pengaturan Alignment JUSTIFIED (Rata Kiri-Kanan)
-            children.push(new Paragraph({
-                alignment: AlignmentType.JUSTIFIED, 
-                children: formatMathToTextRuns(cleanLine, window.docx, customFont, customSize),
-                spacing: { after: 120, line: 276 } // Spacing 1.15 line height
-            }));
+        
+        // Deteksi apakah baris ini bagian dari tabel Markdown
+        if (cleanLine.startsWith('|') && cleanLine.endsWith('|')) {
+            // Abaikan baris pemisah markdown seperti |---|---|
+            if (!cleanLine.includes('---')) {
+                tableRowsBuffer.push(cleanLine);
+            }
+        } else {
+            // Jika menemukan baris non-tabel, cetak tabel yang tertunda dulu (jika ada)
+            flushTableBuffer();
+
+            if (cleanLine !== "") {
+                // Pengaturan Alignment JUSTIFIED untuk Paragraf biasa
+                children.push(new Paragraph({
+                    alignment: AlignmentType.JUSTIFIED, 
+                    children: formatMathToTextRuns(cleanLine, window.docx, customFont, customSize),
+                    spacing: { after: 120, line: 276 }
+                }));
+            }
         }
     });
+
+    // Cetak sisa tabel di akhir dokumen jika ada
+    flushTableBuffer();
 } else {
                 // 2. KOP SURAT & IDENTITAS
                 if (!isAnswerKey) {
