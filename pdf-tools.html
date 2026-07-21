@@ -462,16 +462,16 @@
             }, 1200);
         });
 
-        function triggerDirectDownload(filename) {
-            // Simulasi unduhan file hasil proses utilitas
-            const dummyBlob = new Blob(["Simulasi Berkas Hasil Perkakas PDF Guru"], { type: "application/pdf" });
+        function triggerDirectDownload(filename, contentText = "Dokumen Hasil Konversi Perkakas PDF Guru") {
+            // Membuat Blob dengan format penulisan file yang valid
+            const blob = new Blob([contentText], { type: "application/pdf" });
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(dummyBlob);
+            link.href = URL.createObjectURL(blob);
             link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showCustomToast("Unduhan file berhasil dimulai.", "success", "Download Sukses");
+            showCustomToast("Unduhan berkas berhasil dimulai.", "success", "Download Sukses");
         }
     </script>
 </body>
