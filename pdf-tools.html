@@ -148,7 +148,7 @@
                 <p class="text-slate-500 text-[11px] leading-relaxed">Konversikan naskah modul ajar atau soal dari format Word ke dokumen PDF siap cetak dengan akurasi tinggi.</p>
                 <input type="file" id="wordToPdfInput" accept=".docx" class="w-full app-input p-2 rounded-lg text-[10px] file:bg-blue-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer">
             </div>
-            <button id="processWordToPdf" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
+            <button id="" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
                 Proses Word ke PDF
             </button>
         </div>
@@ -281,17 +281,83 @@
         const resultCont = document.getElementById('pdfToolResultContainer');
 
         // 1. WORD TO PDF HANDLER (Simulasi konversi lokal berstandar dokumen)
+        // Proses Word ke PDF (Konversi Nyata & Valid)
         document.getElementById('processWordToPdf').addEventListener('click', async () => {
             const fileInput = document.getElementById('wordToPdfInput');
             if(!fileInput.files[0]) return showCustomToast("Silakan pilih file .docx terlebih dahulu.", "warning");
             
             previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Memproses konversi dokumen Word ke struktur cetak...";
-            
-            setTimeout(() => {
-                resultCont.innerHTML = `✅ File <strong>${fileInput.files[0].name}</strong> berhasil dikonversi. <br><span class="text-emerald-700 font-semibold">Simulasi output PDF siap diunduh secara lokal.</span>`;
-                showCustomToast("Dokumen Word berhasil diproses!", "success", "Konversi Sukses");
-            }, 1000);
+            resultCont.innerHTML = "Sedang membaca dan mengonversi dokumen Word ke PDF...";
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async function(e) {
+                try {
+                    const arrayBuffer = e.target.result;
+                    
+                    // 1. Ekstrak teks dari file .docx menggunakan Mammoth
+                    const mammothResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                    const extractedText = mammothResult.value || "Dokumen kosong.";
+
+                    // 2. Buat dokumen PDF baru menggunakan PDFLib
+                    const pdfDoc = await PDFLib.PDFDocument.create();
+                    let page = pdfDoc.addPage([595.28, 841.89]); // Ukuran standar A4
+                    const { height } = page.getSize();
+                    
+                    // Atur font standar
+                    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                    
+                    // Pecah teks per baris agar muat di halaman PDF
+                    const lines = extractedText.split('\n');
+                    let y = height - 50; // Margin atas
+                    const fontSize = 11;
+                    const lineHeight = 15;
+
+                    for (let i = 0; i < lines.length; i++) {
+                        // Jika teks melebihi batas bawah halaman, buat halaman baru
+                        if (y < 50) {
+                            page = pdfDoc.addPage([595.28, 841.89]);
+                            y = height - 50;
+                        }
+
+                        // Bersihkan karakter khusus yang tidak didukung font standar
+                        const safeText = lines[i].replace(/[^\x00-\x7F]/g, " ");
+
+                        page.drawText(safeText.substring(0, 95), {
+                            x: 50,
+                            y: y,
+                            size: fontSize,
+                            font: font,
+                            color: PDFLib.rgb(0.1, 0.1, 0.1),
+                        });
+                        y -= lineHeight;
+                    }
+
+                    // 3. Simpan dan unduh file PDF hasil konversi
+                    const pdfBytes = await pdfDoc.save();
+                    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+                    const url = URL.createObjectURL(blob);
+                    const originalName = file.name.replace(/\.[^/.]+$/, "");
+
+                    resultCont.innerHTML = `
+                        <div class="space-y-2">
+                            <p class="text-emerald-700 font-bold">✅ Konversi Word ke PDF Berhasil!</p>
+                            <p class="text-slate-500">File dokumen PDF siap diunduh dan dijamin bisa dibuka.</p>
+                            <a href="${url}" download="${originalName}.pdf" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                                📥 Download Hasil PDF (.pdf)
+                            </a>
+                        </div>
+                    `;
+                    showCustomToast("Dokumen Word berhasil dikonversi ke PDF!", "success", "Konversi Sukses");
+
+                } catch (err) {
+                    resultCont.innerHTML = `❌ Gagal mengonversi file: ${err.message}`;
+                    showCustomToast("Gagal memproses file Word.", "error");
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
         });
 
         // 2. PDF TO WORD HANDLER (Ekstraksi teks dengan Mammoth/PDF.js)
