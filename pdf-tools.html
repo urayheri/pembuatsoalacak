@@ -1,6 +1,38 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
+    <!-- SCRIPT PROTEKSI INSPECT & DEVELOPER TOOLS -->
+    <script>
+        (function() {
+            // 1. Blokir Klik Kanan (Context Menu)
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+
+            // 2. Blokir Tombol Pintas Shortcut (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S)
+            document.onkeydown = function(e) {
+                // F12
+                if (e.keyCode === 123) return false;
+                // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
+                // Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) return false;
+                // Ctrl+S (Save Page)
+                if (e.ctrlKey && e.keyCode === 83) return false;
+            };
+
+            // 3. Deteksi Pembukaan Console / Developer Tools (Auto Crash / Blank Page)
+            setInterval(function() {
+                console.clear();
+                const startTime = +new Date();
+                debugger; // Memicu jeda jika inspector terbuka
+                const endTime = +new Date();
+                if (endTime - startTime > 100) {
+                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f4f6f9;padding:20px;text-align:center;'>⚠️ AKSES DITOLAK. Developer Tools terdeteksi aktif pada halaman ini.</div>";
+                }
+            }, 100);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perkakas PDF Guru - Asisten Guru Indonesia ProMax AI</title>
