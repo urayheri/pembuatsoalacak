@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaisar Langit - Professional PDF & Document Tools</title>
+    <!-- Tailwind CSS CDN untuk Desain Modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Ikon Profesional -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .tool-card {
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / NAVIGASI UTAMA -->
+    <header class="gradient-header text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg flex items-center justify-center text-white font-bold text-xl">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-blue-400 font-semibold block">Platform Dokumen Resmi</span>
+                    <h1 class="text-xl font-bold tracking-tight">Kaisar Langit <span class="text-blue-400 font-light">PDF Tools</span></h1>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <a href="index.html" class="hover:text-blue-400 transition">Beranda Utama</a>
+                <a href="#tools" class="text-blue-400 font-semibold">Pilihan Alat</a>
+                <a href="contact.html" class="hover:text-blue-400 transition">Dukungan</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
+        
+        <!-- BANNER SELAMAT DATANG -->
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="bg-blue-100 text-blue-700 text-xs font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Pusat Konversi Dokumen</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Kelola Berkas Dokumen Anda dengan Mudah dan Cepat</h2>
+            <p class="mt-4 text-slate-600 text-base sm:text-lg">Solusi terintegrasi untuk mengubah format Word ke PDF, PDF ke Word, serta menggabungkan beberapa file PDF secara instan langsung di peramban Anda.</p>
+        </div>
+
+        <!-- GRID PILIHAN ALAT (TOOLS) -->
+        <div id="tools" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            
+            <!-- CARD 1: WORD TO PDF -->
+            <div onclick="openToolModal('Word ke PDF', 'word')" class="tool-card bg-white rounded-2xl p-8 border border-slate-100 shadow-sm cursor-pointer flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6 font-bold shadow-inner">
+                        <i class="fa-solid fa-file-word"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Word ke PDF</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Ubah dokumen teks Microsoft Word (.doc / .docx) ke format PDF berkualitas tinggi dengan tetap mempertahankan tata letak aslinya.</p>
+                </div>
+                <div class="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-blue-600 font-semibold text-sm">
+                    <span>Mulai Konversi</span>
+                    <i class="fa-solid fa-arrow-right-long"></i>
+                </div>
+            </div>
+
+            <!-- CARD 2: PDF TO WORD -->
+            <div onclick="openToolModal('PDF ke Word', 'pdf')" class="tool-card bg-white rounded-2xl p-8 border border-slate-100 shadow-sm cursor-pointer flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-6 font-bold shadow-inner">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">PDF ke Word</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Ekstrak teks dan format dokumen PDF Anda menjadi file Word (.docx) agar mudah disunting kembali secara fleksibel.</p>
+                </div>
+                <div class="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-emerald-600 font-semibold text-sm">
+                    <span>Mulai Konversi</span>
+                    <i class="fa-solid fa-arrow-right-long"></i>
+                </div>
+            </div>
+
+            <!-- CARD 3: PDF COMBINE (MERGE) -->
+            <div onclick="openToolModal('Gabungkan PDF (Merge)', 'combine')" class="tool-card bg-white rounded-2xl p-8 border border-slate-100 shadow-sm cursor-pointer flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-6 font-bold shadow-inner">
+                        <i class="fa-solid fa-object-ungroup"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">PDF Combine</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Gabungkan beberapa halaman atau dokumen PDF terpisah menjadi satu kesatuan file PDF tunggal yang rapi dan terstruktur.</p>
+                </div>
+                <div class="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-amber-600 font-semibold text-sm">
+                    <span>Mulai Gabungkan</span>
+                    <i class="fa-solid fa-arrow-right-long"></i>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL INTERAKTIF UNGGAH BERKAS -->
+    <div id="toolModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl relative transform transition-all">
+            <!-- Tombol Tutup -->
+            <button onclick="closeToolModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-xl w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Judul Dinamis Modal -->
+            <h3 id="modalTitle" class="text-2xl font-bold text-slate-900 mb-2">Pilih Alat</h3>
+            <p id="modalDesc" class="text-slate-500 text-sm mb-6">Unggah dokumen Anda untuk memproses konversi secara instan.</p>
+
+            <!-- Area Drag and Drop Berkas -->
+            <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50 hover:bg-slate-100/50 transition cursor-pointer relative" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-sm">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <p class="text-slate-700 font-semibold mb-1">Klik untuk mengunggah berkas</p>
+                <p class="text-slate-400 text-xs">atau seret dan lepas berkas Anda di sini</p>
+                <p id="selectedFileName" class="mt-4 text-xs font-bold text-blue-600 bg-blue-50 py-1.5 px-3 rounded-lg inline-block hidden"></p>
+            </div>
+
+            <!-- Tombol Proses Eksekusi -->
+            <button onclick="processAction()" class="mt-6 w-full bg-slate-900 hover:bg-blue-600 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg transition duration-200 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Proses Dokumen Sekarang</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+            &copy; 2026 Kaisar Langit. Hak Cipta Dilindungi Undang-Undang.
+        </div>
+    </footer>
+
+    <!-- SCRIPT INTERAKSI -->
+    <script>
+        let currentActiveTool = '';
+
+        function openToolModal(toolName, toolKey) {
+            currentActiveTool = toolKey;
+            document.getElementById('modalTitle').innerText = toolName;
+            document.getElementById('modalDesc').innerText = `Unggah file Anda untuk menjalankan proses ${toolName.toLowerCase()}.`;
+            document.getElementById('selectedFileName').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+            document.getElementById('toolModal').classList.remove('hidden');
+            document.getElementById('toolModal').classList.add('flex');
+        }
+
+        function closeToolModal() {
+            document.getElementById('toolModal').classList.remove('flex');
+            document.getElementById('toolModal').classList.add('hidden');
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileNameElem = document.getElementById('selectedFileName');
+                fileNameElem.innerText = `Berkas dipilih: ${file.name}`;
+                fileNameElem.classList.remove('hidden');
+            }
+        }
+
+        function processAction() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert('Silakan pilih atau unggah berkas terlebih dahulu!');
+                return;
+            }
+            
+            // Simulasi proses berhasil
+            alert(`Berhasil! Berkas sedang diproses menggunakan modul ${currentActiveTool.toUpperCase()}. Unduhan akan segera dimulai.`);
+            closeToolModal();
+        }
+    </script>
+</body>
+</html>
