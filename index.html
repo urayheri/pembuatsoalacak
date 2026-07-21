@@ -748,7 +748,7 @@
     })();
 </script>
 
-    <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT) -->
+    <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT FIXED) -->
     <script>
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
@@ -805,10 +805,10 @@
         const materiInputText = document.getElementById('materiInputText');
         const generateCountPG = document.getElementById('generateCountPG');
         const generateCountEssay = document.getElementById('generateCountEssay');
-        const processGenerateBtn = document.getElementById('processGenerateBtn');
+        const processGenerateBtn = document.getElementById('processGenerateBtn'); // DIPERBAIKI (Terkait ID HTML)
         const documentTypeMode = document.getElementById('documentTypeMode');
         
-        const processModulBtn = document.getElementById('processModulBtn');
+        const processModulBtn = document.getElementById('processModulBtn'); // DIPERBAIKI
 
         let originalPGQuestions = [];
         let originalEssayQuestions = [];
@@ -847,351 +847,348 @@
             input.addEventListener('change', updateTotalEssay);
         });
 
-        tabAcakBtn.addEventListener('click', () => {
-            activeTab = "acak";
-            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
-            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
-            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
-            panelAcak.classList.remove('hidden'); panelBuat.classList.add('hidden'); panelModul.classList.add('hidden'); identitasKopCard.classList.remove('hidden');
-            exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
-        });
+        // TAB NAVIGATION EVENT LISTENERS (DIPERBAIKI AGAR AMAN DIKLIK)
+        if(tabAcakBtn) {
+            tabAcakBtn.addEventListener('click', () => {
+                activeTab = "acak";
+                tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
+                tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+                tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+                panelAcak.classList.remove('hidden'); panelBuat.classList.add('hidden'); panelModul.classList.add('hidden'); identitasKopCard.classList.remove('hidden');
+                exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
+            });
+        }
 
-        tabBuatBtn.addEventListener('click', () => {
-            activeTab = "buat";
-            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
-            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
-            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
-            panelBuat.classList.remove('hidden'); panelAcak.classList.add('hidden'); panelModul.classList.add('hidden'); identitasKopCard.classList.remove('hidden');
-            exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
-            updateTotalPG();
-            updateTotalEssay();
-        });
+        if(tabBuatBtn) {
+            tabBuatBtn.addEventListener('click', () => {
+                activeTab = "buat";
+                tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
+                tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+                tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+                panelBuat.classList.remove('hidden'); panelAcak.classList.add('hidden'); panelModul.classList.add('hidden'); identitasKopCard.classList.remove('hidden');
+                exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
+                updateTotalPG();
+                updateTotalEssay();
+            });
+        }
 
-        tabModulBtn.addEventListener('click', () => {
-            activeTab = "modul";
-            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
-            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
-            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
-            panelModul.classList.remove('hidden'); panelAcak.classList.add('hidden'); panelBuat.classList.add('hidden'); identitasKopCard.classList.add('hidden');
-            exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
-        });
+        if(tabModulBtn) {
+            tabModulBtn.addEventListener('click', () => {
+                activeTab = "modul";
+                tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
+                tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+                tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+                panelModul.classList.remove('hidden'); panelAcak.classList.add('hidden'); panelBuat.classList.add('hidden'); identitasKopCard.classList.add('hidden');
+                exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
+            });
+        }
 
-        materiFileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            fileMateriStatus.textContent = "Sedang memindai data dokumen...";
-            fileMateriStatus.className = "text-[10px] text-emerald-600 font-medium block mt-0.5";
-            extractedTextFromDocument = ""; const reader = new FileReader();
-            
-            if (file.name.endsWith('.docx')) {
+        if(materiFileInput) {
+            materiFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                fileMateriStatus.textContent = "Sedang memindai data dokumen...";
+                fileMateriStatus.className = "text-[10px] text-emerald-600 font-medium block mt-0.5";
+                extractedTextFromDocument = ""; const reader = new FileReader();
+                
+                if (file.name.endsWith('.docx')) {
+                    reader.onload = function(event) {
+                        try {
+                            const arrayBuffer = event.target.result;
+                            mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
+                                extractedTextFromDocument = result.value;
+                                fileMateriStatus.textContent = `✓ Struktur data teks dimuat (${extractedTextFromDocument.split(' ').length} kata).`;
+                                fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                            });
+                        } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else if (file.name.endsWith('.pdf')) {
+                    reader.onload = async function(event) {
+                        try {
+                            const typedarray = new Uint8Array(event.target.result);
+                            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                            let textContent = "";
+                            for (let i = 1; i <= pdf.numPages; i++) {
+                                const page = await pdf.getPage(i); const textObj = await page.getTextContent();
+                                textContent += textObj.items.map(item => item.str).join(" ") + "\n";
+                            }
+                            extractedTextFromDocument = textContent;
+                            fileMateriStatus.textContent = `✓ Berkas PDF Berhasil Dimuat (${extractedTextFromDocument.split(' ').length} kata).`;
+                            fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                        } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            });
+        }
+
+        if(excelInput) {
+            excelInput.addEventListener('change', (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                fileStatus.textContent = "Berkas: " + file.name;
+                const reader = new FileReader();
                 reader.onload = function(event) {
                     try {
-                        const arrayBuffer = event.target.result;
-                        mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
-                            extractedTextFromDocument = result.value;
-                            fileMateriStatus.textContent = `✓ Struktur data teks dimuat (${extractedTextFromDocument.split(' ').length} kata).`;
-                            fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                        });
-                    } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
-                };
-                reader.readAsArrayBuffer(file);
-            } else if (file.name.endsWith('.pdf')) {
-                reader.onload = async function(event) {
-                    try {
-                        const typedarray = new Uint8Array(event.target.result);
-                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                        let textContent = "";
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i); const textObj = await page.getTextContent();
-                            textContent += textObj.items.map(item => item.str).join(" ") + "\n";
+                        const data = new Uint8Array(event.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const ws = workbook.Sheets[workbook.SheetNames[0]];
+                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                        const header = rows[0]; let keyIndex = -1, cogIndex = -1;
+                        
+                        for(let i=0; i<header.length; i++) {
+                            if(header[i] && header[i].toString().toLowerCase().includes('kunci')) keyIndex = i;
+                            if(header[i] && (header[i].toString().toLowerCase().includes('kognitif') || header[i].toString().toLowerCase().includes('kesulitan'))) cogIndex = i;
                         }
-                        extractedTextFromDocument = textContent;
-                        fileMateriStatus.textContent = `✓ Berkas PDF Berhasil Dimuat (${extractedTextFromDocument.split(' ').length} kata).`;
-                        fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                    } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
-                };
-                reader.readAsArrayBuffer(file);
-            }
-        });
+                        if (keyIndex === -1) keyIndex = header.length - 1;
+                        if(cogIndex !== -1 && cogIndex < keyIndex) optionCountGlobal = cogIndex - 1;
+                        else optionCountGlobal = keyIndex - 1;
 
-        excelInput.addEventListener('change', (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            fileStatus.textContent = "Berkas: " + file.name;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const ws = workbook.Sheets[workbook.SheetNames[0]];
-                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    const header = rows[0]; let keyIndex = -1, cogIndex = -1;
-                    
-                    for(let i=0; i<header.length; i++) {
-                        if(header[i] && header[i].toString().toLowerCase().includes('kunci')) keyIndex = i;
-                        if(header[i] && (header[i].toString().toLowerCase().includes('kognitif') || header[i].toString().toLowerCase().includes('kesulitan'))) cogIndex = i;
-                    }
-                    if (keyIndex === -1) keyIndex = header.length - 1;
-                    if(cogIndex !== -1 && cogIndex < keyIndex) optionCountGlobal = cogIndex - 1;
-                    else optionCountGlobal = keyIndex - 1;
-
-                    originalPGQuestions = []; originalEssayQuestions = [];
-                    const labels = ['A', 'B', 'C', 'D', 'E'];
-                    for(let i = 1; i < rows.length; i++) {
-                        const r = rows[i];
-                        if (r[0]) {
-                            let isEssay = true;
-                            for(let j = 1; j <= optionCountGlobal; j++) { if (r[j] && r[j].toString().trim() !== "") { isEssay = false; break; } }
-                            if (r[keyIndex] && r[keyIndex].toString().trim() !== "" && isEssay) {
-                                isEssay = true;
-                            } else if (r[keyIndex] && r[keyIndex].toString().trim() !== "") {
-                                isEssay = false;
-                            }
-                            const kognitifVal = cogIndex !== -1 ? (r[cogIndex] || "").toString().trim().toUpperCase() : "";
-                            if (isEssay) { 
-                                originalEssayQuestions.push({ 
-                                    soal: r[0], 
-                                    kunci: r[keyIndex] ? r[keyIndex].toString().trim() : "", 
-                                    kognitif: kognitifVal 
-                                }); 
-                            } 
-                            else {
-                                const optionsArray = [];
-                                for(let j = 1; j <= optionCountGlobal; j++) { optionsArray.push({ teks: r[j] || "-", labelOriginal: labels[j-1] }); }
-                                originalPGQuestions.push({ soal: r[0], opsi: optionsArray, kunciOriginal: r[keyIndex].toString().trim().toUpperCase(), kognitif: kognitifVal });
+                        originalPGQuestions = []; originalEssayQuestions = [];
+                        const labels = ['A', 'B', 'C', 'D', 'E'];
+                        for(let i = 1; i < rows.length; i++) {
+                            const r = rows[i];
+                            if (r[0]) {
+                                let isEssay = true;
+                                for(let j = 1; j <= optionCountGlobal; j++) { if (r[j] && r[j].toString().trim() !== "") { isEssay = false; break; } }
+                                if (r[keyIndex] && r[keyIndex].toString().trim() !== "" && isEssay) {
+                                    isEssay = true;
+                                } else if (r[keyIndex] && r[keyIndex].toString().trim() !== "") {
+                                    isEssay = false;
+                                }
+                                const kognitifVal = cogIndex !== -1 ? (r[cogIndex] || "").toString().trim().toUpperCase() : "";
+                                if (isEssay) { 
+                                    originalEssayQuestions.push({ 
+                                        soal: r[0], 
+                                        kunci: r[keyIndex] ? r[keyIndex].toString().trim() : "", 
+                                        kognitif: kognitifVal 
+                                    }); 
+                                } 
+                                else {
+                                    const optionsArray = [];
+                                    for(let j = 1; j <= optionCountGlobal; j++) { optionsArray.push({ teks: r[j] || "-", labelOriginal: labels[j-1] }); }
+                                    originalPGQuestions.push({ soal: r[0], opsi: optionsArray, kunciOriginal: r[keyIndex].toString().trim().toUpperCase(), kognitif: kognitifVal });
+                                }
                             }
                         }
-                    }
-                    previewSection.classList.remove('hidden'); 
-                    soalContainer.innerHTML = `<p class="text-xs font-bold text-emerald-700">Berhasil memetakan ${originalPGQuestions.length} Pilihan Ganda dan ${originalEssayQuestions.length} Uraian ke dalam aplikasi.</p>`;
-                    processAcakBtn.disabled = false;
-                } catch (err) { showCustomToast("Ketidakcocokan struktur berkas tabel excel: " + err.message, "error"); }
-            };
-            reader.readAsArrayBuffer(file);
-        });
+                        previewSection.classList.remove('hidden'); 
+                        soalContainer.innerHTML = `<p class="text-xs font-bold text-emerald-700">Berhasil memetakan ${originalPGQuestions.length} Pilihan Ganda dan ${originalEssayQuestions.length} Uraian ke dalam aplikasi.</p>`;
+                        processAcakBtn.disabled = false;
+                    } catch (err) { showCustomToast("Ketidakcocokan struktur berkas tabel excel: " + err.message, "error"); }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
 
         // ACTION BUTTON 2: AI QUESTION GENERATION
-        processGenerateBtn.addEventListener('click', async () => {
-            const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
-            
-            if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
-
-            const kuotaKognitif = {
-                "C1": parseInt(document.getElementById('countC1').value) || 0,
-                "C2": parseInt(document.getElementById('countC2').value) || 0,
-                "C3": parseInt(document.getElementById('countC3').value) || 0,
-                "C4": parseInt(document.getElementById('countC4').value) || 0,
-                "C5": parseInt(document.getElementById('countC5').value) || 0,
-                "C6": parseInt(document.getElementById('countC6').value) || 0
-            };
-            const totalPGMinta = Object.values(kuotaKognitif).reduce((a, b) => a + b, 0);
-
-            const kuotaEssayKognitif = {
-                "C1": parseInt(document.getElementById('countEssayC1').value) || 0,
-                "C2": parseInt(document.getElementById('countEssayC2').value) || 0,
-                "C3": parseInt(document.getElementById('countEssayC3').value) || 0,
-                "C4": parseInt(document.getElementById('countEssayC4').value) || 0,
-                "C5": parseInt(document.getElementById('countEssayC5').value) || 0,
-                "C6": parseInt(document.getElementById('countEssayC6').value) || 0
-            };
-            const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
-
-            if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
-
-            previewSection.classList.remove('hidden');
-            exportSingleWordBtn.classList.add('hidden');
-            previewTitle.textContent = "Sedang Memproses Naskah Soal...";
-            soalContainer.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 space-y-3">
-                    <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi, mohon tunggu...</p>
-                </div>
-            `;
-            previewSection.scrollIntoView({ behavior: 'smooth' });
-
-            processGenerateBtn.disabled = true;
-            processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
-
-            let coreTaskInstruction = "";
-            const modeDipilih = documentTypeMode.value;
-
-            if (modeDipilih === "soal_lama") {
-                coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4500)}". Anda harus membuatkan naskah soal baru variatif/clone question.`;
-            } else {
-                coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4500)}".`;
-            }
-
-            const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. ${coreTaskInstruction}
-            Kriteria: Total PG harus tepat ${totalPGMinta} (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}) dan Essay harus tepat ${totalEssayMinta}. Output murni JSON murni tanpa pembungkus markdown codeblock.
-            PENTING: Jangan tambahkan prefiks huruf A, B, C pada opsi teks (isi teksnya saja). Jika terdapat rumus matematika/pangkat/subskrip, tuliskan langsung menggunakan karakter Unicode asli (contoh: x², x³, xⁿ, a₁, ½, ±, ≤, ≥, ×) dan JANGAN menggunakan tanda topi (^).
-            Format Output JSON:
-            {
-               "pilihan_ganda": [
-                  { "soal": "Pertanyaan...", "opsi": [{"teks": "Isi pilihan 1"}, {"teks": "Isi pilihan 2"}, {"teks": "Isi pilihan 3"}, {"teks": "Isi pilihan 4"}, {"teks": "Isi pilihan 5"}], "kunciOriginal": "A", "kognitif": "C1" }
-               ],
-               "essay": [
-                  { "soal": "Kasus...", "kunci": "Jawaban...", "kognitif": "C4" }
-               ]
-            }`;
-
-            try {
-                const response = await fetch(proxyUrl, { 
-                    method: "POST", 
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) 
-                });
+        if(processGenerateBtn) {
+            processGenerateBtn.addEventListener('click', async () => {
+                const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
+                const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
                 
-                const rawText = await response.text();
-                let cleanJsonText = "";
+                if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
 
-                try {
-                    const parsedResponse = JSON.parse(rawText);
-                    if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
-                        cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
-                    } else {
-                        cleanJsonText = rawText;
-                    }
-                } catch (e) {
-                    cleanJsonText = rawText;
-                }
+                const kuotaKognitif = {
+                    "C1": parseInt(document.getElementById('countC1').value) || 0,
+                    "C2": parseInt(document.getElementById('countC2').value) || 0,
+                    "C3": parseInt(document.getElementById('countC3').value) || 0,
+                    "C4": parseInt(document.getElementById('countC4').value) || 0,
+                    "C5": parseInt(document.getElementById('countC5').value) || 0,
+                    "C6": parseInt(document.getElementById('countC6').value) || 0
+                };
+                const totalPGMinta = Object.values(kuotaKognitif).reduce((a, b) => a + b, 0);
 
-                cleanJsonText = cleanJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const kuotaEssayKognitif = {
+                    "C1": parseInt(document.getElementById('countEssayC1').value) || 0,
+                    "C2": parseInt(document.getElementById('countEssayC2').value) || 0,
+                    "C3": parseInt(document.getElementById('countEssayC3').value) || 0,
+                    "C4": parseInt(document.getElementById('countEssayC4').value) || 0,
+                    "C5": parseInt(document.getElementById('countEssayC5').value) || 0,
+                    "C6": parseInt(document.getElementById('countEssayC6').value) || 0
+                };
+                const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
 
-                const parsedData = JSON.parse(cleanJsonText);
-                const labels = ['A', 'B', 'C', 'D', 'E'];
-                
-                originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
-                    const cleanOpsi = (q.opsi || []).map((opt, oIdx) => {
-                        let text = typeof opt === 'object' ? (opt.teks || "") : opt;
-                        text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
-                        return { teks: text, labelOriginal: labels[oIdx] || 'A' };
-                    });
-                    return { ...q, opsi: cleanOpsi, kunciOriginal: (q.kunciOriginal || 'A').toUpperCase() };
-                });
-
-                originalEssayQuestions = parsedData.essay || [];
-                renderEditorUI();
-                processAcakBtn.disabled = false;
-
-            } catch (err) { 
-                soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal memuat preview: ${err.message}</div>`;
-                showCustomToast("Gagal memproses respons AI: " + err.message, "error"); 
-            } finally { 
-                processGenerateBtn.disabled = false; 
-                processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
-            }
-        });
-
-        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
-        processModulBtn.addEventListener('click', async () => {
-            const mapel = document.getElementById('modulMapel').value.trim();
-            const fase = document.getElementById('modulFase').value;
-            const topik = document.getElementById('modulTopik').value.trim();
-            const waktu = document.getElementById('modulWaktu').value.trim();
-            const fasilitas = document.getElementById('modulFasilitas').value;
-
-            const checkboxes = document.querySelectorAll('#panelModul input[name="dimensiProfil"]:checked');
-            const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
-
-            if(!topik) return showCustomToast("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!", "warning", "Input Belum Lengkap");
-            if(checkboxes.length === 0) return showCustomToast("Silakan centang minimal satu Target Dimensi Profil Lulusan!", "warning", "Input Belum Lengkap");
-
-            processModulBtn.disabled = true;
-            processModulBtn.textContent = "AI Sedang Merumuskan Modul Ajar...";
-
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
-
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) lengkap siap cetak dengan parameter:
-            - Mata Pelajaran: ${mapel}
-            - Jenjang/Fase: ${fase}
-            - Topik Pokok: ${topik}
-            - Alokasi Waktu: ${waktu}
-            - Profil Lulusan: ${profilTerpilih}
-            - Fasilitas: ${fasilitas}
-
-            📋 WAJIB MEMUAT STRUKTUR BERIKUT:
-            1. INFORMASI UMUM (Identitas, Model Pembelajaran)
-            2. KOMPONEN INTI (Tujuan Pembelajaran, Kegiatan Pembelajaran Rinci, Asesmen & Rubrik)
-            3. LAMPIRAN LENGKAP:
-               - LKPD (Lembar Kerja Peserta Didik)
-               - BAHAN BACAAN GURU & SISWA (Sertakan penjelasan ringkas & jelas)
-               - SISIPKAN GAMBAR / DIAGRAM VISUAL pada Bahan Bacaan menggunakan format kotak diagram teks atau label petunjuk visual seperti:
-                 🖼️ [GAMBAR / DIAGRAM VISUAL: Keterangan gambar atau skema visual topik]
-                 beserta deskripsi visualnya agar memudahkan pemahaman siswa.
-               - GLOSARIUM & DAFTAR PUSTAKA
-
-            PENTING: Tuliskan naskah dokumen utuh langsung saja, TANPA JSON dan TANPA markdown codeblock (\`\`\`).`;
-
-            try {
-                const response = await fetch(proxyUrl, { 
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }) 
-                });
-
-                const rawText = await response.text();
-                
-                if (rawText.includes("405 Not Allowed") || rawText.includes("<html") || rawText.includes("<!DOCTYPE")) {
-                    throw new Error("Server Apps Script menolak permintaan (HTTP 405). Pastikan setting deployment di-set ke 'Anyone'.");
-                }
-
-                let aiResponseText = "";
-                try {
-                    const parsedRaw = JSON.parse(rawText);
-                    aiResponseText = parsedRaw.candidates[0].content.parts[0].text.trim();
-                } catch(e) {
-                    aiResponseText = rawText;
-                }
-
-                let cleanText = aiResponseText
-                    .replace(/^```(json|markdown)?/i, '')
-                    .replace(/```$/, '')
-                    .trim();
-
-                if (cleanText.startsWith('{') && cleanText.endsWith('}')) {
-                    try {
-                        const sanitizedJson = cleanText.replace(/[\u0000-\u001F]+/g, (match) => {
-                            if (match === '\n') return '\\n';
-                            if (match === '\r') return '\\r';
-                            if (match === '\t') return '\\t';
-                            return '';
-                        });
-                        const parsedJson = JSON.parse(sanitizedJson);
-                        modulAjarGeneratedContent = parsedJson.modul_markdown || cleanText;
-                    } catch (errJson) {
-                        modulAjarGeneratedContent = cleanText;
-                    }
-                } else {
-                    modulAjarGeneratedContent = cleanText;
-                }
-
-                modulAjarGeneratedContent = modulAjarGeneratedContent.replace(/\*\*/g, "").replace(/\*/g, "");
+                if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
 
                 previewSection.classList.remove('hidden');
-                exportSingleWordBtn.classList.remove('hidden');
-                previewTitle.textContent = "Pratinjau Hasil Rumusan Modul Ajar Kurikulum Merdeka";
-                
+                exportSingleWordBtn.classList.add('hidden');
+                previewTitle.textContent = "Sedang Memproses Naskah Soal...";
                 soalContainer.innerHTML = `
-                    <div class="p-2 space-y-4">
-                        <textarea id="modulEditableArea" class="w-full h-96 border border-slate-200 rounded-xl p-4 text-xs font-sans bg-slate-50 focus:outline-emerald-500 leading-relaxed" style="white-space: pre-wrap; font-family: 'Plus Jakarta Sans', sans-serif;">${modulAjarGeneratedContent}</textarea>
+                    <div class="flex flex-col items-center justify-center py-12 space-y-3">
+                        <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi, mohon tunggu...</p>
                     </div>
                 `;
-                
-                document.getElementById('modulEditableArea').addEventListener('input', function() {
-                    modulAjarGeneratedContent = this.value;
-                });
-
                 previewSection.scrollIntoView({ behavior: 'smooth' });
-            } catch (err) { 
-                showCustomToast("Gagal merumuskan modul: " + err.message, "error", "Gagal Memproses Modul"); 
-            } finally { 
-                processModulBtn.disabled = false; 
-                processModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI"; 
-            }
-        });
+
+                processGenerateBtn.disabled = true;
+                processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
+
+                let coreTaskInstruction = "";
+                const modeDipilih = documentTypeMode.value;
+
+                if (modeDipilih === "soal_lama") {
+                    coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4500)}". Anda harus membuatkan naskah soal baru variatif/clone question.`;
+                } else {
+                    coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4500)}".`;
+                }
+
+                const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. ${coreTaskInstruction}
+                Kriteria: Total PG harus tepat ${totalPGMinta} (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}) dan Essay harus tepat ${totalEssayMinta}. Output murni JSON murni tanpa pembungkus markdown codeblock.
+                PENTING: Jangan tambahkan prefiks huruf A, B, C pada opsi teks (isi teksnya saja). Jika terdapat rumus matematika/pangkat/subskrip, tuliskan langsung menggunakan karakter Unicode asli (contoh: x², x³, xⁿ, a₁, ½, ±, ≤, ≥, ×) dan JANGAN menggunakan tanda topi (^).
+                Format Output JSON:
+                {
+                   "pilihan_ganda": [
+                      { "soal": "Pertanyaan...", "opsi": [{"teks": "Isi pilihan 1"}, {"teks": "Isi pilihan 2"}, {"teks": "Isi pilihan 3"}, {"teks": "Isi pilihan 4"}, {"teks": "Isi pilihan 5"}], "kunciOriginal": "A", "kognitif": "C1" }
+                   ],
+                   "essay": [
+                      { "soal": "Kasus...", "kunci": "Jawaban...", "kognitif": "C4" }
+                   ]
+                }`;
+
+                try {
+                    const response = await fetch(proxyUrl, { 
+                        method: "POST", 
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) 
+                    });
+                    
+                    const rawText = await response.text();
+                    let cleanJsonText = "";
+
+                    try {
+                        const parsedResponse = JSON.parse(rawText);
+                        if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
+                            cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
+                        } else {
+                            cleanJsonText = rawText;
+                        }
+                    } catch (e) {
+                        cleanJsonText = rawText;
+                    }
+
+                    cleanJsonText = cleanJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+                    const parsedData = JSON.parse(cleanJsonText);
+                    const labels = ['A', 'B', 'C', 'D', 'E'];
+                    
+                    originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
+                        const cleanOpsi = (q.opsi || []).map((opt, oIdx) => {
+                            let text = typeof opt === 'object' ? (opt.teks || "") : opt;
+                            text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
+                            return { teks: text, labelOriginal: labels[oIdx] || 'A' };
+                        });
+                        return { ...q, opsi: cleanOpsi, kunciOriginal: (q.kunciOriginal || 'A').toUpperCase() };
+                    });
+
+                    originalEssayQuestions = parsedData.essay || [];
+                    renderEditorUI();
+                    processAcakBtn.disabled = false;
+
+                } catch (err) { 
+                    soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal memuat preview: ${err.message}</div>`;
+                    showCustomToast("Gagal memproses respons AI: " + err.message, "error"); 
+                } finally { 
+                    processGenerateBtn.disabled = false; 
+                    processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
+                }
+            });
+        }
+
+        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
+        if(processModulBtn) {
+            processModulBtn.addEventListener('click', async () => {
+                const mapel = document.getElementById('modulMapel').value.trim();
+                const fase = document.getElementById('modulFase').value;
+                const topik = document.getElementById('modulTopik').value.trim();
+                const waktu = document.getElementById('modulWaktu').value.trim();
+                const fasilitas = document.getElementById('modulFasilitas').value;
+
+                const checkboxes = document.querySelectorAll('#panelModul input[name="dimensiProfil"]:checked');
+                const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
+
+                if(!topik) return showCustomToast("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!", "warning", "Input Belum Lengkap");
+                if(checkboxes.length === 0) return showCustomToast("Silakan centang minimal satu Target Dimensi Profil Lulusan!", "warning", "Input Belum Lengkap");
+
+                processModulBtn.disabled = true;
+                processModulBtn.textContent = "AI Sedang Merumuskan Modul Ajar...";
+
+                const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
+
+                const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) lengkap siap cetak dengan parameter:
+                - Mata Pelajaran: ${mapel}
+                - Jenjang/Fase: ${fase}
+                - Topik Pokok: ${topik}
+                - Alokasi Waktu: ${waktu}
+                - Profil Lulusan: ${profilTerpilih}
+                - Fasilitas: ${fasilitas}
+
+                📋 WAJIB MEMUAT STRUKTUR BERIKUT:
+                1. INFORMASI UMUM (Identitas, Model Pembelajaran)
+                2. KOMPONEN INTI (Tujuan Pembelajaran, Kegiatan Pembelajaran Rinci, Asesmen & Rubrik)
+                3. LAMPIRAN LENGKAP:
+                   - LKPD (Lembar Kerja Peserta Didik)
+                   - BAHAN BACAAN GURU & SISWA (Sertakan penjelasan ringkas & jelas)
+                   - SISIPKAN GAMBAR / DIAGRAM VISUAL pada Bahan Bacaan menggunakan format kotak diagram teks atau label petunjuk visual seperti:
+                      🖼️ [GAMBAR / DIAGRAM VISUAL: Keterangan gambar atau skema visual topik]
+                      beserta deskripsi visualnya agar memudahkan pemahaman siswa.
+                   - GLOSARIUM & DAFTAR PUSTAKA
+
+                PENTING: Tuliskan naskah dokumen utuh langsung saja, TANPA JSON dan TANPA markdown codeblock (\`\`\`).`;
+
+                try {
+                    const response = await fetch(proxyUrl, { 
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }) 
+                    });
+
+                    const rawText = await response.text();
+                    
+                    if (rawText.includes("405 Not Allowed") || rawText.includes("<html") || rawText.includes("<!DOCTYPE")) {
+                        throw new Error("Server Apps Script menolak permintaan (HTTP 405). Pastikan setting deployment di-set ke 'Anyone'.");
+                    }
+
+                    let aiResponseText = "";
+                    try {
+                        const parsedRaw = JSON.parse(rawText);
+                        aiResponseText = parsedRaw.candidates[0].content.parts[0].text.trim();
+                    } catch(e) {
+                        aiResponseText = rawText;
+                    }
+
+                    let cleanText = aiResponseText
+                        .replace(/^```(json|markdown)?/i, '')
+                        .replace(/```$/, '')
+                        .trim();
+
+                    modulAjarGeneratedContent = cleanText.replace(/\*\*/g, "").replace(/\*/g, "");
+
+                    previewSection.classList.remove('hidden');
+                    exportSingleWordBtn.classList.remove('hidden');
+                    previewTitle.textContent = "Pratinjau Hasil Rumusan Modul Ajar Kurikulum Merdeka";
+                    
+                    soalContainer.innerHTML = `
+                        <div class="p-2 space-y-4">
+                            <textarea id="modulEditableArea" class="w-full h-96 border border-slate-200 rounded-xl p-4 text-xs font-sans bg-slate-50 focus:outline-emerald-500 leading-relaxed" style="white-space: pre-wrap; font-family: 'Plus Jakarta Sans', sans-serif;">${modulAjarGeneratedContent}</textarea>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modulEditableArea').addEventListener('input', function() {
+                        modulAjarGeneratedContent = this.value;
+                    });
+
+                    previewSection.scrollIntoView({ behavior: 'smooth' });
+                } catch (err) { 
+                    showCustomToast("Gagal merumuskan modul: " + err.message, "error", "Gagal Memproses Modul"); 
+                } finally { 
+                    processModulBtn.disabled = false; 
+                    processModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI"; 
+                }
+            });
+        }
 
         function getEssayLabel(index, style) { return style === "huruf" ? String.fromCharCode(65 + (index % 26)) + ". " : (index + 1) + ". "; }
 
-        // FUNGSI RENDER EDITOR PREVIEW
         function renderEditorUI() {
             previewSection.classList.remove('hidden'); 
             exportSingleWordBtn.classList.remove('hidden');
@@ -1205,7 +1202,6 @@
                 return;
             }
 
-            // Render Pilihan Ganda
             if (originalPGQuestions.length > 0) {
                 originalPGQuestions.forEach((q, idx) => {
                     const block = document.createElement('div'); 
@@ -1235,7 +1231,6 @@
                 });
             }
 
-            // Render Essay / Uraian
             if (originalEssayQuestions.length > 0) {
                 originalEssayQuestions.forEach((q, idx) => {
                     const block = document.createElement('div'); 
@@ -1253,14 +1248,13 @@
             previewSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // HELPER PARSING PANGKAT, SUBSKRIP & SIMBOL MATEMATIKA
         function parseMathTextRuns(rawText, customFont, customSize, isBold = false) {
             const { TextRun } = window.docx;
             if (!rawText) return [new TextRun({ text: "", font: customFont, size: customSize, bold: isBold })];
 
             let text = rawText.toString()
                 .replace(/<=/g, "≤")
-                .replace/>=/g, "≥")
+                .replace(/>=/g, "≥")
                 .replace(/!=/g, "≠")
                 .replace(/\* /g, "× ")
                 .replace(/\*/g, "×");
@@ -1317,7 +1311,6 @@
             return runs.length > 0 ? runs : [new TextRun({ text: text, font: customFont, size: customSize, bold: isBold })];
         }
 
-        // HELPER KONVERSI TEKS TABEL MARKDOWN KE TABEL WORD (.DOCX)
         function convertMarkdownTableToDocx(tableText, customFont, customSize) {
             const { Table, TableRow, TableCell, Paragraph, WidthType, BorderStyle, AlignmentType } = window.docx;
             
@@ -1368,7 +1361,6 @@
             });
         }
 
-        // FUNGSI CREATEDOCXBLOB: EKSPOR DOKUMEN WORD RAPI
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
             const children = []; 
@@ -1388,7 +1380,6 @@
                 return str.replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
             };
 
-            // A. MODE 3: MODUL AJAR
             if (typeof activeTab !== 'undefined' && activeTab === "modul") {
                 const lines = (modulAjarGeneratedContent || "").split('\n');
                 let tableBuffer = [];
@@ -1430,7 +1421,6 @@
                     }
                 }
             } 
-            // B. MODE 1 & 2: NASKAH SOAL
             else {
                 if (!isAnswerKey) {
                     const kopGambarElem = document.getElementById('kopGambarInput');
@@ -1477,7 +1467,7 @@
                                     ]}),
                                     new TableCell({ width: { size: 45, type: WidthType.PERCENTAGE }, children: [
                                         new Paragraph({ children: [new TextRun({ text: `Hari / Tanggal  : ${hari}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
-                                        new Paragraph({ children: [new TextRun({ text: `Waktu           : ${waktu}`, font: customFont, size: customSize })], spacing: { after: 40 } })
+                                        new Paragraph({ children: [new TextRun({ text: `Waktu          : ${waktu}`, font: customFont, size: customSize })], spacing: { after: 40 } })
                                     ]})
                                 ]
                             })
@@ -1491,7 +1481,6 @@
 
                 const labels = ['A', 'B', 'C', 'D', 'E'];
 
-                // DOKUMEN KUNCI JAWABAN
                 if (isAnswerKey) {
                     if (pgData && pgData.length > 0) {
                         children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { after: 150 } }));
@@ -1532,7 +1521,6 @@
                         });
                     }
                 } 
-                // NASKAH SOAL UTAMA
                 else {
                     if (pgData && pgData.length > 0) {
                         children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
@@ -1578,19 +1566,6 @@
                                 const colWidth = Math.floor(8500 / targetOptions.length); 
                                 for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
                                 children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
-                            
-                            } else if (totalOptLen >= 80 && totalOptLen < 160 && targetOptions.length > 0) {
-                                for(let i = 0; i < targetOptions.length; i += 2) {
-                                    const runChildren = [
-                                        new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }),
-                                        ...parseMathTextRuns(targetOptions[i], customFont, customSize)
-                                    ];
-                                    if (i + 1 < targetOptions.length) {
-                                        runChildren.push(new TextRun({ text: `\t${labels[i+1]}. `, bold: true, font: customFont, size: customSize }));
-                                        runChildren.push(...parseMathTextRuns(targetOptions[i+1], customFont, customSize));
-                                    }
-                                    children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
-                                }
                             } else {
                                 targetOptions.forEach((optText, oIdx) => { 
                                     const optRuns = [
@@ -1624,7 +1599,6 @@
                         });
                     }
 
-                    // LAMPIRAN KUNCI JAWABAN
                     children.push(
                         new Paragraph({
                             children: [new TextRun({ text: "--------------------------------------------------------------------------------------------------", font: customFont, size: customSize })],
@@ -1690,81 +1664,81 @@
             return await window.docx.Packer.toBlob(doc);
         }
 
-        // EVENT LISTENER MODE 1
-        processAcakBtn.addEventListener('click', async () => {
-            const numPackets = parseInt(packetCount.value);
-            const zip = new JSZip(); 
-            const labels = ['A', 'B', 'C', 'D', 'E'];
-            const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
-            const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
-            
-            processAcakBtn.disabled = true;
-            processAcakBtn.textContent = "Sedang mengacak...";
-
-            try {
-                for (let p = 0; p < numPackets; p++) {
-                    const packetLetter = String.fromCharCode(65 + p);
-                    let shuffledPG = shuffleArray(originalPGQuestions); 
-                    let shuffledEssay = shuffleArray(originalEssayQuestions); 
-                    
-                    if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
-                    if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
-
-                    const processedPG = shuffledPG.map(q => {
-                        const shuffledOptions = shuffleArray(q.opsi); 
-                        let newKey = '';
-                        shuffledOptions.forEach((opt, idxOpt) => { 
-                            if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; 
-                        });
-                        return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
-                    });
-
-                    // Cetak Dokumen Soal
-                    const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
-                    zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
-
-                    // Cetak Dokumen Kunci Jawaban
-                    const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
-                    zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
-                }
-
-                const base64Content = await zip.generateAsync({ type: 'base64' });
-                const dataUri = "data:application/zip;base64," + base64Content;
+        if(processAcakBtn) {
+            processAcakBtn.addEventListener('click', async () => {
+                const numPackets = parseInt(packetCount.value);
+                const zip = new JSZip(); 
+                const labels = ['A', 'B', 'C', 'D', 'E'];
+                const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
+                const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
                 
-                const element = document.createElement('a');
-                element.href = dataUri;
-                element.download = "Paket_Ujian_Acak_Final.zip";
-                element.target = "_blank";
-                document.body.appendChild(element); 
-                element.click();
-                document.body.removeChild(element);
+                processAcakBtn.disabled = true;
+                processAcakBtn.textContent = "Sedang mengacak...";
 
-            } catch (err) {
-                if (typeof showCustomToast === 'function') {
-                    showCustomToast("Gagal memproses acak soal: " + err.message, "error");
-                } else {
-                    alert("Gagal memproses acak soal: " + err.message);
+                try {
+                    for (let p = 0; p < numPackets; p++) {
+                        const packetLetter = String.fromCharCode(65 + p);
+                        let shuffledPG = shuffleArray(originalPGQuestions); 
+                        let shuffledEssay = shuffleArray(originalEssayQuestions); 
+                        
+                        if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
+                        if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
+
+                        const processedPG = shuffledPG.map(q => {
+                            const shuffledOptions = shuffleArray(q.opsi); 
+                            let newKey = '';
+                            shuffledOptions.forEach((opt, idxOpt) => { 
+                                if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; 
+                            });
+                            return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
+                        });
+
+                        const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
+                        zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
+
+                        const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
+                        zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
+                    }
+
+                    const base64Content = await zip.generateAsync({ type: 'base64' });
+                    const dataUri = "data:application/zip;base64," + base64Content;
+                    
+                    const element = document.createElement('a');
+                    element.href = dataUri;
+                    element.download = "Paket_Ujian_Acak_Final.zip";
+                    element.target = "_blank";
+                    document.body.appendChild(element); 
+                    element.click();
+                    document.body.removeChild(element);
+
+                } catch (err) {
+                    if (typeof showCustomToast === 'function') {
+                        showCustomToast("Gagal memproses acak soal: " + err.message, "error");
+                    } else {
+                        alert("Gagal memproses acak soal: " + err.message);
+                    }
+                } finally {
+                    processAcakBtn.disabled = false;
+                    processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
                 }
-            } finally {
-                processAcakBtn.disabled = false;
-                processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
-            }
-        });
+            });
+        }
 
-        exportSingleWordBtn.addEventListener('click', async () => {
-            exportSingleWordBtn.disabled = true;
-            try {
-                const blob = await createDocxBlob("Teacher Assistant Output", originalPGQuestions, originalEssayQuestions, false);
-                const reader = new FileReader(); reader.onloadend = function() {
-                    const el = document.createElement('a'); el.href = reader.result; el.download = activeTab === "modul" ? "Modul_Ajar_Kurikulum_Merdeka_Lengkap.docx" : "Hasil_AI_Soal_Ujian.docx";
-                    document.body.appendChild(el); el.click(); document.body.removeChild(el);
-                };
-                reader.readAsDataURL(blob);
-            } catch(e) { showCustomToast("Gagal mengunduh berkas: " + e.message, "error"); }
-            finally { exportSingleWordBtn.disabled = false; }
-        });
+        if(exportSingleWordBtn) {
+            exportSingleWordBtn.addEventListener('click', async () => {
+                exportSingleWordBtn.disabled = true;
+                try {
+                    const blob = await createDocxBlob("Teacher Assistant Output", originalPGQuestions, originalEssayQuestions, false);
+                    const reader = new FileReader(); reader.onloadend = function() {
+                        const el = document.createElement('a'); el.href = reader.result; el.download = activeTab === "modul" ? "Modul_Ajar_Kurikulum_Merdeka_Lengkap.docx" : "Hasil_AI_Soal_Ujian.docx";
+                        document.body.appendChild(el); el.click(); document.body.removeChild(el);
+                    };
+                    reader.readAsDataURL(blob);
+                } catch(e) { showCustomToast("Gagal mengunduh berkas: " + e.message, "error"); }
+                finally { exportSingleWordBtn.disabled = false; }
+            });
+        }
 
-        // LOGIKA CHATBOT AI INTERAKTIF MELAYANG
         const toggleChatbotBtn = document.getElementById('toggleChatbotBtn');
         const closeChatbotBtn = document.getElementById('closeChatbotBtn');
         const chatbotWindow = document.getElementById('chatbotWindow');
@@ -1772,20 +1746,24 @@
         const chatInput = document.getElementById('chatInput');
         const chatMessages = document.getElementById('chatMessages');
 
-        toggleChatbotBtn.addEventListener('click', () => {
-            if (chatbotWindow.classList.contains('hidden')) {
-                chatbotWindow.classList.remove('hidden');
-                setTimeout(() => chatbotWindow.classList.add('chat-popup-enter-active'), 10);
-            } else {
+        if(toggleChatbotBtn) {
+            toggleChatbotBtn.addEventListener('click', () => {
+                if (chatbotWindow.classList.contains('hidden')) {
+                    chatbotWindow.classList.remove('hidden');
+                    setTimeout(() => chatbotWindow.classList.add('chat-popup-enter-active'), 10);
+                } else {
+                    chatbotWindow.classList.remove('chat-popup-enter-active');
+                    setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
+                }
+            });
+        }
+
+        if(closeChatbotBtn) {
+            closeChatbotBtn.addEventListener('click', () => {
                 chatbotWindow.classList.remove('chat-popup-enter-active');
                 setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
-            }
-        });
-
-        closeChatbotBtn.addEventListener('click', () => {
-            chatbotWindow.classList.remove('chat-popup-enter-active');
-            setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
-        });
+            });
+        }
 
         function appendUserMessage(msg) {
             const userMsgDiv = document.createElement('div');
@@ -1817,45 +1795,46 @@
             chatForm.dispatchEvent(new Event('submit'));
         }
 
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if(!text) return;
+        if(chatForm) {
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = chatInput.value.trim();
+                if(!text) return;
 
-            appendUserMessage(text);
-            chatInput.value = "";
+                appendUserMessage(text);
+                chatInput.value = "";
 
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = "flex gap-2 items-start loading-msg";
-            loadingDiv.innerHTML = `
-                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5 animate-spin">🌀</div>
-                <div class="bg-white border border-slate-200 p-2 rounded-2xl text-slate-400 italic text-[10px]">
-                    Sistem AI sedang berpikir...
-                </div>
-            `;
-            chatMessages.appendChild(loadingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = "flex gap-2 items-start loading-msg";
+                loadingDiv.innerHTML = `
+                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5 animate-spin">🌀</div>
+                    <div class="bg-white border border-slate-200 p-2 rounded-2xl text-slate-400 italic text-[10px]">
+                        Sistem AI sedang berpikir...
+                    </div>
+                `;
+                chatMessages.appendChild(loadingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
-            const chatPrompt = `Bertindaklah sebagai Konsultan Pendidikan AI yang ramah, ringkas, dan sangat membantu guru sekolah. Jawab pertanyaan guru berikut dalam waktu singkat tanpa simbol markdown berlebihan: ${text}`;
+                const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
+                const chatPrompt = `Bertindaklah sebagai Konsultan Pendidikan AI yang ramah, ringkas, dan sangat membantu guru sekolah. Jawab pertanyaan guru berikut dalam waktu singkat tanpa simbol markdown berlebihan: ${text}`;
 
-            try {
-                const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: chatPrompt }] }] }) });
-                const rawText = await response.text();
-                let reply = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
-                reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
+                try {
+                    const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: chatPrompt }] }] }) });
+                    const rawText = await response.text();
+                    let reply = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
+                    reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
 
-                const loader = chatMessages.querySelector('.loading-msg');
-                if(loader) loader.remove();
+                    const loader = chatMessages.querySelector('.loading-msg');
+                    if(loader) loader.remove();
 
-                appendAiMessage(reply);
-            } catch (err) {
-                const loader = chatMessages.querySelector('.loading-msg');
-                if(loader) loader.remove();
-                appendAiMessage("Maaf, koneksi server AI sedang padat. Silakan coba tanyakan kembali.");
-            }
-        });
-
+                    appendAiMessage(reply);
+                } catch (err) {
+                    const loader = chatMessages.querySelector('.loading-msg');
+                    if(loader) loader.remove();
+                    appendAiMessage("Maaf, koneksi server AI sedang padat. Silakan coba tanyakan kembali.");
+                }
+            });
+        }
         // MULTI-LANGUAGE ENGINE ARCHITECTURE
         const i18n = {
             id: {
