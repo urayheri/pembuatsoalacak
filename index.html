@@ -840,6 +840,16 @@
         .replace(/\\\\/g, ' | ')                   // Ganti \\ (baris baru tabel) jadi pemisah '|'
         .replace(/&/g, ' = ');                     // Ganti & jadi '='
 
+      // --- PENANGANAN KHUSUS NOTASI SIGMA (\sum) ---
+      // Konversi \sum_{bottom}^{top} -> Σ_(bottom)^(top)
+      mathVal = mathVal
+        .replace(/\\sum_\{([^}]+)\}\^\{([^}]+)\}/g, '∑_($1)^($2) ')
+        .replace(/\\sum_\{([^}]+)\}\^([0-9a-zA-Z]+)/g, '∑_($1)^($2) ')
+        .replace(/\\sum=([0-9a-zA-Z]+)\^([0-9a-zA-Z]+)/g, '∑_($1)^($2) ')
+        .replace(/\\sum_([0-9a-zA-Z]+)=([0-9a-zA-Z]+)\^([0-9a-zA-Z]+)/g, '∑_($1=$2)^($3) ')
+        .replace(/\\sum_([0-9a-zA-Z]+)\^([0-9a-zA-Z]+)/g, '∑_($1)^($2) ')
+        .replace(/\\sum/g, '∑ ');
+
       // Penggantian simbol umum LaTeX ke Unicode
       mathVal = mathVal
         .replace(/\\times/g, '×')
@@ -908,7 +918,6 @@
 
   return runs;
 }
-
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
         const devStatementModal = document.getElementById('devStatementModal');
