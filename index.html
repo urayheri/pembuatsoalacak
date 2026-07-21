@@ -1345,59 +1345,68 @@ Format Output JSON Harus Seperti Ini:
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah MODUL AJAR & RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) utuh, sangat rinci, dan siap cetak dengan parameter berikut:
-- Mata Pelajaran: ${mapel}
-- Jenjang/Fase/Kelas: ${fase}
-- Topik Pokok: ${topik}
-- Alokasi Waktu: ${waktu}
-- Target Dimensi Profil Lulusan (DPL): ${profilTerpilih}
-- Fasilitas Sekolah: ${fasilitas}
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI dan Pakar Pendidikan Matematika/Sains Profesional. Buatkan dokumen naskah RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) yang SANGAT LENGKAP, PANJANG, MENDALAM, dan SANGAT DETAIL dalam bentuk paragraf naratif utuh (bukan poin-poin terpotong), persis seperti dokumen resmi guru profesional.
+
+📌 DATA ADMINISTRASI UTAMA:
 - Nama Guru: ${namaGuru}
 - NIP Guru: ${nipGuru}
+- Satuan Pendidikan: ${namaSekolah}
 - Nama Kepala Sekolah: ${namaKepsek}
 - NIP Kepala Sekolah: ${nipKepsek}
-- Nama Sekolah: ${namaSekolah}
+- Mata Pelajaran: ${mapel}
+- Fase / Kelas: ${fase}
+- Topik / Materi: ${topik}
+- Alokasi Waktu: ${waktu}
+- Target Profil Lulusan: ${profilTerpilih}
+- Kondisi Fasilitas: ${fasilitas}
 
-📋 ATURAN FORMAT LAYOUT DOKUMEN:
+⚠️ ATURAN KHUSUS PENULISAN RUMUS, PANGKAT & MATEMATIKA (WAJIB DIPATUHI):
+1. Jika materi/soal memuat rumus matematika, fisika, atau kimia, PENULISAN RUMUS HARUS BENAR DAN PRESISI.
+2. DILARANG KERAS menggunakan simbol segitiga/caret (^), sintaks LaTeX mentah seperti \\sum, \\Sigma, \\frac, atau \\begin{array} yang merusak dokumen Word.
+3. Untuk penulisan pangkat, WAJIB menggunakan angka superskrip Unicode yang bersih atau menuliskannya secara eksplisit (Contoh: tuliskan "x²", "x³", atau uraikan perkaliannya seperti "x dikali x", BUKAN menggunakan "x^2").
+4. Contoh lambang Sigma: Gunakan simbol huruf kapital Yunani asli (∑), BUKAN kode teks.
+5. Sajikan perhitungan atau langkah penyelesaian rumus secara runtut, bertahap, dan jelas agar mudah dipahami oleh siswa.
 
-A. KHUSUS BAGIAN DALAM TABEL GRID UTAMA 2 KOLOM (DARI IDENTITAS SAMPAI PENGALAMAN BELAJAR KHAS PDF):
-Sajikan bagian awal ini ke dalam struktur Tabel Grid 2 Kolom (Kolom Kiri: Label Seksi, Kolom Kanan: Isi Rinci Rata Kiri-Kanan) mencakup:
-1. Identitas: Nama Guru, Satuan Pendidikan, Mapel, Materi, Alokasi Waktu.
-2. Identifikasi:
-   a) Kesiapan Peserta Didik (Uraian narasi analitis).
-   b) Materi Pembelajaran (Uraian aspek Konseptual & Prosedural).
-   c) Dimensi Profil Lulusan (DPL): Sajikan Tabel Grid 8 Kotak Checkbox (DPL 1 s/d DPL 8 dengan tanda ✓ pada DPL yang relevan).
-3. Desain Pembelajaran: Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), Praktik Pedagogis (Model PBL/Discovery, Metode), Kemitraan, Lingkungan Belajar, Pemanfaatan Digital.
-4. Pengalaman Belajar (BATAS AKHIR TABEL GRID):
-   - Memahami: Kegiatan Awal (10 menit) memuat Doa, Cek Kehadiran, Latihan Fokus Teknik STOP, Apersepsi, Tes Awal.
-   - Mengaplikasikan: Kegiatan Inti (75 menit) memuat runtutan Sintaks a-f (Orientasi Masalah, Identifikasi Masalah, Pengumpulan Data, Pengolahan Data, Pembuktian dengan Spin Wheel, Menarik Kesimpulan).
-   - Merefleksikan: Kegiatan Penutup (5 menit) memuat Refleksi Murid, Umpan Balik, Tindak Lanjut, Doa.
+⚠️ ATURAN MUTLAK FORMAT & GAYA PENULISAN:
+1. JANGAN MEMBUAT RINGKASAN. Tuliskan setiap bagian secara panjang, bernarasi deskriptif, dan mendalam (minimal setara dokumen setebal 5-8 halaman jika diekspor ke Word).
+2. HANYA GUNAKAN TABEL MARKDOWN (2 Kolom) pada Bagian Identitas dan Desain Pembelajaran. Bagian isi materi, langkah pembelajaran, bahan ajar, asesmen, dan refleksi WAJIB ditulis dalam bentuk PARAGRAF NARATIF UTUH dan SUB-HEADING yang jelas.
+3. Penulisan paragraf wajib menggunakan perataan rata kanan-kiri (Justify) secara konseptual dengan penjelasan yang sangat bernas.
 
-B. BAGIAN DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP):
-Tuliskan bagian-bagian berikut di luar tabel grid utama dengan format narasi & tabel terpisah:
+📋 STRUKTUR DOKUMEN UTUH YANG WAJIB DIHASILKAN:
 
-1. BAHAN AJAR SISIPAN MATERI PEMBELAJARAN
-   - Pengertian & Kedudukan Materi
-   - Karakteristik Elemen Utama
-   - WAJIB SISIPKAN DIAGRAM VISUAL ASCII ANATOMI/HIRARKI MATERI
-   - Naskah Contoh Sintaks/Kode/Aplikasi Standar.
+BAGIAN I: IDENTITAS & ANALISIS KONDISI PEMBELAJARAN
+- Uraikan secara naratif identitas pembelajaran.
+- Uraikan Analisis Kesiapan Peserta Didik secara mendalam berdasarkan karakteristik siswa dan fasilitas sekolah.
+- Uraikan Karakteristik Materi Pembelajaran (Aspek Konseptual, Prosedural, serta pemetaan rumus/konsep dasar jika ada).
+- Uraikan Target Dimensi Profil Lulusan (DPL) yang dipilih secara kontekstual.
 
-2. ASESMEN PEMBELAJARAN
-   - A. Asesmen Diagnostik Formatif Awal (Tes Lisan 3 soal)
-   - B. Penilaian Formatif LKPD
-   - C. Rubrik Skor Penilaian LKPD Praktikum + Rumus Nilai
-   - D. Tabel Penilaian Formatif Hasil Praktikum Murid (Kolom NO, NAMA MURID, L/P, SKOR, NILAI, KET)
-   - E. Soal Penilaian Sumatif Akhir (Soal Uraian, B-S, PG berbasis Diagram)
-   - F. Tabel Kunci Jawaban Penilaian Sumatif & Pedoman Penskoran
-   - G. Rubrik Observasi Sikap Murid DPL (Tabel Indikator & Tabel Skor DPL Per Murid)
+BAGIAN II: DESAIN INSTRUKSIONAL & CAPAIAN
+- Rumusan Capaian Pembelajaran (CP) dan Tujuan Pembelajaran (TP) yang diturunkan secara operasional.
+- Pemilihan Model Pembelajaran (Problem Based Learning / Discovery Learning), Metode, Kemitraan Pembelajaran, Lingkungan Belajar, dan Pemanfaatan Digital.
 
-3. LEMBAR REFLEKSI GURU (Pertanyaan evaluasi diri guru)
+BAGIAN III: PENGALAMAN BELAJAR MENDALAM (LANGKAH-LANGKAH PEMBELAJARAN)
+- A. Memahami (Kegiatan Awal / 15-20 Menit): Uraikan narasi pembuka kelas, teknik kesadaran penuh (STOP), apersepsi bermakna, dan pelaksanaan Tes Awal.
+- B. Mengaplikasikan (Kegiatan Inti / Alokasi Waktu Sesuai JP): Uraikan secara naratif panjang berbasis sintaks (1. Orientasi Masalah/Studi Kasus; 2. Identifikasi Masalah; 3. Pengumpulan Data/Eksplorasi Rumus; 4. Pengolahan Data di LKPD; 5. Pembuktian/Presentasi; 6. Penarikan Kesimpulan kolektif).
+- C. Merefleksikan (Kegiatan Penutup / 10-15 Menit): Uraikan proses refleksi pemahaman siswa, umpan balik konstruktif guru, tindak lanjut, dan doa penutup.
 
-4. LEMBAR PENGESAHAN TANDA TANGAN
-   Mengetahui, Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}) di Semparuk.
+BAGIAN IV: BAHAN AJAR / RINGKASAN MATERI PEMBELAJARAN
+- Berikan uraian materi teks pembelajaran yang mendalam, lengkap dengan konsep dasar, rumus utama (tanpa simbol segitiga/caret, menggunakan karakter Unicode bersih seperti ∑ dan ²/³), penurunan konsep, serta contoh soal beserta penyelesaian lengkapnya.
 
-CATATAN FONT & PARAGRAF: Terapkan gaya penulisan narasi formal, rinci, dan rata kiri-kanan (justified).`;
+BAGIAN V: INSTRUMEN ASESMEN & EVALUASI LENGKAP
+- A. Asesmen Diagnostik Awal (Daftar pertanyaan lisan/tertulis beserta kunci jawaban).
+- B. Lembar Kerja Peserta Didik (LKPD) lengkap dengan panduan penyelesaian perhitungan/soal.
+- C. Rubrik Skor Penilaian LKPD dan Rumus Penghitungan Nilai Akhir.
+- D. Tabel Penilaian Formatif Proses (Format tabel markdown rapi: NO | NAMA MURID | L/P | SKOR | NILAI | KET).
+- E. Soal Penilaian Sumatif (Sediakan minimal 3-5 soal Uraian/Essay HOTS atau perhitungan matematis yang menantang).
+- F. Kunci Jawaban dan Langkah Pembahasan Rinci Penilaian Sumatif.
+- G. Rubrik Observasi Sikap Dimensi Profil Lulusan (DPL) lengkap dengan tabel rekapitulasi penilaian per siswa untuk seluruh anggota kelas.
 
+BAGIAN VI: LEMBAR REFLEKSI GURU
+- Berisi 5 pertanyaan reflektif mendalam bagi pendidik untuk mengevaluasi efektivitas pembelajaran.
+
+BAGIAN VII: LEMBAR PENGESAHAN / TANDA TANGAN
+- Format tanda tangan resmi sekolah yang rapi dan proporsional untuk Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}).
+`;
 
             try {
                 const response = await fetch(proxyUrl, { 
