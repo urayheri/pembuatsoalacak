@@ -766,6 +766,7 @@
 </script>
 
     <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT FIXED) -->
+    <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (LENGKAP & DISEMPURNAKAN) -->
     <script>
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
@@ -790,7 +791,6 @@
             });
         }
 
-        // LOGIKA MODAL SEDEKAH
         const openSedekahBtn = document.getElementById('openSedekahBtn');
         const closeSedekahBtn = document.getElementById('closeSedekahBtn');
         const sedekahModal = document.getElementById('sedekahModal');
@@ -822,10 +822,10 @@
         const materiInputText = document.getElementById('materiInputText');
         const generateCountPG = document.getElementById('generateCountPG');
         const generateCountEssay = document.getElementById('generateCountEssay');
-        const processGenerateBtn = document.getElementById('processGenerateBtn'); // DIPERBAIKI (Terkait ID HTML)
+        const processGenerateBtn = document.getElementById('processGenerateBtn');
         const documentTypeMode = document.getElementById('documentTypeMode');
         
-        const processModulBtn = document.getElementById('processModulBtn'); // DIPERBAIKI
+        const processModulBtn = document.getElementById('processModulBtn');
 
         let originalPGQuestions = [];
         let originalEssayQuestions = [];
@@ -864,7 +864,6 @@
             input.addEventListener('change', updateTotalEssay);
         });
 
-        // TAB NAVIGATION EVENT LISTENERS (DIPERBAIKI AGAR AMAN DIKLIK)
         if(tabAcakBtn) {
             tabAcakBtn.addEventListener('click', () => {
                 activeTab = "acak";
@@ -987,8 +986,8 @@
                                 }
                             }
                         }
-                        previewSection.classList.remove('hidden'); 
-                        soalContainer.innerHTML = `<p class="text-xs font-bold text-emerald-700">Berhasil memetakan ${originalPGQuestions.length} Pilihan Ganda dan ${originalEssayQuestions.length} Uraian ke dalam aplikasi.</p>`;
+                        // PANGGIL RENDER EDITOR UI SUPAYA PRATINJAU LANGSUNG MUNCUL DI LAYAR
+                        renderEditorUI();
                         processAcakBtn.disabled = false;
                     } catch (err) { showCustomToast("Ketidakcocokan struktur berkas tabel excel: " + err.message, "error"); }
                 };
@@ -996,7 +995,6 @@
             });
         }
 
-        // ACTION BUTTON 2: AI QUESTION GENERATION
         if(processGenerateBtn) {
             processGenerateBtn.addEventListener('click', async () => {
                 const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
@@ -1111,7 +1109,6 @@
             });
         }
 
-        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         if(processModulBtn) {
             processModulBtn.addEventListener('click', async () => {
                 const mapel = document.getElementById('modulMapel').value.trim();
@@ -1570,33 +1567,19 @@
                                 }));
                             }
                             
-                            let totalOptLen = targetOptions.reduce((acc, o) => acc + o.length, 0);
-                            
-                            if (totalOptLen < 80 && targetOptions.length > 0) {
-                                const runChildren = []; 
-                                targetOptions.forEach((optText, oIdx) => { 
-                                    runChildren.push(new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }));
-                                    runChildren.push(...parseMathTextRuns(optText, customFont, customSize));
-                                    if (oIdx < targetOptions.length - 1) runChildren.push(new TextRun({ text: "\t" })); 
-                                });
-                                const tabStops = []; 
-                                const colWidth = Math.floor(8500 / targetOptions.length); 
-                                for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
-                                children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
-                            } else {
-                                targetOptions.forEach((optText, oIdx) => { 
-                                    const optRuns = [
-                                        new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }),
-                                        ...parseMathTextRuns(optText, customFont, customSize)
-                                    ];
-                                    children.push(new Paragraph({ 
-                                        alignment: AlignmentType.JUSTIFIED,
-                                        indent: { left: 720, hanging: 360 }, 
-                                        children: optRuns, 
-                                        spacing: { after: 60 } 
-                                    })); 
-                                });
-                            }
+                            // FORMAT PILIHAN GANDA MENURUT KEBAWAH (VERTICAL LIST) AGAR RAPI SEPERTI GAMBAR
+                            targetOptions.forEach((optText, oIdx) => { 
+                                const optRuns = [
+                                    new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }),
+                                    ...parseMathTextRuns(optText, customFont, customSize)
+                                ];
+                                children.push(new Paragraph({ 
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    indent: { left: 720, hanging: 360 }, 
+                                    children: optRuns, 
+                                    spacing: { after: 60 } 
+                                })); 
+                            });
                         });
                     }
 
@@ -1755,104 +1738,7 @@
                 finally { exportSingleWordBtn.disabled = false; }
             });
         }
-
-        const toggleChatbotBtn = document.getElementById('toggleChatbotBtn');
-        const closeChatbotBtn = document.getElementById('closeChatbotBtn');
-        const chatbotWindow = document.getElementById('chatbotWindow');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-        const chatMessages = document.getElementById('chatMessages');
-
-        if(toggleChatbotBtn) {
-            toggleChatbotBtn.addEventListener('click', () => {
-                if (chatbotWindow.classList.contains('hidden')) {
-                    chatbotWindow.classList.remove('hidden');
-                    setTimeout(() => chatbotWindow.classList.add('chat-popup-enter-active'), 10);
-                } else {
-                    chatbotWindow.classList.remove('chat-popup-enter-active');
-                    setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
-                }
-            });
-        }
-
-        if(closeChatbotBtn) {
-            closeChatbotBtn.addEventListener('click', () => {
-                chatbotWindow.classList.remove('chat-popup-enter-active');
-                setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
-            });
-        }
-
-        function appendUserMessage(msg) {
-            const userMsgDiv = document.createElement('div');
-            userMsgDiv.className = "flex gap-2 items-start justify-end";
-            userMsgDiv.innerHTML = `
-                <div class="bg-emerald-600 text-white p-2.5 rounded-2xl rounded-tr-xs shadow-2xs max-w-[85%] leading-relaxed">
-                    ${msg}
-                </div>
-            `;
-            chatMessages.appendChild(userMsgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function appendAiMessage(msg) {
-            const aiMsgDiv = document.createElement('div');
-            aiMsgDiv.className = "flex gap-2 items-start";
-            aiMsgDiv.innerHTML = `
-                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">🤖</div>
-                <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-xs text-slate-700 shadow-2xs max-w-[85%] leading-relaxed">
-                    ${msg}
-                </div>
-            `;
-            chatMessages.appendChild(aiMsgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function sendQuickPrompt(promptText) {
-            chatInput.value = promptText;
-            chatForm.dispatchEvent(new Event('submit'));
-        }
-
-        if(chatForm) {
-            chatForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const text = chatInput.value.trim();
-                if(!text) return;
-
-                appendUserMessage(text);
-                chatInput.value = "";
-
-                const loadingDiv = document.createElement('div');
-                loadingDiv.className = "flex gap-2 items-start loading-msg";
-                loadingDiv.innerHTML = `
-                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5 animate-spin">🌀</div>
-                    <div class="bg-white border border-slate-200 p-2 rounded-2xl text-slate-400 italic text-[10px]">
-                        Sistem AI sedang berpikir...
-                    </div>
-                `;
-                chatMessages.appendChild(loadingDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
-                const chatPrompt = `Bertindaklah sebagai Konsultan Pendidikan AI yang ramah, ringkas, dan sangat membantu guru sekolah. Jawab pertanyaan guru berikut dalam waktu singkat tanpa simbol markdown berlebihan: ${text}`;
-
-                try {
-                    const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: chatPrompt }] }] }) });
-                    const rawText = await response.text();
-                    let reply = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
-                    reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
-
-                    const loader = chatMessages.querySelector('.loading-msg');
-                    if(loader) loader.remove();
-
-                    appendAiMessage(reply);
-                } catch (err) {
-                    const loader = chatMessages.querySelector('.loading-msg');
-                    if(loader) loader.remove();
-                    appendAiMessage("Maaf, koneksi server AI sedang padat. Silakan coba tanyakan kembali.");
-                }
-            });
-        }
-        // MULTI-LANGUAGE ENGINE ARCHITECTURE
+    // MULTI-LANGUAGE ENGINE ARCHITECTURE
         const i18n = {
             id: {
                 btnDonate: "💝 Apresiasi", lblTerminalStatus: "Sistem: Aktif", lblSessionSync: "Sinkronisasi: OK",
