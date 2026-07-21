@@ -640,6 +640,13 @@
             }
         }, 100);
     })();
+        // Membuka Pop-up Keunggulan Web saat Maskot/Badge diklik
+const heroMascotTrigger = document.getElementById('heroMascotTrigger');
+if (heroMascotTrigger) {
+    heroMascotTrigger.addEventListener('click', () => {
+        devStatementModal.classList.remove('hidden');
+    });
+}
     </script>
 
     <!-- LOGIKA WORKSPACE & MODAL INTERAKSI -->
@@ -794,13 +801,7 @@
                 reader.readAsArrayBuffer(file);
             }
         });
-        // Membuka Pop-up Keunggulan Web saat Maskot/Badge diklik
-const heroMascotTrigger = document.getElementById('heroMascotTrigger');
-if (heroMascotTrigger) {
-    heroMascotTrigger.addEventListener('click', () => {
-        devStatementModal.classList.remove('hidden');
-    });
-}
+        
 
         excelInput.addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
