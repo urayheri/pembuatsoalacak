@@ -722,7 +722,7 @@
         }
     </script>
 
-    <!-- DOMAIN PROTECTION LOCK SCRIPT (PERBAIKAN / AMAN) -->
+    <!-- DOMAIN & INSPECT PROTECTION SCRIPT (AMAN & AKTIF) -->
 <script>
     (function() {
         const allowedHosts = [
@@ -738,12 +738,29 @@
             window.location.replace("https://google.com");
             return;
         }
-        
-        // Pengamanan shortcut keyboard menggunakan preventDefault() yang benar
+
+        // Blok klik kanan (Context Menu)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Blok shortcut Inspect Element & View Source yang aman
         document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123) { e.preventDefault(); }
-            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); }
-            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); }
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+I / J / C (Developer Tools)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+U (View Source) & Ctrl+S (Save Page)
+            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) {
+                e.preventDefault();
+                return false;
+            }
         });
     })();
 </script>
