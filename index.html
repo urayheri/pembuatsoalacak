@@ -842,10 +842,18 @@
          * Mengonversi teks yang memuat matematika LaTeX menjadi larik docx.TextRun
          * yang mendukung superskrip (^), subskrip (_), dan simbol matematika untuk ekspor Word (.docx).
          */
-        function formatMathToTextRuns(text, docx, customFont, customSize) {
-  const { TextRun } = docx;
-  const parsed = parseMathTextRuns(text);
-  const runs = [];
+        ction formatMathToTextRuns(text, docx, customFont, customSize) {
+            const { TextRun } = docx;
+
+            // [TAMBAHAN] Pre-processing: Tangani kasus jika AI lupa membungkus rumus dengan $...$
+            text = text.replace(/\\[Ss]igma/g, '∑ ')
+                       .replace(/\\[Ss]um/g, '∑ ')
+                       .replace(/\\cdot/g, '· ')
+                       .replace(/\\times/g, '× ')
+                       .replace(/\\div/g, '÷ ');
+
+            const parsed = parseMathTextRuns(text);
+            const runs = [];
 
   parsed.forEach(item => {
     if (item.type === 'text') {
@@ -1228,7 +1236,7 @@ ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
 3. Pembungkus Notasi Matematika Sederhana: Gunakan $ ... $ untuk persamaan matematika biasa. Contoh: $x^2 + 2x - 5 = 0$ atau $\\frac{a}{b}$.
 4. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^{ } dan _{ }. Contoh: $x^{2}$, $a_{n}$, $f(x) = 3x^{3} - 2x + 5$.
 5. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid.
-
+6. Pembungkus Notasi Matematika Sederhana: WAJIB SECARA KETAT menggunakan $ ... $ untuk SELURUH persamaan matematika, pecahan, dan simbol khusus. Contoh: $x^2 + 2x - 5 = 0$, $\\frac{a}{b}$, $\\Sigma f_i$. JANGAN PERNAH membiarkan sintaks LaTeX (seperti \\Sigma, \\frac, \\cdot) berdiri sendiri tanpa pembungkus $ ... $.
 📋 ATURAN FORMAT OPSI & JSON:
 - Jangan tambahkan prefiks huruf (A, B, C, D, E) pada teks opsi pilihan ganda.
 - Wajib mengembalikan output MURNI berupa objek JSON tanpa pembungkus markdown codeblock (\`\`\`json ... \`\`\`).
@@ -1502,15 +1510,21 @@ BAGIAN B: DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP)
 
         // FUNGSI MEMBANTU FORMAT TEKS MATH PADA HTML PREVIEW CANVAS
         function formatMathHtml(text) {
-          if (!text) return "";
-          const runs = parseMathTextRuns(text);
-          return runs.map(run => {
-            if (run.type === 'text') {
-              return run.value;
-            } else {
-              return `<span class="katex-render" data-type="${run.type}" data-value="${run.value}"></span>`;
-            }
-          }).join('');
+            if (!text) return "";
+            
+            // [TAMBAHAN] Fallback untuk preview web jika AI lupa tag $...$
+            text = text.replace(/\\[Ss]igma/g, '∑ ')
+                       .replace(/\\[Ss]um/g, '∑ ')
+                       .replace(/\\cdot/g, '· ');
+
+            const runs = parseMathTextRuns(text);
+            return runs.map(run => {
+                if (run.type === 'text') {
+                    return run.value;
+                } else {
+                    return `<span class="katex-render" data-type="${run.type}" data-value="${run.value}"></span>`;
+                }
+            }).join('');
         }
 
         // 1. FUNGSI RENDER EDITOR PREVIEW (DIPERBAIKI DENGAN METODE KATEX MATH PARSING)
