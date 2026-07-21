@@ -522,6 +522,27 @@
             </div>
         </div>
     </div>
+    <!-- POP-UP NOTIFIKASI & ERROR ANIMASI KEREN -->
+<div id="customToastModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-100 text-center transform scale-90 opacity-0 transition-all duration-300 relative" id="customToastBox">
+        
+        <!-- Ikon Animasi Status -->
+        <div id="toastIconBg" class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce">
+            <span id="toastIcon">⚠️</span>
+        </div>
+
+        <!-- Judul & Pesan -->
+        <div class="space-y-1">
+            <h3 id="toastTitle" class="font-extrabold text-slate-800 text-sm">Pemberitahuan Sistem</h3>
+            <p id="toastMessage" class="text-slate-600 text-[11px] leading-relaxed">Pesan notifikasi akan muncul di sini.</p>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <button id="closeToastBtn" type="button" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-md">
+            Paham & Tutup
+        </button>
+    </div>
+</div>
 
     <!-- VOLUNTARY SUPPORT DIALOG -->
     <div id="sedekahModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
@@ -604,6 +625,57 @@
         <p>Asisten Guru Indonesia © 2026 | Dibuat oleh U. Heri Mukti, S.Tr.Kom.</p>
     </footer>
 
+    // FUNGSI POP-UP TOAST ANIMASI MODERN
+    <script>
+function showCustomToast(message, type = 'error', title = null) {
+    const toastModal = document.getElementById('customToastModal');
+    const toastBox = document.getElementById('customToastBox');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastIconBg = document.getElementById('toastIconBg');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    const closeToastBtn = document.getElementById('closeToastBtn');
+
+    if (!toastModal) {
+        alert(message); // Fallback jika HTML modal belum terpasang
+        return;
+    }
+
+    // Set Variasi Tampilan Berdasarkan Tipe
+    if (type === 'error') {
+        toastIcon.textContent = '❌';
+        toastIconBg.className = 'w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+        toastTitle.textContent = title || 'Gagal Memproses Data';
+    } else if (type === 'warning') {
+        toastIcon.textContent = '⚠️';
+        toastIconBg.className = 'w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+        toastTitle.textContent = title || 'Perhatian!';
+    } else {
+        toastIcon.textContent = '🎉';
+        toastIconBg.className = 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+        toastTitle.textContent = title || 'Berhasil!';
+    }
+
+    toastMessage.textContent = message;
+
+    // Tampilkan Modal dengan Animasi Zoom-In
+    toastModal.classList.remove('hidden');
+    setTimeout(() => {
+        toastBox.classList.remove('scale-90', 'opacity-0');
+        toastBox.classList.add('scale-100', 'opacity-100');
+    }, 10);
+
+    // Fungsi Tutup
+    const closeAction = () => {
+        toastBox.classList.remove('scale-100', 'opacity-100');
+        toastBox.classList.add('scale-90', 'opacity-0');
+        setTimeout(() => toastModal.classList.add('hidden'), 200);
+    };
+
+    closeToastBtn.onclick = closeAction;
+    toastModal.onclick = (e) => { if (e.target === toastModal) closeAction(); };
+}
+</script>
     <!-- DOMAIN PROTECTION LOCK SCRIPT -->
     <script>
     (function() {
@@ -939,8 +1011,8 @@
             const checkboxes = document.querySelectorAll('#panelModul input[name="dimensiProfil"]:checked');
             const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
 
-            if(!topik) return alert("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!");
-            if(checkboxes.length === 0) return alert("Silakan centang minimal satu Target Dimensi Profil Lulusan!");
+           if(!topik) return showCustomToast("Silakan masukkan Topik / Materi Pokok Pembahasan terlebih dahulu!", "warning", "Input Belum Lengkap");
+            if(checkboxes.length === 0) return showCustomToast("Silakan centang minimal satu Target Dimensi Profil Lulusan!", "warning", "Input Belum Lengkap");
 
             processModulBtn.disabled = true;
             processModulBtn.textContent = "AI Sedang Merumuskan Modul Ajar...";
@@ -1005,9 +1077,11 @@
                         });
                         const parsedJson = JSON.parse(sanitizedJson);
                         modulAjarGeneratedContent = parsedJson.modul_markdown || cleanText;
-                    } catch(err) {
-                        modulAjarGeneratedContent = cleanText;
-                    }
+                    try {
+                // ...
+            } catch (err) { 
+                showCustomToast("Gagal merumuskan modul: " + err.message, "error", "Gagal Memproses Modul"); 
+            }
                 } else {
                     modulAjarGeneratedContent = cleanText;
                 }
