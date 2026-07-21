@@ -820,85 +820,94 @@
          * yang mendukung superskrip (^), subskrip (_), dan simbol matematika untuk ekspor Word (.docx).
          */
         function formatMathToTextRuns(text, docx, customFont, customSize) {
-          const { TextRun } = docx;
-          const parsed = parseMathTextRuns(text);
-          const runs = [];
+  const { TextRun } = docx;
+  const parsed = parseMathTextRuns(text);
+  const runs = [];
 
-          parsed.forEach(item => {
-            if (item.type === 'text') {
-              runs.push(new TextRun({ text: item.value, font: customFont, size: customSize }));
-            } else {
-              // Konversi ekspresi matematika LaTeX menjadi format yang bersih
-              let mathVal = item.value;
+  parsed.forEach(item => {
+    if (item.type === 'text') {
+      runs.push(new TextRun({ text: item.value, font: customFont, size: customSize }));
+    } else {
+      let mathVal = item.value;
 
-              // Penggantian simbol umum LaTeX ke Unicode
-              mathVal = mathVal
-                .replace(/\\times/g, '×')
-                .replace(/\\div/g, '÷')
-                .replace(/\\pm/g, '±')
-                .replace(/\\leq/g, '≤')
-                .replace(/\\geq/g, '≥')
-                .replace(/\\neq/g, '≠')
-                .replace(/\\infty/g, '∞')
-                .replace(/\\pi/g, 'π')
-                .replace(/\\alpha/g, 'α')
-                .replace(/\\beta/g, 'β')
-                .replace(/\\theta/g, 'θ')
-                .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1/$2)');
+      // --- CLEANUP SINTAKS LATEX TABEL & MACRO KHUSUS ---
+      mathVal = mathVal
+        .replace(/\\text\{([^}]+)\}/g, '$1')       // \text{Nilai} -> Nilai
+        .replace(/\\bar\{([^}]+)\}/g, '$1̄')        // \bar{x} -> x̄
+        .replace(/\\begin\{array\}\{[^}]+\}/g, '') // Hapus \begin{array}{...}
+        .replace(/\\end\{array\}/g, '')           // Hapus \end{array}
+        .replace(/\\hline/g, '')                  // Hapus \hline
+        .replace(/\\\\/g, ' | ')                   // Ganti \\ (baris baru tabel) jadi pemisah '|'
+        .replace(/&/g, ' = ');                     // Ganti & jadi '='
 
-              // Parsing Pangkat (^) dan Subskrip (_)
-              const subSuperRegex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z]+)|_\{([^}]+)\}|_([0-9a-zA-Z]+))/g;
-              let lastIdx = 0;
-              let subMatch;
+      // Penggantian simbol umum LaTeX ke Unicode
+      mathVal = mathVal
+        .replace(/\\times/g, '×')
+        .replace(/\\div/g, '÷')
+        .replace(/\\pm/g, '±')
+        .replace(/\\leq/g, '≤')
+        .replace(/\\geq/g, '≥')
+        .replace(/\\neq/g, '≠')
+        .replace(/\\infty/g, '∞')
+        .replace(/\\pi/g, 'π')
+        .replace(/\\alpha/g, 'α')
+        .replace(/\\beta/g, 'β')
+        .replace(/\\theta/g, 'θ')
+        .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+        .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1/$2)');
 
-              while ((subMatch = subSuperRegex.exec(mathVal)) !== null) {
-                if (subMatch.index > lastIdx) {
-                  runs.push(new TextRun({
-                    text: mathVal.slice(lastIdx, subMatch.index),
-                    font: customFont,
-                    size: customSize,
-                    italics: true
-                  }));
-                }
+      // Parsing Pangkat (^) dan Subskrip (_)
+      const subSuperRegex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z]+)|_\{([^}]+)\}|_([0-9a-zA-Z]+))/g;
+      let lastIdx = 0;
+      let subMatch;
 
-                const supVal = subMatch[2] || subMatch[3];
-                const subVal = subMatch[4] || subMatch[5];
-
-                if (supVal) {
-                  runs.push(new TextRun({
-                    text: supVal,
-                    font: customFont,
-                    size: customSize,
-                    superScript: true,
-                    italics: true
-                  }));
-                } else if (subVal) {
-                  runs.push(new TextRun({
-                    text: subVal,
-                    font: customFont,
-                    size: customSize,
-                    subScript: true,
-                    italics: true
-                  }));
-                }
-
-                lastIdx = subSuperRegex.lastIndex;
-              }
-
-              if (lastIdx < mathVal.length) {
-                runs.push(new TextRun({
-                  text: mathVal.slice(lastIdx),
-                  font: customFont,
-                  size: customSize,
-                  italics: true
-                }));
-              }
-            }
-          });
-
-          return runs;
+      while ((subMatch = subSuperRegex.exec(mathVal)) !== null) {
+        if (subMatch.index > lastIdx) {
+          runs.push(new TextRun({
+            text: mathVal.slice(lastIdx, subMatch.index),
+            font: customFont,
+            size: customSize,
+            italics: true
+          }));
         }
+
+        const supVal = subMatch[2] || subMatch[3];
+        const subVal = subMatch[4] || subMatch[5];
+
+        if (supVal) {
+          runs.push(new TextRun({
+            text: supVal,
+            font: customFont,
+            size: customSize,
+            superScript: true,
+            italics: true
+          }));
+        } else if (subVal) {
+          runs.push(new TextRun({
+            text: subVal,
+            font: customFont,
+            size: customSize,
+            subScript: true,
+            italics: true
+          }));
+        }
+
+        lastIdx = subSuperRegex.lastIndex;
+      }
+
+      if (lastIdx < mathVal.length) {
+        runs.push(new TextRun({
+          text: mathVal.slice(lastIdx),
+          font: customFont,
+          size: customSize,
+          italics: true
+        }));
+      }
+    }
+  });
+
+  return runs;
+}
 
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
@@ -1180,13 +1189,13 @@ Kriteria Jumlah Soal:
 - Total Pilihan Ganda harus tepat ${totalPGMinta} soal dengan rincian kognitif: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
 - Total Uraian/Essay harus tepat ${totalEssayMinta} soal.
 
-📐 ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
-1. Pembungkus Notasi Matematika: Selalu bungkus ekspresi matematika dengan simbol $ ... $ (inline) atau $$ ... $$ (block math). Contoh: $x^2 + 2x - 5 = 0$ atau $\\frac{a}{b}$.
-2. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^{ } dan _{ }. Contoh: $x^{2}$, $a_{n}$, $f(x) = 3x^{3} - 2x + 5$, $H_{2}O$.
-3. PECAHAN & AKAR: Tulis pecahan dengan sintaks \\frac{a}{b}, dan akar dengan \\sqrt{x}.
-4. SIMBOL MATEMATIKA & LOGIKA: Gunakan simbol LaTeX standar seperti \\times, \\div, \\pm, \\leq, \\geq, \\neq, \\infty, \\pi, \\theta, \\alpha, \\beta, \\sum, \\int, \\lim, \\log, \\sin, \\cos, \\tan.
-5. PERSIAPAN EXPORT DOCX: Pastikan setiap ekspresi matematika, persamaan linear, kuadrat, matriks, trigonometri, limit, dan kalkulus dituliskan secara lengkap dan tidak terpotong.
-6. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid dan tidak error saat di-parse.
+ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
+1. DILARANG MENGGUNAKAN SINTAKS TABEL LATEX seperti \\begin{array}, \\begin{matrix}, \\hline, \\text{...}, atau \\bar{...}!
+2. Jika ada data tabel atau frekuensi, sajikan dalam bentuk teks biasa yang rapi dan mudah dibaca. Contoh:
+   "Nilai (x) dan Frekuensi (f): [70: 3], [80: 4], [90: 2], [100: 1]" atau tulisan rata-rata menggunakan simbol "x̄" atau "mean (x̄)".
+3. Pembungkus Notasi Matematika Sederhana: Gunakan $ ... $ untuk persamaan matematika biasa. Contoh: $x^2 + 2x - 5 = 0$ atau $\\frac{a}{b}$.
+4. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^{ } dan _{ }. Contoh: $x^{2}$, $a_{n}$, $f(x) = 3x^{3} - 2x + 5$.
+5. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid.
 
 📋 ATURAN FORMAT OPSI & JSON:
 - Jangan tambahkan prefiks huruf (A, B, C, D, E) pada teks opsi pilihan ganda.
