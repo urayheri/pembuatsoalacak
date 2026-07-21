@@ -287,7 +287,7 @@
                         </div>
                     </div>
                     <button id="processAcakBtn" disabled class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-md shadow-emerald-600/20 cursor-pointer text-xs transform active:scale-95">
-                        ⚡ Proses & Unduh Paket Soal Acak
+                        📝 Acak & Ekspor ke ZIP
                     </button>
                 </div>
             </div>
@@ -508,7 +508,7 @@
 
                 <h4 class="font-bold text-slate-800 text-xs">✨ Keunggulan Utama Platform Ini:</h4>
                 <ul class="space-y-2 list-disc list-inside text-slate-700">
-                    <li><strong class="text-slate-800">Pemrosesan Lokal & Aman:</strong> File Excel dan dokumen Anda dipproses langsung di browser tanpa menyimpan data kerahasiaan sekolah ke server luar.</li>
+                    <li><strong class="text-slate-800">Pemrosesan Lokal & Aman:</strong> File Excel dan dokumen Anda diproses langsung di browser tanpa menyimpan data kerahasiaan sekolah ke server luar.</li>
                     <li><strong class="text-slate-800">Integrasi Kurikulum Merdeka:</strong> Penyusunan Modul Ajar dan indikator soal disesuaikan secara dinamis dengan Fase, Capaian Pembelajaran, dan Fasilitas Sekolah.</li>
                     <li><strong class="text-slate-800">Export Siap Cetak (.docx):</strong> Hasil acakan atau rumusan AI langsung dikemas ke dalam format Word lengkap dengan pengaturan margin dan kop resmi.</li>
                     <li><strong class="text-slate-800">100% Gratis & Efisien:</strong> Dapat diakses kapan saja oleh seluruh pendidik di Indonesia tanpa biaya berlangganan.</li>
@@ -671,6 +671,16 @@
 
             closeToastBtn.onclick = closeAction;
             toastModal.onclick = (e) => { if (e.target === toastModal) closeAction(); };
+        }
+
+        // FUNGSI UTILITAS PENGACAK ARRAY
+        function shuffleArray(array) {
+            let arr = JSON.parse(JSON.stringify(array));
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
         }
     </script>
 
@@ -1152,7 +1162,7 @@
             previewSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // DOWNLOAD AS WORD (.DOCX) INTEGRATED ENGINE (SUDAH DIPERBAIKI)
+        // FUNGSI CREATEDOCXBLOB PERBAIKAN: DENGAN JUSTIFY, STABILITAS KOP, & KUNCI JAWABAN
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
             const children = []; 
@@ -1187,18 +1197,18 @@
                     const kopGambarElem = document.getElementById('kopGambarInput');
                     const kopGambarFile = kopGambarElem && kopGambarElem.files ? kopGambarElem.files[0] : null;
                     if (kopGambarFile) {
-    try {
-        const bufKop = await kopGambarFile.arrayBuffer();
-        const uint8Kop = new Uint8Array(bufKop);
-        children.push(new Paragraph({ 
-            alignment: AlignmentType.CENTER, 
-            children: [new ImageRun({ data: uint8Kop, transformation: { width: visualKopWidth, height: 95 } })], 
-            spacing: { after: 200 } 
-        }));
-    } catch(e) {
-        console.warn("Gagal memuat gambar Kop:", e);
-    }
-}
+                        try {
+                            const bufKop = await kopGambarFile.arrayBuffer();
+                            const uint8Kop = new Uint8Array(bufKop);
+                            children.push(new Paragraph({ 
+                                alignment: AlignmentType.CENTER, 
+                                children: [new ImageRun({ data: uint8Kop, transformation: { width: visualKopWidth, height: 95 } })], 
+                                spacing: { after: 200 } 
+                            }));
+                        } catch(e) {
+                            console.warn("Gagal memuat gambar Kop:", e);
+                        }
+                    }
                     
                     const hUjian = document.getElementById('ujianHeader').value; 
                     const hTahun = document.getElementById('ujianTahun').value;
@@ -1435,64 +1445,67 @@
             });
             return await window.docx.Packer.toBlob(doc);
         }
+
+        // EVENT LISTENER MODE 1 (PERBAIKAN LENGKAP DENGAN TRY CATCH FINALLY)
         processAcakBtn.addEventListener('click', async () => {
-    const numPackets = parseInt(packetCount.value);
-    const zip = new JSZip(); 
-    const labels = ['A', 'B', 'C', 'D', 'E'];
-    const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
-    const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
-    
-    processAcakBtn.disabled = true;
-    processAcakBtn.textContent = "Sedang mengacak...";
-
-    try {
-        for (let p = 0; p < numPackets; p++) {
-            const packetLetter = String.fromCharCode(65 + p);
-            let shuffledPG = shuffleArray(originalPGQuestions); 
-            let shuffledEssay = shuffleArray(originalEssayQuestions); 
+            const numPackets = parseInt(packetCount.value);
+            const zip = new JSZip(); 
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+            const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
+            const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
             
-            if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
-            if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
+            processAcakBtn.disabled = true;
+            processAcakBtn.textContent = "Sedang mengacak...";
 
-            const processedPG = shuffledPG.map(q => {
-                const shuffledOptions = shuffleArray(q.opsi); 
-                let newKey = '';
-                shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
-                return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
-            });
+            try {
+                for (let p = 0; p < numPackets; p++) {
+                    const packetLetter = String.fromCharCode(65 + p);
+                    let shuffledPG = shuffleArray(originalPGQuestions); 
+                    let shuffledEssay = shuffleArray(originalEssayQuestions); 
+                    
+                    if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
+                    if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
 
-            // Cetak Dokumen Soal
-            const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
-            zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
+                    const processedPG = shuffledPG.map(q => {
+                        const shuffledOptions = shuffleArray(q.opsi); 
+                        let newKey = '';
+                        shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
+                        return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
+                    });
 
-            // Cetak Dokumen Kunci Jawaban
-            const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
-            zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
-        }
+                    // Cetak Dokumen Soal
+                    const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
+                    zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
 
-        const base64Content = await zip.generateAsync({ type: 'base64' });
-        const dataUri = "data:application/zip;base64," + base64Content;
-        
-        const element = document.createElement('a');
-        element.href = dataUri;
-        element.download = "Paket_Ujian_Acak_Final.zip";
-        element.target = "_blank";
-        document.body.appendChild(element); 
-        element.click();
-        document.body.removeChild(element);
+                    // Cetak Dokumen Kunci Jawaban
+                    const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
+                    zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
+                }
 
-    } catch (err) {
-        if (typeof showCustomToast === 'function') {
-            showCustomToast("Gagal memproses acak soal: " + err.message, "error");
-        } else {
-            alert("Gagal memproses acak soal: " + err.message);
-        }
-    } finally {
-        // Tombol PASTI kembali aktif walaupun terjadi error
-        processAcakBtn.disabled = false;
-        processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
-    }
-});
+                const base64Content = await zip.generateAsync({ type: 'base64' });
+                const dataUri = "data:application/zip;base64," + base64Content;
+                
+                const element = document.createElement('a');
+                element.href = dataUri;
+                element.download = "Paket_Ujian_Acak_Final.zip";
+                element.target = "_blank";
+                document.body.appendChild(element); 
+                element.click();
+                document.body.removeChild(element);
+
+            } catch (err) {
+                if (typeof showCustomToast === 'function') {
+                    showCustomToast("Gagal memproses acak soal: " + err.message, "error");
+                } else {
+                    alert("Gagal memproses acak soal: " + err.message);
+                }
+            } finally {
+                // Tombol PASTI kembali aktif walaupun terjadi error
+                processAcakBtn.disabled = false;
+                processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
+            }
+        });
+
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
             try {
@@ -1605,7 +1618,7 @@
                 lblWorkspaceModes: "Panel Kerja Mengajar", txtTabAcak: "Mode 1: Pengacak Paket Soal", txtTabBuat: "Mode 2: Pembuat Soal AI",
                 lblLayoutConfig: "Format Margin & Dokumen Cetak", lblTypography: "Jenis Font Dokumen", lblFontSize: "Ukuran (pt)",
                 lblMargin: "Margin Kertas (cm)", lblCanvasGeo: "Ukuran Kertas Lembar Kerja", lblBlueprints: "Unduh Master Template Excel",
-                lblInstitutionalManifest: "Atribut Kepala Surat / Kop Lembar Kerja", btnProcessAcak: "⚡ Proses & Unduh Paket Soal Acak",
+                lblInstitutionalManifest: "Atribut Kepala Surat / Kop Lembar Kerja", btnProcessAcak: "📝 Acak & Ekspor ke ZIP",
                 lblCognitiveTitle: "Parameter Pembuatan Soal Berbasis Otomasi AI", btnProcessGenerate: "✨ Buat Soal Otomatis",
                 previewTitle: "Pratinjau Hasil Penyusunan Dokumen", btnExportSingleWord: "📥 Download File Word (.docx)"
             },
@@ -1614,7 +1627,7 @@
                 lblWorkspaceModes: "Teacher Assistant Menu", txtTabAcak: "Mode 1: Question Packet Shuffler", txtTabBuat: "Mode 2: AI Question Generator",
                 lblLayoutConfig: "Margin & Document Print Format", lblTypography: "Document Font Family", lblFontSize: "Size (pt)",
                 lblMargin: "Paper Margin (cm)", lblCanvasGeo: "Worksheet Paper Geometry", lblBlueprints: "Download Master Excel Sheets",
-                lblInstitutionalManifest: "Header Attributes / Worksheet Kop", btnProcessAcak: "⚡ Process & Download Shuffled Packets",
+                lblInstitutionalManifest: "Header Attributes / Worksheet Kop", btnProcessAcak: "📝 Shuffle & Export ZIP",
                 lblCognitiveTitle: "AI-Based Automatic Question Generation Parameters", btnProcessGenerate: "✨ Generate Questions Automatically",
                 previewTitle: "Document Compilation Preview", btnExportSingleWord: "📥 Download Word File (.docx)"
             }
