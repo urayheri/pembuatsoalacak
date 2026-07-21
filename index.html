@@ -945,36 +945,34 @@
             processModulBtn.disabled = true;
             processModulBtn.textContent = "AI Sedang Merumuskan Modul Ajar...";
 
-            const proxyUrl = "[https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec](https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec)";
+            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI yang sangat teliti dan berpengalaman. 
+            // Prompt dibuat efisien agar ukuran payload request aman dari error 405
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) lengkap siap cetak dengan parameter:
+            - Mata Pelajaran: ${mapel}
+            - Jenjang/Fase: ${fase}
+            - Topik Pokok: ${topik}
+            - Alokasi Waktu: ${waktu}
+            - Profil Lulusan: ${profilTerpilih}
+            - Fasilitas: ${fasilitas}
 
-Tugas Anda adalah menyusun dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) yang sangat lengkap, mendalam, dan siap cetak berdasarkan parameter berikut:
-
-📌 PARAMETER MODUL:
-- Mata Pelajaran: ${mapel}
-- Jenjang / Fase: ${fase}
-- Topik / Materi Pokok: ${topik}
-- Alokasi Waktu: ${waktu}
-- Target Dimensi Profil Lulusan: ${profilTerpilih}
-- Kondisi Fasilitas Sekolah: ${fasilitas}
-
-📋 STRUKTUR DOKUMEN YANG WAJIB DIHASILKAN:
-I. INFORMASI UMUM (Identitas, Kompetensi Awal, Profil Lulusan, Sarana & Prasarana, Target Peserta Didik, Model Pembelajaran).
-II. KOMPONEN INTI (Tujuan Pembelajaran, Pemahaman Bermakna, Pertanyaan Pemantik, Kegiatan Pembelajaran Rinci [Pendahuluan, Inti, Penutup], Asesmen/Penilaian Formatif & Sumatif beserta Rubrik).
-III. LAMPIRAN (Lembar Kerja Peserta Didik / LKPD Ringkas, Bahan Bacaan Guru & Siswa, Glosarium, Daftar Pustaka).
-
-⚠️ ATURAN PENULISAN:
-1. Buat penjelasan kegiatan pembelajaran secara operasional dan rinci (bukan sekadar poin singkat).
-2. Sesuaikan metode dan media dengan Kondisi Fasilitas Sekolah yang dipilih.
-3. Tuliskan dalam bentuk TEKS DOKUMEN UTUH LENGKAP dari awal sampai akhir.
-4. PENTING: Jangan gunakan format JSON, jangan gunakan markdown code block (\`\`\`), dan langsung berikan naskah dokumennya saja.`;
+            Tuliskan dokumen utuh lengkap (Informasi Umum, Komponen Inti, Kegiatan Pembelajaran, Asesmen, Lampiran). PENTING: Langsung berikan naskah dokumennya saja, TANPA JSON dan TANPA markdown codeblock.`;
 
             try {
-                const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }) });
+                // Menggunakan text/plain untuk menghindari pemicu preflight CORS / 405 di Apps Script
+                const response = await fetch(proxyUrl, { 
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }) 
+                });
+
                 const rawText = await response.text();
                 
-                // Ambil respons teks utama dari struktur Gemini AI
+                // Jika balasan ternyata halaman error HTML (seperti 405/500)
+                if (rawText.includes("405 Not Allowed") || rawText.includes("<html") || rawText.includes("<!DOCTYPE")) {
+                    throw new Error("Server Apps Script menolak permintaan (HTTP 405). Silakan pastikan deployment Apps Script sudah di-set ke 'Anyone' (Siapa Saja).");
+                }
+
                 let aiResponseText = "";
                 try {
                     const parsedRaw = JSON.parse(rawText);
@@ -983,34 +981,28 @@ III. LAMPIRAN (Lembar Kerja Peserta Didik / LKPD Ringkas, Bahan Bacaan Guru & Si
                     aiResponseText = rawText;
                 }
 
-                // Bersihkan pembungkus Markdown jika ada
-                cleanText = aiResponseText
+                let cleanText = aiResponseText
                     .replace(/^```(json|markdown)?/i, '')
                     .replace(/```$/, '')
                     .trim();
 
-                // Jika respons AI berupa JSON, coba ambil string modul_markdown-nya
                 if (cleanText.startsWith('{') && cleanText.endsWith('}')) {
                     try {
-                        // Perbaiki unescaped control character/backslash sebelum parse
-                        const sanitizedJson = cleanText
-                            .replace(/[\u0000-\u001F]+/g, (match) => {
-                                if (match === '\n') return '\\n';
-                                if (match === '\r') return '\\r';
-                                if (match === '\t') return '\\t';
-                                return '';
-                            });
+                        const sanitizedJson = cleanText.replace(/[\u0000-\u001F]+/g, (match) => {
+                            if (match === '\n') return '\\n';
+                            if (match === '\r') return '\\r';
+                            if (match === '\t') return '\\t';
+                            return '';
+                        });
                         const parsedJson = JSON.parse(sanitizedJson);
                         modulAjarGeneratedContent = parsedJson.modul_markdown || cleanText;
                     } catch(err) {
-                        // Jika JSON parse gagal, gunakan teks bersih secara langsung
                         modulAjarGeneratedContent = cleanText;
                     }
                 } else {
                     modulAjarGeneratedContent = cleanText;
                 }
 
-                // Hapus cetak tebal markdown (*) agar tampilan rapi saat masuk ke Word
                 modulAjarGeneratedContent = modulAjarGeneratedContent.replace(/\*\*/g, "").replace(/\*/g, "");
 
                 previewSection.classList.remove('hidden');
@@ -1036,7 +1028,6 @@ III. LAMPIRAN (Lembar Kerja Peserta Didik / LKPD Ringkas, Bahan Bacaan Guru & Si
                 processModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI"; 
             }
         });
-
         function getEssayLabel(index, style) { return style === "huruf" ? String.fromCharCode(65 + (index % 26)) + ". " : (index + 1) + ". "; }
 
         function renderEditorUI() {
