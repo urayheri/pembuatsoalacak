@@ -1162,7 +1162,7 @@
             previewSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // FUNGSI CREATEDOCXBLOB PERBAIKAN: DENGAN JUSTIFY, STABILITAS KOP, & KUNCI JAWABAN
+        // FUNGSI CREATEDOCXBLOB PERBAIKAN: SANITASI OPSI GANDA & KOP SURAT RAPI
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
             const children = []; 
@@ -1175,6 +1175,13 @@
             const dxaWidth = Math.round((sizeMode === "F4" ? 215 : 210) * 56.7);
             const dxaHeight = Math.round((sizeMode === "F4" ? 330 : 297) * 56.7);
             const visualKopWidth = sizeMode === "F4" ? 620 : 600;
+
+            // FUNGSI PEMBERSIH HURUF AWAL PADA OPSI (Mencegah "A. A.")
+            const cleanOptionText = (text) => {
+                if (!text) return "";
+                let str = text.toString().trim();
+                return str.replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
+            };
 
             // 1. PENANGANAN MODUL AJAR
             if (typeof activeTab !== 'undefined' && activeTab === "modul") {
@@ -1203,24 +1210,24 @@
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.CENTER, 
                                 children: [new ImageRun({ data: uint8Kop, transformation: { width: visualKopWidth, height: 95 } })], 
-                                spacing: { after: 200 } 
+                                spacing: { after: 150 } 
                             }));
                         } catch(e) {
                             console.warn("Gagal memuat gambar Kop:", e);
                         }
+                    } else {
+                        const hUjian = document.getElementById('ujianHeader').value; 
+                        const hTahun = document.getElementById('ujianTahun').value;
+                        children.push(
+                            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hUjian, bold: true, size: titleSize, font: customFont })] }),
+                            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hTahun, bold: true, size: titleSize, font: customFont })], spacing: { after: 150 } })
+                        );
                     }
-                    
-                    const hUjian = document.getElementById('ujianHeader').value; 
-                    const hTahun = document.getElementById('ujianTahun').value;
-                    children.push(
-                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hUjian, bold: true, size: titleSize, font: customFont })] }),
-                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: hTahun, bold: true, size: titleSize, font: customFont })], spacing: { after: 200 } })
-                    );
                     
                     const mapel = document.getElementById('attrMapel').value || "-"; 
                     const kelas = document.getElementById('attrKelas').value || "-";
-                    const hari = document.getElementById('attrHari').value || ""; 
-                    const waktu = document.getElementById('attrWaktu').value || "";
+                    const hari = document.getElementById('attrHari').value || "-"; 
+                    const waktu = document.getElementById('attrWaktu').value || "-";
                     
                     const attrTable = new Table({
                         width: { size: 100, type: WidthType.PERCENTAGE },
@@ -1233,26 +1240,26 @@
                             new TableRow({
                                 children: [
                                     new TableCell({ width: { size: 55, type: WidthType.PERCENTAGE }, children: [
-                                        new Paragraph({ children: [new TextRun({ text: `Mata Pelajaran : ${mapel}`, font: customFont, size: customSize })] }),
-                                        new Paragraph({ children: [new TextRun({ text: `Kelas / Jurusan : ${kelas}`, font: customFont, size: customSize })] })
+                                        new Paragraph({ children: [new TextRun({ text: `Mata Pelajaran : ${mapel}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
+                                        new Paragraph({ children: [new TextRun({ text: `Kelas / Jurusan : ${kelas}`, font: customFont, size: customSize })], spacing: { after: 40 } })
                                     ]}),
                                     new TableCell({ width: { size: 45, type: WidthType.PERCENTAGE }, children: [
-                                        new Paragraph({ children: [new TextRun({ text: `Hari / Tanggal  : ${hari}`, font: customFont, size: customSize })] }),
-                                        new Paragraph({ children: [new TextRun({ text: `Waktu           : ${waktu}`, font: customFont, size: customSize })] })
+                                        new Paragraph({ children: [new TextRun({ text: `Hari / Tanggal  : ${hari}`, font: customFont, size: customSize })], spacing: { after: 40 } }),
+                                        new Paragraph({ children: [new TextRun({ text: `Waktu           : ${waktu}`, font: customFont, size: customSize })], spacing: { after: 40 } })
                                     ]})
                                 ]
                             })
                         ]
                     });
                     children.push(attrTable);
-                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "___________________________________________________________________________", bold: true, font: customFont, size: customSize })], spacing: { after: 300 } }));
+                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "_________________________________________________________________________________", bold: true, font: customFont, size: customSize })], spacing: { after: 250 } }));
                 } else {
-                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: title.toUpperCase(), bold: true, size: titleSize, font: customFont })], spacing: { after: 300 } }));
+                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: title.toUpperCase(), bold: true, size: titleSize, font: customFont })], spacing: { after: 250 } }));
                 }
 
                 const labels = ['A', 'B', 'C', 'D', 'E'];
 
-                // 3. JIKA DOKUMEN KHUSUS KUNCI JAWABAN (MODE ZIP SEPARATE)
+                // 3. JIKA DOKUMEN KHUSUS KUNCI JAWABAN
                 if (isAnswerKey) {
                     if (pgData && pgData.length > 0) {
                         children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { after: 150 } }));
@@ -1293,15 +1300,18 @@
                         });
                     }
                 } 
-                // 4. JIKA DOKUMEN NASKAH SOAL (LENGKAP DENGAN PILIHAN GANDA, ESSAY, DAN KUNCI LAMPIRAN DI BAWAH)
+                // 4. NASKAH SOAL UTAMA
                 else {
                     if (pgData && pgData.length > 0) {
                         children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
                         
                         pgData.forEach((q, index) => {
-                            const targetOptions = q.shuffledOptions || q.opsi || [];
+                            const rawOptions = q.shuffledOptions || q.opsi || [];
                             
-                            // Teks Soal -> ALIGNMENT: JUSTIFIED (RATA KIRI KANAN)
+                            // Bersihkan huruf opsi ganda bawaan
+                            const targetOptions = rawOptions.map(o => typeof o === 'object' ? cleanOptionText(o.teks) : cleanOptionText(o));
+
+                            // Teks Soal -> ALIGNMENT: JUSTIFIED
                             children.push(new Paragraph({ 
                                 alignment: AlignmentType.JUSTIFIED,
                                 indent: { left: 360, hanging: 360 }, 
@@ -1312,13 +1322,12 @@
                                 spacing: { before: 120, after: 80 } 
                             }));
                             
-                            let totalOptLen = targetOptions.reduce((acc, o) => acc + (typeof o === 'object' ? (o.teks || "") : o).toString().length, 0);
+                            let totalOptLen = targetOptions.reduce((acc, o) => acc + o.length, 0);
                             
                             if (totalOptLen < 80 && targetOptions.length > 0) {
                                 // Opsi Menyamping 1 Baris
                                 const runChildren = []; 
-                                targetOptions.forEach((opt, oIdx) => { 
-                                    const optText = typeof opt === 'object' ? opt.teks : opt;
+                                targetOptions.forEach((optText, oIdx) => { 
                                     runChildren.push(
                                         new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), 
                                         new TextRun({ text: optText, font: customFont, size: customSize })
@@ -1333,13 +1342,13 @@
                             } else if (totalOptLen >= 80 && totalOptLen < 160 && targetOptions.length > 0) {
                                 // Opsi 2 Kolom
                                 for(let i = 0; i < targetOptions.length; i += 2) {
-                                    const optText1 = typeof targetOptions[i] === 'object' ? targetOptions[i].teks : targetOptions[i];
+                                    const optText1 = targetOptions[i];
                                     const runChildren = [
                                         new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }), 
                                         new TextRun({ text: optText1, font: customFont, size: customSize })
                                     ];
                                     if (i + 1 < targetOptions.length) {
-                                        const optText2 = typeof targetOptions[i+1] === 'object' ? targetOptions[i+1].teks : targetOptions[i+1];
+                                        const optText2 = targetOptions[i+1];
                                         runChildren.push(
                                             new TextRun({ text: `\t${labels[i+1]}. `, bold: true, font: customFont, size: customSize }), 
                                             new TextRun({ text: optText2, font: customFont, size: customSize })
@@ -1348,9 +1357,8 @@
                                     children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 4600 }], indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
                                 }
                             } else {
-                                // Opsi Berurutan Ke Bawah -> ALIGNMENT: JUSTIFIED
-                                targetOptions.forEach((opt, oIdx) => { 
-                                    const optText = typeof opt === 'object' ? opt.teks : opt;
+                                // Opsi Berurutan Ke Bawah
+                                targetOptions.forEach((optText, oIdx) => { 
                                     children.push(new Paragraph({ 
                                         alignment: AlignmentType.JUSTIFIED,
                                         indent: { left: 720, hanging: 360 }, 
@@ -1380,7 +1388,7 @@
                         });
                     }
 
-                    // LAMPIRAN KUNCI JAWABAN DI HALAMAN BELAKANG NASKAH
+                    // LAMPIRAN KUNCI JAWABAN DI HALAMAN BELAKANG
                     children.push(
                         new Paragraph({
                             children: [new TextRun({ text: "--------------------------------------------------------------------------------------------------", font: customFont, size: customSize })],
@@ -1445,7 +1453,6 @@
             });
             return await window.docx.Packer.toBlob(doc);
         }
-
         // EVENT LISTENER MODE 1 (PERBAIKAN LENGKAP DENGAN TRY CATCH FINALLY)
         processAcakBtn.addEventListener('click', async () => {
             const numPackets = parseInt(packetCount.value);
