@@ -126,23 +126,30 @@
         </div>
     </header>
 
-    <!-- HERO BANNER PROMOSI DENGAN MASKOT PNG -->
-    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner relative overflow-hidden">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-            <div class="space-y-2 max-w-xl text-center md:text-left">
-                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Otomasi Pendidikan 2026</span>
-                <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Solusi Cerdas Menyusun Soal & Modul Ajar Kurikulum Merdeka</h2>
-                <p class="text-xs text-emerald-100/90 leading-relaxed">Hemat hingga 80% waktu administrasi mengajar Anda. Proses aman secara lokal tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
-            </div>
+    <!-- HERO BANNER PROMOSI DENGAN MASKOT INTERAKTIF -->
+<div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner relative overflow-hidden">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+        <div class="space-y-2 max-w-xl text-center md:text-left">
+            <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Otomasi Pendidikan 2026</span>
+            <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Solusi Cerdas Menyusun Soal & Modul Ajar Kurikulum Merdeka</h2>
+            <p class="text-xs text-emerald-100/90 leading-relaxed">Hemat hingga 80% waktu administrasi mengajar Anda. Proses aman secara lokal tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
+        </div>
+        
+        <!-- MASKOT HERO INTERAKTIF WITH POP-UP TRIGGER -->
+        <div class="shrink-0 relative group cursor-pointer" id="heroMascotTrigger" title="Klik untuk melihat Keunggulan Web">
             
-            <!-- GAMBAR PNG MASKOT HERO -->
-            <div class="shrink-0 relative">
-                <div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/20 flex items-center justify-center p-2 shadow-2xl animate-float-slow">
-                    <img src="teacher-hero.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>';" alt="Maskot Guru AI" class="w-full h-full object-contain filter drop-shadow-lg">
-                </div>
+            <!-- Tulisan Pop-up/Badge Melayang di Atas Maskot -->
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-20 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-[10px] px-3 py-1 rounded-full shadow-lg border border-amber-200 flex items-center gap-1.5 animate-bounce whitespace-nowrap">
+                <span>✨ Keunggulan Web</span>
+            </div>
+
+            <!-- Ring Lingkaran Maskot -->
+            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/10 backdrop-blur-md border-2 border-emerald-300/40 hover:border-amber-300 flex items-center justify-center p-2 shadow-2xl transition-all duration-300 group-hover:scale-105 group-hover:bg-white/20">
+                <img src="teacher-hero.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>';" alt="Maskot Guru AI" class="w-full h-full object-contain filter drop-shadow-lg transition-transform duration-300 group-hover:rotate-2">
             </div>
         </div>
     </div>
+</div>
 
     <!-- MAIN DASHBOARD WINDOW -->
     <main class="container mx-auto px-4 py-8 max-w-5xl flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -790,6 +797,13 @@
                 reader.readAsArrayBuffer(file);
             }
         });
+        // Membuka Pop-up Keunggulan Web saat Maskot/Badge diklik
+const heroMascotTrigger = document.getElementById('heroMascotTrigger');
+if (heroMascotTrigger) {
+    heroMascotTrigger.addEventListener('click', () => {
+        devStatementModal.classList.remove('hidden');
+    });
+}
 
         excelInput.addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
