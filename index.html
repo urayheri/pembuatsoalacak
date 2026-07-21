@@ -1345,7 +1345,7 @@ Format Output JSON Harus Seperti Ini:
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) utuh, sangat rinci, dan siap cetak.
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) yang SANGAT RINCI, EKSTENSIF, KOMPREHENSIF, dan siap cetak (minimal setara 6-10 halaman dokumen Word jika dicetak). Jangan membuat ringkasan yang terlalu singkat; berikan uraian narasi yang mendalam dan profesional.
 
 📌 DATA ADMINISTRASI UTAMA:
 - Nama Guru: ${namaGuru}
@@ -1358,73 +1358,34 @@ Format Output JSON Harus Seperti Ini:
 - Topik / Materi: ${topik}
 - Alokasi Waktu: ${waktu}
 
-⚠️ ATURAN STRICT FORMATTING (SANGAT PENTING)
+📋 STRUKTUR DOKUMEN WAJIB YANG SANGAT DETAIL:
 
-1. DILARANG KERAS menggunakan sintaks LaTeX atau Math Block (contoh: $$, \(...\), \[...\], \begin{array}, \frac, \sum, dan sintaks matematika lainnya). Gunakan teks biasa, simbol Unicode yang diperlukan, dan Tabel Markdown murni (| Header | Header |).
+BAGIAN A: TABEL GRID UTAMA DESAIN INSTRUKSIONAL (2 KOLOM)
+Sajikan dalam format tabel markdown 2 kolom yang memuat:
+1. IDENTITAS (Lengkap data guru, sekolah, waktu, fase).
+2. IDENTIFIKASI (Analisis Kesiapan Peserta Didik secara naratif mendalam; Analisis Karakteristik Materi Konseptual & Prosedural; Tabel 8 Dimensi Profil Lulusan/DPL dengan tanda [✓]).
+3. DESAIN PEMBELAJARAN (Capaian Pembelajaran/CP, Tujuan Pembelajaran/TP yang operasional, Praktik Pedagogis, Kemitraan, Lingkungan Belajar, dan Pemanfaatan Digital secara spesifik).
+4. PENGALAMAN BELAJAR MENYELURUH:
+   - A. Memahami (Kegiatan Awal 15-20 menit): Uraikan narasi pembuka, doa, apersepsi bermakna, teknik kesadaran penuh (STOP), dan pelaksanaan Tes Awal diagnostik.
+   - B. Mengaplikasikan (Kegiatan Inti 75+ menit): Uraikan secara rinci langkah demi langkah berbasis sintaks model pembelajaran (Orientasi Masalah dengan pertanyaan pemantik, Identifikasi Masalah, Pengumpulan Data dari berbagai sumber, Pengolahan Data di LKPD, Pembuktian/Presentasi interaktif, dan Penarikan Kesimpulan).
+   - C. Merefleksikan (Kegiatan Penutup 10-15 menit): Uraikan refleksi proses oleh murid, umpan balik konstruktif, tindak lanjut, dan penutup.
 
-2. Tabel Grid Utama HANYA digunakan dari Seksi 1 (Identitas) sampai Seksi 4 (Pengalaman Belajar).
-
-3. Seluruh seksi setelah Pengalaman Belajar (Bahan Ajar, Asesmen, Rubrik, Pengayaan, Remedial, Refleksi, Lampiran, dan Tanda Tangan) WAJIB ditulis DI LUAR TABEL GRID UTAMA menggunakan heading dan tabel terpisah sesuai kebutuhan.
-
-4. Seluruh isi dokumen ditulis dalam bahasa Indonesia yang baku sesuai Pedoman Umum Ejaan Bahasa Indonesia (PUEBI).
-
-5. Penulisan paragraf menggunakan format yang rapi, sistematis, dan mudah dipindahkan ke Microsoft Word tanpa memerlukan perbaikan tata letak.
-
-6. Setiap paragraf ditulis dalam bentuk paragraf utuh (bukan poin-poin yang terpotong), dengan panjang yang proporsional dan konsisten.
-
-7. Jarak antarparagraf menggunakan format Set Multiple 1,5 (Line Spacing 1.5) sebagaimana standar dokumen resmi pendidikan.
-
-8. Seluruh isi paragraf WAJIB menggunakan perataan rata kanan-kiri (Justify), bukan rata kiri.
-
-9. Setiap judul bab menggunakan Heading yang konsisten, sedangkan subjudul menggunakan Heading tingkat berikutnya secara berurutan.
-
-10. Setiap tabel harus menggunakan format Markdown yang bersih, memiliki header yang jelas, dan tidak menggunakan tabel bersarang (nested table).
-
-11. Hindari penggunaan spasi, baris kosong, atau pemisah yang berlebihan agar tampilan dokumen tetap profesional.
-
-12. Penomoran menggunakan format yang konsisten (1., 2., 3. atau a., b., c.) sesuai kebutuhan.
-
-13. Seluruh istilah teknis, nama mata pelajaran, tujuan pembelajaran, asesmen, dan rubrik ditulis secara lengkap tanpa singkatan yang tidak dijelaskan.
-
-14. Bagian Tanda Tangan/Pengesahan WAJIB menggunakan format dokumen resmi sekolah yang rapi, simetris, dan mudah disalin ke Microsoft Word. Posisi tempat dan tanggal berada di sisi kanan, sedangkan kolom tanda tangan Kepala Sekolah dan Guru Mata Pelajaran dibuat sejajar dengan jarak yang proporsional.
-
-15. Pada bagian pengesahan harus tersedia ruang kosong yang cukup untuk tanda tangan (minimal 4–5 baris), diikuti nama lengkap, gelar, serta NIP apabila tersedia.
-
-16. Jangan menggunakan karakter dekoratif, ASCII Art, emoji, atau simbol yang tidak diperlukan dalam dokumen resmi.
-
-17. Seluruh dokumen harus memiliki tata letak yang konsisten dari awal hingga akhir sehingga siap dicetak tanpa memerlukan penyuntingan format ulang.
-📋 STRUKTUR DOKUMEN WAJIB:
-
-BAGIAN A: TABEL GRID UTAMA DESAIN INSTRUKSIONAL (HANYA 2 KOLOM)
-Sajikan dalam format tabel markdown 2 kolom persis berikut:
-| Seksi & Parameter | Deskripsi & Rincian Operasional Pembelajaran |
-| :--- | :--- |
-| 1. IDENTITAS | Tuliskan Nama Guru, NIP, Satuan Pendidikan, Mapel, Materi, Fase/Kelas, Alokasi Waktu |
-| 2. IDENTIFIKASI | a) Kesiapan Peserta Didik (Narasi analitis)<br>b) Materi Pembelajaran (Aspek Konseptual & Prosedural)<br>c) Dimensi Profil Lulusan (DPL): Buatlah tabel markdown 8 kotak checkbox (DPL 1 s/d DPL 8 dengan tanda [✓]) |
-| 3. DESAIN PEMBELAJARAN | Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), Praktik Pedagogis (PBL/Discovery), Kemitraan, Lingkungan Belajar, Pemanfaatan Digital |
-| 4. PENGALAMAN BELAJAR | A. Memahami: Kegiatan Awal (10-20 menit) memuat Doa, Kehadiran, Latihan STOP, Apersepsi, Tes Awal<br>B. Mengaplikasikan: Kegiatan Inti memuat Sintaks a-f (Orientasi, Identifikasi, Pengumpulan Data, Pengolahan Data, Pembuktian dengan Spin Wheel, Kesimpulan)<br>C. Merefleksikan: Kegiatan Penutup memuat Refleksi Murid, Umpan Balik, Tindak Lanjut, Doa |
-
-BAGIAN B: DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP)
-1. BAHAN AJAR SISIPAN MATERI PEMBELAJARAN
-   - Pengertian & Kedudukan
-   - Karakteristik Elemen
-   - DIAGRAM VISUAL ASCII ANATOMI/HIRARKI MATERI
-   - Example Code / Penerapan Nyata
-
-2. ASESMEN PEMBELAJARAN
-   - A. Asesmen Diagnostik Formatif Awal (Tes Lisan 3 Soal)
-   - B. Penilaian Formatif LKPD Praktikum
-   - C. Rubrik Skor Penilaian LKPD + Rumus Nilai
-   - D. Tabel Penilaian Formatif Hasil Praktikum Murid (Tabel Markdown: NO | NAMA MURID | L/P | SKOR | NILAI | KET)
-   - E. Soal Penilaian Sumatif Akhir (Uraian, B-S, PG)
-   - F. Tabel Kunci Jawaban Penilaian Sumatif & Penskoran
-   - G. Rubrik Observasi Sikap Murid DPL (Tabel Indikator & Tabel Skor DPL Per Murid)
-
-3. LEMBAR REFLEKSI GURU (5 Pertanyaan Evaluasi Diri Guru)
-
-4. LEMBAR PENGESAHAN TANDA TANGAN
-   Mengetahui, Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}).`;
-;
+BAGIAN B: LAMPIRAN PENDUKUNG YANG LUAS DAN DETAIL (DI LUAR TABEL UTAMA)
+1. BAHAN AJAR / RINGKASAN MATERI UTAMA
+   - Uraian konsep dasar materi secara lengkap (definisi, karakteristik, mekanisme, dan contoh penerapan dalam kehidupan sehari-hari).
+   - Diagram atau skema teks terstruktur/tabel konsep materi.
+2. PERANGKAT ASESMEN PEMBELAJARAN LENGKAP
+   - A. Asesmen Diagnostik Awal (Minimal 3 pertanyaan lisan/tertulis + kunci jawaban).
+   - B. Lembar Kerja Peserta Didik (LKPD) Praktikum/Diskusi beserta panduan pengerjaannya.
+   - C. Rubrik Skor Penilaian LKPD dan Rumus Konversi Nilai Baku.
+   - D. Contoh Tabel Rekapitulasi Nilai Formatif Kelas (Tabel Markdown lengkap: NO | NAMA MURID | L/P | SKOR | NILAI | KET).
+   - E. Soal Penilaian Sumatif Akhir (Sajikan minimal 3 soal Uraian/Essay berbobot HOTS, soal Benar-Salah, dan Pilihan Ganda lengkap dengan opsi A-E).
+   - F. Kunci Jawaban dan Pembahasan Lengkap Penilaian Sumatif.
+   - G. Rubrik Observasi Sikap Murid Berdasarkan Dimensi Profil Lulusan (DPL) lengkap dengan tabel matriks skor penilaian per siswa.
+3. LEMBAR REFLEKSI GURU (5 Pertanyaan Evaluasi Diri Pendidik).
+4. LEMBAR PENGESAHAN / TANDA TANGAN RESMI
+   - Format penandatanganan resmi yang rapi untuk Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}) beserta ruang tanda tangan yang proporsional.
+`;
 
             try {
                 const response = await fetch(proxyUrl, { 
