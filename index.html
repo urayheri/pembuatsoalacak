@@ -947,7 +947,7 @@
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            // Prompt dibuat efisien agar ukuran payload request aman dari error 405
+            // Prompt disesuaikan agar mewajibkan Bahan Bacaan + Visual Ilustrasi Gambar
             const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) lengkap siap cetak dengan parameter:
             - Mata Pelajaran: ${mapel}
             - Jenjang/Fase: ${fase}
@@ -956,10 +956,20 @@
             - Profil Lulusan: ${profilTerpilih}
             - Fasilitas: ${fasilitas}
 
-            Tuliskan dokumen utuh lengkap (Informasi Umum, Komponen Inti, Kegiatan Pembelajaran, Asesmen, Lampiran). PENTING: Langsung berikan naskah dokumennya saja, TANPA JSON dan TANPA markdown codeblock.`;
+            📋 WAJIB MEMUAT STRUKTUR BERIKUT:
+            1. INFORMASI UMUM (Identitas, Model Pembelajaran)
+            2. KOMPONEN INTI (Tujuan Pembelajaran, Kegiatan Pembelajaran Rinci, Asesmen & Rubrik)
+            3. LAMPIRAN LENGKAP:
+               - LKPD (Lembar Kerja Peserta Didik)
+               - BAHAN BACAAN GURU & SISWA (Sertakan penjelasan ringkas & jelas)
+               - SISIPKAN GAMBAR / DIAGRAM VISUAL pada Bahan Bacaan menggunakan format kotak diagram teks atau label petunjuk visual seperti:
+                 🖼️ [GAMBAR / DIAGRAM VISUAL: Keterangan gambar atau skema visual topik]
+                 beserta deskripsi visualnya agar memudahkan pemahaman siswa.
+               - GLOSARIUM & DAFTAR PUSTAKA
+
+            PENTING: Tuliskan naskah dokumen utuh langsung saja, TANPA JSON dan TANPA markdown codeblock (\`\`\`).`;
 
             try {
-                // Menggunakan text/plain untuk menghindari pemicu preflight CORS / 405 di Apps Script
                 const response = await fetch(proxyUrl, { 
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -968,9 +978,8 @@
 
                 const rawText = await response.text();
                 
-                // Jika balasan ternyata halaman error HTML (seperti 405/500)
                 if (rawText.includes("405 Not Allowed") || rawText.includes("<html") || rawText.includes("<!DOCTYPE")) {
-                    throw new Error("Server Apps Script menolak permintaan (HTTP 405). Silakan pastikan deployment Apps Script sudah di-set ke 'Anyone' (Siapa Saja).");
+                    throw new Error("Server Apps Script menolak permintaan (HTTP 405). Pastikan setting deployment di-set ke 'Anyone'.");
                 }
 
                 let aiResponseText = "";
@@ -1003,6 +1012,7 @@
                     modulAjarGeneratedContent = cleanText;
                 }
 
+                // Bersihkan simbol bintang markdown
                 modulAjarGeneratedContent = modulAjarGeneratedContent.replace(/\*\*/g, "").replace(/\*/g, "");
 
                 previewSection.classList.remove('hidden');
