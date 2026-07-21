@@ -978,7 +978,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // ACTION BUTTON 2: AI QUESTION GENERATION
+        // ACTION BUTTON 2: AI QUESTION GENERATION (FIXED PARSING & SANITIZATION)
         processGenerateBtn.addEventListener('click', async () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
@@ -1014,18 +1014,18 @@
             const modeDipilih = documentTypeMode.value;
 
             if (modeDipilih === "soal_lama") {
-                coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4500)}".
-                Anda harus membuatkan naskah soal baru variatif/clone question.`;
+                coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4500)}". Anda harus membuatkan naskah soal baru variatif/clone question.`;
             } else {
                 coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4500)}".`;
             }
 
             const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. ${coreTaskInstruction}
-            Kriteria: Total PG harus tepat ${totalPGMinta} (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}) dan Essay harus tepat ${totalEssayMinta}. Output murni JSON.
+            Kriteria: Total PG harus tepat ${totalPGMinta} (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}) dan Essay harus tepat ${totalEssayMinta}. Output murni JSON murni tanpa pembungkus markdown codeblock.
+            PENTING: Jangan tambahkan prefiks huruf A, B, C pada opsi teks (isi teksnya saja).
             Format Output JSON:
             {
                "pilihan_ganda": [
-                  { "soal": "Pertanyaan...", "opsi": [{"teks": "A..."}, {"teks": "B..."}, {"teks": "C..."}, {"teks": "D..."}, {"teks": "E..."}], "kunciOriginal": "A", "kognitif": "C1" }
+                  { "soal": "Pertanyaan...", "opsi": [{"teks": "Isi pilihan 1"}, {"teks": "Isi pilihan 2"}, {"teks": "Isi pilihan 3"}, {"teks": "Isi pilihan 4"}, {"teks": "Isi pilihan 5"}], "kunciOriginal": "A", "kognitif": "C1" }
                ],
                "essay": [
                   { "soal": "Kasus...", "kunci": "Jawaban...", "kognitif": "C4" }
@@ -1033,15 +1033,50 @@
             }`;
 
             try {
-                const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) });
+                const response = await fetch(proxyUrl, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) 
+                });
+                
                 const rawText = await response.text();
-                let cleanJsonText = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
+                let cleanJsonText = "";
+
+                // Parsing bertahap untuk mencegah error candidates[0]
+                try {
+                    const parsedResponse = JSON.parse(rawText);
+                    if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
+                        cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
+                    } else {
+                        cleanJsonText = rawText;
+                    }
+                } catch (e) {
+                    cleanJsonText = rawText;
+                }
+
+                // Bersihkan tag markdown ```json ... ``` dari respons AI
+                cleanJsonText = cleanJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
                 const parsedData = JSON.parse(cleanJsonText);
-                originalPGQuestions = parsedData.pilihan_ganda || [];
+                
+                // Ambil data PG dan bersihkan teks opsinya dari huruf "A. ", "B. ", dst.
+                originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
+                    const cleanOpsi = (q.opsi || []).map(opt => {
+                        let text = typeof opt === 'object' ? (opt.teks || "") : opt;
+                        text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
+                        return { teks: text };
+                    });
+                    return { ...q, opsi: cleanOpsi };
+                });
+
                 originalEssayQuestions = parsedData.essay || [];
                 renderEditorUI();
-            } catch (err) { showCustomToast("Layanan AI sibuk, silakan coba lagi: " + err.message, "error"); }
-            finally { processGenerateBtn.disabled = false; processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; }
+            } catch (err) { 
+                showCustomToast("Gagal memproses respons AI: " + err.message, "error"); 
+            } finally { 
+                processGenerateBtn.disabled = false; 
+                processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
+            }
         });
 
         // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
