@@ -1341,11 +1341,41 @@ Format Output JSON Harus Seperti Ini:
 - Topik / Materi: ${topik}
 - Alokasi Waktu: ${waktu}
 
-⚠️ ATURAN STRICT FORMATTING (SANGAT PENTING):
-1. DILARANG KERAS menggunakan sintaks LaTeX atau Math Block ($$ atau \\begin{array}). Gunakan teks biasa dan Tabel Markdown murni (| Header | Header |).
-2. Tabel Grid Utama HANYA digunakan dari seksi 1 (Identitas) sampai seksi 4 (Pengalaman Belajar). 
-3. Seluruh seksi setelah Pengalaman Belajar (Bahan Ajar, Asesmen, Rubrik, Refleksi, Tanda Tangan) WAJIB ditulis DI LUAR TABEL GRID UTAMA menggunakan judul heading dan tabel terpisah.
+⚠️ ATURAN STRICT FORMATTING (SANGAT PENTING)
 
+1. DILARANG KERAS menggunakan sintaks LaTeX atau Math Block (contoh: $$, \(...\), \[...\], \begin{array}, \frac, \sum, dan sintaks matematika lainnya). Gunakan teks biasa, simbol Unicode yang diperlukan, dan Tabel Markdown murni (| Header | Header |).
+
+2. Tabel Grid Utama HANYA digunakan dari Seksi 1 (Identitas) sampai Seksi 4 (Pengalaman Belajar).
+
+3. Seluruh seksi setelah Pengalaman Belajar (Bahan Ajar, Asesmen, Rubrik, Pengayaan, Remedial, Refleksi, Lampiran, dan Tanda Tangan) WAJIB ditulis DI LUAR TABEL GRID UTAMA menggunakan heading dan tabel terpisah sesuai kebutuhan.
+
+4. Seluruh isi dokumen ditulis dalam bahasa Indonesia yang baku sesuai Pedoman Umum Ejaan Bahasa Indonesia (PUEBI).
+
+5. Penulisan paragraf menggunakan format yang rapi, sistematis, dan mudah dipindahkan ke Microsoft Word tanpa memerlukan perbaikan tata letak.
+
+6. Setiap paragraf ditulis dalam bentuk paragraf utuh (bukan poin-poin yang terpotong), dengan panjang yang proporsional dan konsisten.
+
+7. Jarak antarparagraf menggunakan format Set Multiple 1,5 (Line Spacing 1.5) sebagaimana standar dokumen resmi pendidikan.
+
+8. Seluruh isi paragraf WAJIB menggunakan perataan rata kanan-kiri (Justify), bukan rata kiri.
+
+9. Setiap judul bab menggunakan Heading yang konsisten, sedangkan subjudul menggunakan Heading tingkat berikutnya secara berurutan.
+
+10. Setiap tabel harus menggunakan format Markdown yang bersih, memiliki header yang jelas, dan tidak menggunakan tabel bersarang (nested table).
+
+11. Hindari penggunaan spasi, baris kosong, atau pemisah yang berlebihan agar tampilan dokumen tetap profesional.
+
+12. Penomoran menggunakan format yang konsisten (1., 2., 3. atau a., b., c.) sesuai kebutuhan.
+
+13. Seluruh istilah teknis, nama mata pelajaran, tujuan pembelajaran, asesmen, dan rubrik ditulis secara lengkap tanpa singkatan yang tidak dijelaskan.
+
+14. Bagian Tanda Tangan/Pengesahan WAJIB menggunakan format dokumen resmi sekolah yang rapi, simetris, dan mudah disalin ke Microsoft Word. Posisi tempat dan tanggal berada di sisi kanan, sedangkan kolom tanda tangan Kepala Sekolah dan Guru Mata Pelajaran dibuat sejajar dengan jarak yang proporsional.
+
+15. Pada bagian pengesahan harus tersedia ruang kosong yang cukup untuk tanda tangan (minimal 4–5 baris), diikuti nama lengkap, gelar, serta NIP apabila tersedia.
+
+16. Jangan menggunakan karakter dekoratif, ASCII Art, emoji, atau simbol yang tidak diperlukan dalam dokumen resmi.
+
+17. Seluruh dokumen harus memiliki tata letak yang konsisten dari awal hingga akhir sehingga siap dicetak tanpa memerlukan penyuntingan format ulang.
 📋 STRUKTUR DOKUMEN WAJIB:
 
 BAGIAN A: TABEL GRID UTAMA DESAIN INSTRUKSIONAL (HANYA 2 KOLOM)
@@ -1376,7 +1406,9 @@ BAGIAN B: DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP)
 3. LEMBAR REFLEKSI GURU (5 Pertanyaan Evaluasi Diri Guru)
 
 4. LEMBAR PENGESAHAN TANDA TANGAN
+     - dirapikan penulisannya serapi mungkin, rata kiri dan kanan,
    Mengetahui, Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}).`;
+;
 
             try {
                 const response = await fetch(proxyUrl, { 
