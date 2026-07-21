@@ -945,26 +945,72 @@
             processModulBtn.disabled = true;
             processModulBtn.textContent = "AI Sedang Merumuskan Modul Ajar...";
 
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
+            const proxyUrl = "[https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec](https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec)";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI yang sangat teliti, perfeksionis, dan berwawasan luas. Namamu adalah Asisten AI Teacher Assistant Suite. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) yang komprehensif, mendalam, dan siap cetak untuk parameter berikut:
-            
-            - Mata Pelajaran: ${mapel}
-            - Jenjang / Fase: ${fase}
-            - Topik Pokok Pembahasan: ${topik}
-            - Alokasi Waktu: ${waktu}
-            - Dimensi Profil Lulusan Target: ${profilTerpilih}
-            - Kondisi Fasilitas Sekolah Realistis: ${fasilitas}
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI yang sangat teliti dan berpengalaman. 
 
-            Format Output wajib dibungkus dalam JSON murni dengan properti "modul_markdown": "isi dokumen lengkap berbentuk format teks string biasa". Jangan gunakan markdown code block di luar JSON.`;
+Tugas Anda adalah menyusun dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) yang sangat lengkap, mendalam, dan siap cetak berdasarkan parameter berikut:
+
+📌 PARAMETER MODUL:
+- Mata Pelajaran: ${mapel}
+- Jenjang / Fase: ${fase}
+- Topik / Materi Pokok: ${topik}
+- Alokasi Waktu: ${waktu}
+- Target Dimensi Profil Lulusan: ${profilTerpilih}
+- Kondisi Fasilitas Sekolah: ${fasilitas}
+
+📋 STRUKTUR DOKUMEN YANG WAJIB DIHASILKAN:
+I. INFORMASI UMUM (Identitas, Kompetensi Awal, Profil Lulusan, Sarana & Prasarana, Target Peserta Didik, Model Pembelajaran).
+II. KOMPONEN INTI (Tujuan Pembelajaran, Pemahaman Bermakna, Pertanyaan Pemantik, Kegiatan Pembelajaran Rinci [Pendahuluan, Inti, Penutup], Asesmen/Penilaian Formatif & Sumatif beserta Rubrik).
+III. LAMPIRAN (Lembar Kerja Peserta Didik / LKPD Ringkas, Bahan Bacaan Guru & Siswa, Glosarium, Daftar Pustaka).
+
+⚠️ ATURAN PENULISAN:
+1. Buat penjelasan kegiatan pembelajaran secara operasional dan rinci (bukan sekadar poin singkat).
+2. Sesuaikan metode dan media dengan Kondisi Fasilitas Sekolah yang dipilih.
+3. Tuliskan dalam bentuk TEKS DOKUMEN UTUH LENGKAP dari awal sampai akhir.
+4. PENTING: Jangan gunakan format JSON, jangan gunakan markdown code block (\`\`\`), dan langsung berikan naskah dokumennya saja.`;
 
             try {
                 const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }) });
                 const rawText = await response.text();
-                let cleanJsonText = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
-                const parsedData = JSON.parse(cleanJsonText);
-                modulAjarGeneratedContent = parsedData.modul_markdown || parsedData.toString();
+                
+                // Ambil respons teks utama dari struktur Gemini AI
+                let aiResponseText = "";
+                try {
+                    const parsedRaw = JSON.parse(rawText);
+                    aiResponseText = parsedRaw.candidates[0].content.parts[0].text.trim();
+                } catch(e) {
+                    aiResponseText = rawText;
+                }
 
+                // Bersihkan pembungkus Markdown jika ada
+                cleanText = aiResponseText
+                    .replace(/^```(json|markdown)?/i, '')
+                    .replace(/```$/, '')
+                    .trim();
+
+                // Jika respons AI berupa JSON, coba ambil string modul_markdown-nya
+                if (cleanText.startsWith('{') && cleanText.endsWith('}')) {
+                    try {
+                        // Perbaiki unescaped control character/backslash sebelum parse
+                        const sanitizedJson = cleanText
+                            .replace(/[\u0000-\u001F]+/g, (match) => {
+                                if (match === '\n') return '\\n';
+                                if (match === '\r') return '\\r';
+                                if (match === '\t') return '\\t';
+                                return '';
+                            });
+                        const parsedJson = JSON.parse(sanitizedJson);
+                        modulAjarGeneratedContent = parsedJson.modul_markdown || cleanText;
+                    } catch(err) {
+                        // Jika JSON parse gagal, gunakan teks bersih secara langsung
+                        modulAjarGeneratedContent = cleanText;
+                    }
+                } else {
+                    modulAjarGeneratedContent = cleanText;
+                }
+
+                // Hapus cetak tebal markdown (*) agar tampilan rapi saat masuk ke Word
                 modulAjarGeneratedContent = modulAjarGeneratedContent.replace(/\*\*/g, "").replace(/\*/g, "");
 
                 previewSection.classList.remove('hidden');
@@ -982,8 +1028,13 @@
                 });
 
                 previewSection.scrollIntoView({ behavior: 'smooth' });
-            } catch (err) { alert("Gagal merumuskan modul: " + err.message); }
-            finally { processModulBtn.disabled = false; processModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI"; }
+            } catch (err) { 
+                alert("Gagal merumuskan modul: " + err.message); 
+            }
+            finally { 
+                processModulBtn.disabled = false; 
+                processModulBtn.textContent = "✨ Susun Perangkat Ajar Bersama AI"; 
+            }
         });
 
         function getEssayLabel(index, style) { return style === "huruf" ? String.fromCharCode(65 + (index % 26)) + ". " : (index + 1) + ". "; }
