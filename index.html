@@ -1345,47 +1345,59 @@ Format Output JSON Harus Seperti Ini:
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) yang SANGAT RINCI, EKSTENSIF, KOMPREHENSIF, dan siap cetak (minimal setara 6-10 halaman dokumen Word jika dicetak). Jangan membuat ringkasan yang terlalu singkat; berikan uraian narasi yang mendalam dan profesional.
-
-📌 DATA ADMINISTRASI UTAMA:
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah MODUL AJAR & RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) utuh, sangat rinci, dan siap cetak dengan parameter berikut:
+- Mata Pelajaran: ${mapel}
+- Jenjang/Fase/Kelas: ${fase}
+- Topik Pokok: ${topik}
+- Alokasi Waktu: ${waktu}
+- Target Dimensi Profil Lulusan (DPL): ${profilTerpilih}
+- Fasilitas Sekolah: ${fasilitas}
 - Nama Guru: ${namaGuru}
 - NIP Guru: ${nipGuru}
-- Satuan Pendidikan: ${namaSekolah}
 - Nama Kepala Sekolah: ${namaKepsek}
 - NIP Kepala Sekolah: ${nipKepsek}
-- Mata Pelajaran: ${mapel}
-- Fase / Kelas: ${fase}
-- Topik / Materi: ${topik}
-- Alokasi Waktu: ${waktu}
+- Nama Sekolah: ${namaSekolah}
 
-📋 STRUKTUR DOKUMEN WAJIB YANG SANGAT DETAIL:
+📋 ATURAN FORMAT LAYOUT DOKUMEN:
 
-BAGIAN A: TABEL GRID UTAMA DESAIN INSTRUKSIONAL (2 KOLOM)
-Sajikan dalam format tabel markdown 2 kolom yang memuat:
-1. IDENTITAS (Lengkap data guru, sekolah, waktu, fase).
-2. IDENTIFIKASI (Analisis Kesiapan Peserta Didik secara naratif mendalam; Analisis Karakteristik Materi Konseptual & Prosedural; Tabel 8 Dimensi Profil Lulusan/DPL dengan tanda [✓]).
-3. DESAIN PEMBELAJARAN (Capaian Pembelajaran/CP, Tujuan Pembelajaran/TP yang operasional, Praktik Pedagogis, Kemitraan, Lingkungan Belajar, dan Pemanfaatan Digital secara spesifik).
-4. PENGALAMAN BELAJAR MENYELURUH:
-   - A. Memahami (Kegiatan Awal 15-20 menit): Uraikan narasi pembuka, doa, apersepsi bermakna, teknik kesadaran penuh (STOP), dan pelaksanaan Tes Awal diagnostik.
-   - B. Mengaplikasikan (Kegiatan Inti 75+ menit): Uraikan secara rinci langkah demi langkah berbasis sintaks model pembelajaran (Orientasi Masalah dengan pertanyaan pemantik, Identifikasi Masalah, Pengumpulan Data dari berbagai sumber, Pengolahan Data di LKPD, Pembuktian/Presentasi interaktif, dan Penarikan Kesimpulan).
-   - C. Merefleksikan (Kegiatan Penutup 10-15 menit): Uraikan refleksi proses oleh murid, umpan balik konstruktif, tindak lanjut, dan penutup.
+A. KHUSUS BAGIAN DALAM TABEL GRID UTAMA 2 KOLOM (DARI IDENTITAS SAMPAI PENGALAMAN BELAJAR KHAS PDF):
+Sajikan bagian awal ini ke dalam struktur Tabel Grid 2 Kolom (Kolom Kiri: Label Seksi, Kolom Kanan: Isi Rinci Rata Kiri-Kanan) mencakup:
+1. Identitas: Nama Guru, Satuan Pendidikan, Mapel, Materi, Alokasi Waktu.
+2. Identifikasi:
+   a) Kesiapan Peserta Didik (Uraian narasi analitis).
+   b) Materi Pembelajaran (Uraian aspek Konseptual & Prosedural).
+   c) Dimensi Profil Lulusan (DPL): Sajikan Tabel Grid 8 Kotak Checkbox (DPL 1 s/d DPL 8 dengan tanda ✓ pada DPL yang relevan).
+3. Desain Pembelajaran: Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), Praktik Pedagogis (Model PBL/Discovery, Metode), Kemitraan, Lingkungan Belajar, Pemanfaatan Digital.
+4. Pengalaman Belajar (BATAS AKHIR TABEL GRID):
+   - Memahami: Kegiatan Awal (10 menit) memuat Doa, Cek Kehadiran, Latihan Fokus Teknik STOP, Apersepsi, Tes Awal.
+   - Mengaplikasikan: Kegiatan Inti (75 menit) memuat runtutan Sintaks a-f (Orientasi Masalah, Identifikasi Masalah, Pengumpulan Data, Pengolahan Data, Pembuktian dengan Spin Wheel, Menarik Kesimpulan).
+   - Merefleksikan: Kegiatan Penutup (5 menit) memuat Refleksi Murid, Umpan Balik, Tindak Lanjut, Doa.
 
-BAGIAN B: LAMPIRAN PENDUKUNG YANG LUAS DAN DETAIL (DI LUAR TABEL UTAMA)
-1. BAHAN AJAR / RINGKASAN MATERI UTAMA
-   - Uraian konsep dasar materi secara lengkap (definisi, karakteristik, mekanisme, dan contoh penerapan dalam kehidupan sehari-hari).
-   - Diagram atau skema teks terstruktur/tabel konsep materi.
-2. PERANGKAT ASESMEN PEMBELAJARAN LENGKAP
-   - A. Asesmen Diagnostik Awal (Minimal 3 pertanyaan lisan/tertulis + kunci jawaban).
-   - B. Lembar Kerja Peserta Didik (LKPD) Praktikum/Diskusi beserta panduan pengerjaannya.
-   - C. Rubrik Skor Penilaian LKPD dan Rumus Konversi Nilai Baku.
-   - D. Contoh Tabel Rekapitulasi Nilai Formatif Kelas (Tabel Markdown lengkap: NO | NAMA MURID | L/P | SKOR | NILAI | KET).
-   - E. Soal Penilaian Sumatif Akhir (Sajikan minimal 3 soal Uraian/Essay berbobot HOTS, soal Benar-Salah, dan Pilihan Ganda lengkap dengan opsi A-E).
-   - F. Kunci Jawaban dan Pembahasan Lengkap Penilaian Sumatif.
-   - G. Rubrik Observasi Sikap Murid Berdasarkan Dimensi Profil Lulusan (DPL) lengkap dengan tabel matriks skor penilaian per siswa.
-3. LEMBAR REFLEKSI GURU (5 Pertanyaan Evaluasi Diri Pendidik).
-4. LEMBAR PENGESAHAN / TANDA TANGAN RESMI
-   - Format penandatanganan resmi yang rapi untuk Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}) beserta ruang tanda tangan yang proporsional.
-`;
+B. BAGIAN DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP):
+Tuliskan bagian-bagian berikut di luar tabel grid utama dengan format narasi & tabel terpisah:
+
+1. BAHAN AJAR SISIPAN MATERI PEMBELAJARAN
+   - Pengertian & Kedudukan Materi
+   - Karakteristik Elemen Utama
+   - WAJIB SISIPKAN DIAGRAM VISUAL ASCII ANATOMI/HIRARKI MATERI
+   - Naskah Contoh Sintaks/Kode/Aplikasi Standar.
+
+2. ASESMEN PEMBELAJARAN
+   - A. Asesmen Diagnostik Formatif Awal (Tes Lisan 3 soal)
+   - B. Penilaian Formatif LKPD
+   - C. Rubrik Skor Penilaian LKPD Praktikum + Rumus Nilai
+   - D. Tabel Penilaian Formatif Hasil Praktikum Murid (Kolom NO, NAMA MURID, L/P, SKOR, NILAI, KET)
+   - E. Soal Penilaian Sumatif Akhir (Soal Uraian, B-S, PG berbasis Diagram)
+   - F. Tabel Kunci Jawaban Penilaian Sumatif & Pedoman Penskoran
+   - G. Rubrik Observasi Sikap Murid DPL (Tabel Indikator & Tabel Skor DPL Per Murid)
+
+3. LEMBAR REFLEKSI GURU (Pertanyaan evaluasi diri guru)
+
+4. LEMBAR PENGESAHAN TANDA TANGAN
+   Mengetahui, Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}) di Semparuk.
+
+CATATAN FONT & PARAGRAF: Terapkan gaya penulisan narasi formal, rinci, dan rata kiri-kanan (justified).`;
+
 
             try {
                 const response = await fetch(proxyUrl, { 
