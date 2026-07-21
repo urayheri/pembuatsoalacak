@@ -1033,7 +1033,7 @@
 
             const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. ${coreTaskInstruction}
             Kriteria: Total PG harus tepat ${totalPGMinta} (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}) dan Essay harus tepat ${totalEssayMinta}. Output murni JSON murni tanpa pembungkus markdown codeblock.
-            PENTING: Jangan tambahkan prefiks huruf A, B, C pada opsi teks (isi teksnya saja).
+            PENTING: Jangan tambahkan prefiks huruf A, B, C pada opsi teks (isi teksnya saja). Jika terdapat rumus matematika/pangkat/subskrip, tuliskan langsung menggunakan karakter Unicode asli (contoh: x², x³, xⁿ, a₁, ½, ±, ≤, ≥, ×) dan JANGAN menggunakan tanda topi (^).
             Format Output JSON:
             {
                "pilihan_ganda": [
