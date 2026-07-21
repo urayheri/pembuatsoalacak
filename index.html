@@ -978,7 +978,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // ACTION BUTTON 2: AI QUESTION GENERATION (FIXED PARSING & SANITIZATION)
+        // ACTION BUTTON 2: AI QUESTION GENERATION (ENHANCED FOR COMPLEX MATHEMATICS)
         processGenerateBtn.addEventListener('click', async () => {
             const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
@@ -1007,14 +1007,14 @@
 
             if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
 
-            // TAMPILKAN PREVIEW AREA DENGAN INDIKATOR LOADING LANGSUNG
+            // TAMPILKAN PREVIEW AREA DENGAN INDIKATOR LOADING
             previewSection.classList.remove('hidden');
             exportSingleWordBtn.classList.add('hidden');
             previewTitle.textContent = "Sedang Memproses Naskah Soal...";
             soalContainer.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-12 space-y-3">
                     <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi, mohon tunggu...</p>
+                    <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi & simbol matematika, mohon tunggu...</p>
                 </div>
             `;
             previewSection.scrollIntoView({ behavior: 'smooth' });
@@ -1031,18 +1031,48 @@
                 coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4500)}".`;
             }
 
-            const rawPromptText = `Bertindaklah sebagai Ahli Analisis Evaluasi Pendidikan. ${coreTaskInstruction}
-            Kriteria: Total PG harus tepat ${totalPGMinta} (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}) dan Essay harus tepat ${totalEssayMinta}. Output murni JSON murni tanpa pembungkus markdown codeblock.
-            PENTING: Jangan tambahkan prefiks huruf A, B, C pada opsi teks (isi teksnya saja). Jika terdapat rumus matematika/pangkat/subskrip, tuliskan langsung menggunakan karakter Unicode asli (contoh: x², x³, xⁿ, a₁, ½, ±, ≤, ≥, ×) dan JANGAN menggunakan tanda topi (^).
-            Format Output JSON:
-            {
-               "pilihan_ganda": [
-                  { "soal": "Pertanyaan...", "opsi": [{"teks": "Isi pilihan 1"}, {"teks": "Isi pilihan 2"}, {"teks": "Isi pilihan 3"}, {"teks": "Isi pilihan 4"}, {"teks": "Isi pilihan 5"}], "kunciOriginal": "A", "kognitif": "C1" }
-               ],
-               "essay": [
-                  { "soal": "Kasus...", "kunci": "Jawaban...", "kognitif": "C4" }
-               ]
-            }`;
+            // PROMPT AI DENGAN INSTRUKSI FORMULASI MATEMATIKA LENGKAP & PRESISI
+            const rawPromptText = `Bertindaklah sebagai Ahli Penyusun Soal Evaluasi Pendidikan dan Pakar Matematika/Sains. ${coreTaskInstruction}
+
+Kriteria Jumlah Soal:
+- Total Pilihan Ganda harus tepat ${totalPGMinta} soal dengan rincian kognitif: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
+- Total Uraian/Essay harus tepat ${totalEssayMinta} soal.
+
+📐 ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
+1. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^ { } dan _ { } atau Unicode asli. Contoh: x^{2}, a_{n}, f(x) = 3x^{3} - 2x + 5, H_{2}O.
+2. PECAHAN & AKAR: Tulis pecahan dengan sintaks tebal/jelas seperti (a/b) atau \\frac{a}{b}, dan akar dengan √x atau \\sqrt{x}.
+3. SIMBOL MATEMATIKA & LOGIKA: Gunakan simbol standar Unicode seperti ×, ÷, ±, ≤, ≥, ≠, ∞, π, θ, α, β, ∑, ∫, lim, log, sin, cos, tan, matrix/vektor.
+4. PERSIAPAN EXPORT DOCX: Pastikan setiap ekspresi matematika, persamaan linear, kuadrat, matriks, trigonometri, limit, dan kalkulus dituliskan secara lengkap dan tidak terpotong.
+5. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid dan tidak error saat di-parse.
+
+📋 ATURAN FORMAT OPSI & JSON:
+- Jangan tambahkan prefiks huruf (A, B, C, D, E) pada teks opsi pilihan ganda.
+- Wajib mengembalikan output MURNI berupa objek JSON tanpa pembungkus markdown codeblock (\`\`\`json ... \`\`\`).
+
+Format Output JSON Harus Seperti Ini:
+{
+  "pilihan_ganda": [
+    {
+      "soal": "Pertanyaan atau persamaan matematika...",
+      "opsi": [
+        {"teks": "Isi opsi 1"},
+        {"teks": "Isi opsi 2"},
+        {"teks": "Isi opsi 3"},
+        {"teks": "Isi opsi 4"},
+        {"teks": "Isi opsi 5"}
+      ],
+      "kunciOriginal": "A",
+      "kognitif": "C3"
+    }
+  ],
+  "essay": [
+    {
+      "soal": "Soal matematika/uraian...",
+      "kunci": "Langkah penyelesaian ringkas...",
+      "kognitif": "C4"
+    }
+  ]
+}`;
 
             try {
                 const response = await fetch(proxyUrl, { 
