@@ -851,7 +851,7 @@
          * Mengonversi teks yang memuat matematika LaTeX menjadi larik docx.TextRun
          * yang mendukung superskrip (^), subskrip (_), dan simbol matematika untuk ekspor Word (.docx).
          */
-        ction formatMathToTextRuns(text, docx, customFont, customSize) {
+        function formatMathToTextRuns(text, docx, customFont, customSize) {
             const { TextRun } = docx;
 
             // [TAMBAHAN] Pre-processing: Tangani kasus jika AI lupa membungkus rumus dengan $...$
