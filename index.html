@@ -682,6 +682,43 @@
             }
             return arr;
         }
+        // LOGIKA UNDUH TEMPLATE EXCEL DENGAN SHEETJS (XLSX)
+        const downloadTemplateEBtn = document.getElementById('downloadTemplateEBtn');
+        const downloadTemplateDBtn = document.getElementById('downloadTemplateDBtn');
+
+        // 1. Template SMA/SMK (Opsi A sampai E)
+        if (downloadTemplateEBtn) {
+            downloadTemplateEBtn.addEventListener('click', () => {
+                const data = [
+                    ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Pilihan E", "Kunci Jawaban", "Tingkat Kognitif"],
+                    ["Kepanjangan dari HTML yang benar adalah...", "Hyper Text Markup Language", "Hyper Text MakeUp Language", "Hide Text Markup Language", "Hide Text Makeup Language", "High Text Markup Language", "A", "C1"],
+                    ["Berikut ini tag untuk membuat teks cetak tebal adalah...", "<i>", "<b>", "<u>", "<p>", "<a>", "B", "C1"],
+                    ["Jelaskan perbedaan mendasar antara HTML dan CSS!", "", "", "", "", "", "HTML untuk struktur dasar halaman web, sedangkan CSS digunakan untuk mengatur tata letak dan tampilan visual.", "C2"]
+                ];
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Master Soal");
+                XLSX.writeFile(wb, "Template_Soal_SMA_SMK_Opsi_AE.xlsx");
+            });
+        }
+
+        // 2. Template SD/SMP (Opsi A sampai D)
+        if (downloadTemplateDBtn) {
+            downloadTemplateDBtn.addEventListener('click', () => {
+                const data = [
+                    ["Soal", "Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Kunci Jawaban", "Tingkat Kognitif"],
+                    ["Ibu kota negara Indonesia saat ini adalah...", "Bandung", "Surakarta", "Jakarta", "Surabaya", "C", "C1"],
+                    ["Hasil dari 15 + 25 adalah...", "30", "35", "40", "45", "C", "C1"],
+                    ["Tuliskan 3 nama planet dalam sistem tata surya kita!", "", "", "", "", "Merkurius, Venus, Bumi.", "C2"]
+                ];
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Master Soal");
+                XLSX.writeFile(wb, "Template_Soal_SD_SMP_Opsi_AD.xlsx");
+            });
+        }
     </script>
 
     <!-- DOMAIN PROTECTION LOCK SCRIPT -->
