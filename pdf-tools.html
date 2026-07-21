@@ -351,15 +351,10 @@
                     const elements = tempDiv.querySelectorAll('p, img');
 
                     for (let el of elements) {
-                        if (y < 60) {
-                            page = pdfDoc.addPage([595.28, 841.89]);
-                            y = height - 50;
-                        }
-
                         if (el.tagName === 'IMG') {
                             // Jika elemen berupa Gambar
                             try {
-                                const imgSrc = el.src; // Base64 atau URL gambar dari Word
+                                const imgSrc = el.src; 
                                 const imageBytes = await fetch(imgSrc).then(res => res.arrayBuffer());
                                 
                                 let embeddedImage;
@@ -369,48 +364,62 @@
                                     embeddedImage = await pdfDoc.embedJpg(imageBytes);
                                 }
 
-                                // Batasi dimensi gambar agar pas di halaman PDF (maks lebar 300px)
-                                const imgDims = embeddedImage.scale(0.5);
-                                let drawWidth = imgDims.width;
-                                let drawHeight = imgDims.height;
-                                if (drawWidth > 300) {
-                                    drawWidth = 300;
-                                    drawHeight = (imgDims.height * 300) / imgDims.width;
+                                // ATURAN UKURAN PROPORTIONAL (Maksimal Lebar & Tinggi agar tidak meluber)
+                                const maxW = 400; // Lebar maksimal dalam pt
+                                const maxH = 300; // Tinggi maksimal dalam pt
+                                let imgDims = embeddedImage.scale(1);
+                                
+                                if (imgDims.width > maxW) {
+                                    imgDims = embeddedImage.scale(maxW / imgDims.width);
+                                }
+                                if (imgDims.height > maxH) {
+                                    imgDims = embeddedImage.scale(maxH / imgDims.height);
                                 }
 
-                                if (y - drawHeight < 50) {
+                                // Cek sisa halaman, jika tidak cukup buat halaman baru
+                                if (y - imgDims.height < 50) {
                                     page = pdfDoc.addPage([595.28, 841.89]);
                                     y = height - 50;
                                 }
 
+                                // POSISI GAMBAR DI TENGAH HALAMAN (CENTER ALIGNMENT)
+                                const centerX = (595.28 - imgDims.width) / 2;
+                                y -= imgDims.height;
+
                                 page.drawImage(embeddedImage, {
-                                    x: 50,
-                                    y: y - drawHeight,
-                                    width: drawWidth,
-                                    height: drawHeight,
+                                    x: centerX,
+                                    y: y,
+                                    width: imgDims.width,
+                                    height: imgDims.height,
                                 });
 
-                                y -= (drawHeight + 20); // Beri jarak setelah gambar
+                                y -= 20; // Jarak aman setelah gambar sebelum teks keterangan
                             } catch (imgErr) {
                                 console.warn("Gagal menyematkan gambar:", imgErr);
                             }
                         } else {
-                            // Jika elemen berupa Teks Paragraf
+                            // Jika elemen berupa Teks Paragraf / Keterangan Gambar
                             const text = el.textContent || "";
                             if (text.trim() !== "") {
+                                if (y < 50) {
+                                    page = pdfDoc.addPage([595.28, 841.89]);
+                                    y = height - 50;
+                                }
+
                                 const safeText = text.replace(/[^\x00-\x7F]/g, " ");
-                                page.drawText(safeText.substring(0, 95), {
-                                    x: 50,
+                                
+                                // Teks Keterangan diatur di tengah (Center) agar rapi seperti layout dokumentasi
+                                page.drawText(safeText.substring(0, 100), {
+                                    x: 70,
                                     y: y,
-                                    size: fontSize,
+                                    size: 10,
                                     font: font,
-                                    color: PDFLib.rgb(0.1, 0.1, 0.1),
+                                    color: PDFLib.rgb(0.2, 0.2, 0.2),
                                 });
-                                y -= lineHeight;
+                                y -= 18; // Spasi antar baris teks keterangan
                             }
                         }
                     }
-
                     const pdfBytes = await pdfDoc.save();
                     const blob = new Blob([pdfBytes], { type: "application/pdf" });
                     const url = URL.createObjectURL(blob);
