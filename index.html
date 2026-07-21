@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Guru Indonesia</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9646208288837391"
-     crossorigin="anonymous"></script>
+    <title>Asisten Guru Indonesia - Platform Administrasi Pembelajaran Digital</title>
+    
+    <!-- GOOGLE ADSENSE CODE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9646208288837391" crossorigin="anonymous"></script>
+    
     <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -22,15 +24,21 @@
         
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
             color: #334155;
         }
 
         .app-card {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
             border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.03), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
-            border-radius: 14px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-card:hover {
+            box-shadow: 0 20px 30px -10px rgba(16, 185, 129, 0.08);
         }
 
         .app-input {
@@ -42,33 +50,31 @@
 
         .app-input:focus {
             border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
             outline: none;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* ANIMASI KUSTOM & EFFECTS */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 6px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .animate-float-slow {
+            animation: floatSlow 4s ease-in-out infinite;
         }
 
-        /* ANIMASI POPUP CHATBOT */
-        @keyframes floatBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 15px rgba(5, 150, 105, 0.3)); }
+            50% { opacity: 0.8; filter: drop-shadow(0 0 25px rgba(5, 150, 105, 0.6)); }
         }
-        .animate-float {
-            animation: floatBounce 3s ease-in-out infinite;
+        .animate-glow {
+            animation: pulseGlow 3s ease-in-out infinite;
         }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #059669; }
 
         .chat-popup-enter {
             opacity: 0;
@@ -83,21 +89,26 @@
 </head>
 <body class="text-xs antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-50 selection:text-emerald-800">
 
-    <!-- MINIMALIST CLASSROOM HEADER -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between">
+    <!-- HEADER & NAVBAR UTAMA -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between shadow-xs">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl font-bold shadow-sm shadow-emerald-600/10">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-emerald-600/20 transform hover:scale-105 transition-transform cursor-pointer">
                 👨‍🏫
             </div>
             <div>
                 <h1 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                    Asisten Guru Indonesia <span class="text-[9px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-emerald-700 font-bold">ProMax</span>
+                    Asisten Guru Indonesia <span class="text-[9px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-emerald-700 font-extrabold shadow-2xs">ProMax AI</span>
                 </h1>
-                <p class="text-[10px] text-slate-500 font-medium">Teman Guru Sepanjang Masa </p>
+                <p class="text-[10px] text-slate-500 font-medium">Platform Efisiensi Administrasi Pendidik Masa Kini</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
+            <!-- PANGGIL POPUP PERNYATAAN PENGEMBANG -->
+            <button id="openDevStatementBtn" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg border border-emerald-200 transition-all cursor-pointer text-[11px] flex items-center gap-1.5 shadow-2xs">
+                ✨ Keunggulan Web
+            </button>
+
             <!-- LANGUAGE SWITCHER -->
             <div class="flex bg-slate-100 border border-slate-200 rounded-lg p-0.5">
                 <button id="langIdBtn" class="px-3 py-1 rounded-md text-[10px] font-bold cursor-pointer transition-all bg-white text-emerald-700 shadow-xs">ID</button>
@@ -106,16 +117,32 @@
 
             <!-- STATUS MONITOR -->
             <div class="hidden md:flex items-center gap-4 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-[10px] text-slate-500">
-                <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> <span id="lblTerminalStatus">Sistem: Aktif</span></div>
-                <div class="w-px h-3 bg-slate-200"></div>
-                <div class="flex items-center gap-2"><span id="lblSessionSync">Sinkronisasi: OK</span></div>
+                <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> <span id="lblTerminalStatus" class="font-semibold text-slate-700">Sistem: Aktif</span></div>
             </div>
 
-            <button id="openSedekahBtn" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-xs cursor-pointer text-[11px]">
-                💝 Apresiasi Dana
+            <button id="openSedekahBtn" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-all shadow-sm shadow-amber-500/20 cursor-pointer text-[11px] transform active:scale-95">
+                💝 Apresiasi
             </button>
         </div>
     </header>
+
+    <!-- HERO BANNER PROMOSI DENGAN MASKOT PNG -->
+    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner relative overflow-hidden">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+            <div class="space-y-2 max-w-xl text-center md:text-left">
+                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Otomasi Pendidikan 2026</span>
+                <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Solusi Cerdas Menyusun Soal & Modul Ajar Kurikulum Merdeka</h2>
+                <p class="text-xs text-emerald-100/90 leading-relaxed">Hemat hingga 80% waktu administrasi mengajar Anda. Proses aman secara lokal tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
+            </div>
+            
+            <!-- GAMBAR PNG MASKOT HERO -->
+            <div class="shrink-0 relative">
+                <div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/20 flex items-center justify-center p-2 shadow-2xl animate-float-slow">
+                    <img src="teacher-hero.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>';" alt="Maskot Guru AI" class="w-full h-full object-contain filter drop-shadow-lg">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MAIN DASHBOARD WINDOW -->
     <main class="container mx-auto px-4 py-8 max-w-5xl flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -124,19 +151,19 @@
         <section class="lg:col-span-4 space-y-6">
             <!-- WORKSPACE SELECTION TABS -->
             <div class="app-card p-4 space-y-2">
-                <p id="lblWorkspaceModes" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 mb-2">Menu Asisten Guru</p>
+                <p id="lblWorkspaceModes" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 mb-2">Panel Kerja Mengajar</p>
                 
-                <button id="tabAcakBtn" class="w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs">
+                <button id="tabAcakBtn" class="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group">
                     <span id="txtTabAcak" class="flex items-center gap-3 text-xs"><span>📊</span> Mode 1: Pengacak Paket Soal</span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-600 group-hover:scale-125 transition-transform"></span>
                 </button>
                 
-                <button id="tabBuatBtn" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer">
+                <button id="tabBuatBtn" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group">
                     <span id="txtTabBuat" class="flex items-center gap-3 text-xs"><span>🤖</span> Mode 2: Pembuat Soal AI</span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+                    <span class="w-2 h-2 rounded-full bg-transparent group-hover:bg-slate-300 transition-colors"></span>
                 </button>
                 
-                <button id="tabModulBtn" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer">
+                <button id="tabModulBtn" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group">
                     <span id="txtTabModul" class="flex items-center gap-3 text-xs"><span>📚</span> Mode 3: Perumus Modul Ajar</span>
                     <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200">BARU</span>
                 </button>
@@ -180,10 +207,10 @@
             <!-- EXCEL TEMPLATE MANAGEMENT -->
             <div class="app-card p-4 flex flex-col gap-2">
                 <p id="lblBlueprints" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 mb-1">Unduh Master Template Excel</p>
-                <button id="downloadTemplateEBtn" class="w-full py-2 bg-slate-50 hover:bg-slate-100 text-emerald-700 font-semibold rounded-lg border border-slate-200 transition-colors cursor-pointer text-left px-3 flex justify-between items-center text-xs">
+                <button id="downloadTemplateEBtn" class="w-full py-2 bg-slate-50 hover:bg-emerald-50 text-emerald-700 font-semibold rounded-lg border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer text-left px-3 flex justify-between items-center text-xs">
                     <span id="btnTxtTempE">📥 Template SMA/SMK (Opsi A-E)</span>
                 </button>
-                <button id="downloadTemplateDBtn" class="w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 font-semibold rounded-lg border border-slate-200 transition-colors cursor-pointer text-left px-3 flex justify-between items-center text-xs">
+                <button id="downloadTemplateDBtn" class="w-full py-2 bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-semibold rounded-lg border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer text-left px-3 flex justify-between items-center text-xs">
                     <span id="btnTxtTempD">📥 Template SD/SMP (Opsi A-D)</span>
                 </button>
             </div>
@@ -225,7 +252,7 @@
             <div id="panelAcak" class="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div class="md:col-span-7 app-card p-6 flex flex-col justify-center items-center min-h-[190px] border-2 border-dashed border-slate-300 hover:border-emerald-500 transition-colors group relative bg-white">
                     <input type="file" id="excelInput" accept=".xlsx, .xls" class="absolute inset-0 opacity-0 cursor-pointer z-10">
-                    <span class="text-4xl block mb-2 group-hover:scale-105 transition-transform">📄</span>
+                    <img src="analytics.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>';" alt="Upload Icon" class="w-12 h-12 mb-2 group-hover:scale-110 transition-transform">
                     <span id="lblDropExcel" class="text-xs font-semibold text-slate-700 block">Pilih atau Seret Berkas Excel Master Ke Sini</span>
                     <span id="fileStatus" class="text-[10px] text-slate-400 block mt-1 font-medium">Mendukung format tabel data soal (.xlsx)</span>
                 </div>
@@ -258,7 +285,7 @@
                             </div>
                         </div>
                     </div>
-                    <button id="processAcakBtn" disabled class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-xs cursor-pointer text-xs">
+                    <button id="processAcakBtn" disabled class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-md shadow-emerald-600/20 cursor-pointer text-xs transform active:scale-95">
                         ⚡ Proses & Unduh Paket Soal Acak
                     </button>
                 </div>
@@ -266,9 +293,12 @@
 
             <!-- MODE 2 PANEL: AI GENERATOR WORKSPACE -->
             <div id="panelBuat" class="app-card p-6 space-y-5 hidden">
-                <p id="lblCognitiveTitle" class="text-xs font-bold text-slate-700 flex items-center gap-2">
-                    <span>🧠</span> Parameter Pembuatan Soal Berbasis Otomasi AI
-                </p>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <p id="lblCognitiveTitle" class="text-xs font-bold text-slate-700 flex items-center gap-2">
+                        <span>🧠</span> Parameter Pembuatan Soal Berbasis Otomasi AI
+                    </p>
+                    <img src="ai-brain.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>';" alt="AI Icon" class="w-8 h-8 animate-glow">
+                </div>
 
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <label id="lblAlgoMode" class="block font-medium text-slate-600 mb-1.5 text-xs">Metode Analisis Dokumen</label>
@@ -321,15 +351,18 @@
                     <div><label id="lblSumPG" class="block font-semibold text-slate-500 mb-1">Total PG Terhitung</label><input type="text" id="generateCountPG" value="5" readonly class="w-full app-input p-2 rounded-lg text-center bg-slate-50 font-bold text-slate-600 cursor-not-allowed"></div>
                     <div><label id="lblSumEssay" class="block font-semibold text-slate-500 mb-1">Total Uraian Terhitung</label><input type="text" id="generateCountEssay" value="2" readonly class="w-full app-input p-2 rounded-lg text-center bg-slate-50 font-bold text-slate-600 cursor-not-allowed"></div>
                     <div><label id="lblLabelStyle" class="block font-semibold text-slate-500 mb-1">Format Penomoran</label><select id="generateEssayLabelStyle" class="w-full app-input p-2 rounded-lg font-medium"><option value="angka">Angka (1,2)</option><option value="huruf">Huruf (A,B)</option></select></div>
-                    <div><button id="processGenerateBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs uppercase transition-all shadow-xs cursor-pointer">✨ Buat Soal Otomatis</button></div>
+                    <div><button id="processGenerateBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs uppercase transition-all shadow-md shadow-emerald-600/20 cursor-pointer">✨ Buat Soal Otomatis</button></div>
                 </div>
             </div>
 
-            <!-- MODE 3 PANEL: MODUL MERDEKA CURRICULUM PERUMUS (INTEGRATED ENGINE) -->
+            <!-- MODE 3 PANEL: MODUL MERDEKA CURRICULUM PERUMUS -->
             <div id="panelModul" class="app-card p-6 space-y-5 hidden">
-                <p id="lblModulTitle" class="text-xs font-bold text-slate-700 flex items-center gap-2">
-                    <span>📚</span> Perumus & Penyusun Modul Ajar Kurikulum Merdeka AI
-                </p>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <p id="lblModulTitle" class="text-xs font-bold text-slate-700 flex items-center gap-2">
+                        <span>📚</span> Perumus & Penyusun Modul Ajar Kurikulum Merdeka AI
+                    </p>
+                    <img src="curriculum.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>';" alt="Modul Icon" class="w-8 h-8">
+                </div>
                 
                 <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-4 text-xs">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -411,7 +444,7 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <button id="processModulBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs uppercase tracking-wide cursor-pointer transition-all shadow-xs">
+                    <button id="processModulBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs uppercase tracking-wide cursor-pointer transition-all shadow-md shadow-emerald-600/20">
                         ✨ Susun Perangkat Ajar Bersama AI
                     </button>
                 </div>
@@ -427,8 +460,67 @@
                 </div>
                 <div id="soalContainer" class="p-6 space-y-6 max-h-[500px] overflow-y-auto divide-y divide-slate-100 text-slate-700 text-xs"></div>
             </section>
+
+            <!-- SEKSI PANDUAN LENGKAP & ARTIKEL FITUR (UNSUR KUNCI ADSENSE) -->
+            <section class="app-card p-6 space-y-4 bg-white/80">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <span>📖</span> Panduan & Efisiensi Platform Asisten Guru Indonesia
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-slate-600 text-[11px] leading-relaxed">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1">
+                        <h4 class="font-bold text-emerald-800">1. Pengacak Paket Soal</h4>
+                        <p>Mengacak urutan nomor soal dan kunci pilihan ganda dari file Excel master untuk mencegah kecurangan ujian dengan sekali klik.</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1">
+                        <h4 class="font-bold text-emerald-800">2. Pembuat Soal AI HOTS</h4>
+                        <p>Formulasi bank soal berbasis Taksonomi Bloom (C1-C6) yang otomatis disesuaikan dari naskah materi atau bank soal lama Bapak/Ibu.</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1">
+                        <h4 class="font-bold text-emerald-800">3. Perumus Modul Ajar</h4>
+                        <p>Menyusun Alur Tujuan Pembelajaran (ATP) dan RPP Plus Kurikulum Merdeka yang siap cetak lengkap dengan materi bacaan & asesmen.</p>
+                    </div>
+                </div>
+            </section>
+
         </section>
     </main>
+
+    <!-- POP-UP PERNYATAAN PENGEMBANG & KEUNGGULAN APLIKASI (DEVELOPER STATEMENT MODAL) -->
+    <div id="devStatementModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 border border-slate-200 relative transform transition-all">
+            <button id="closeDevStatementBtn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl cursor-pointer">&times;</button>
+            
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-12 h-12 rounded-full bg-emerald-100 border-2 border-emerald-500 overflow-hidden shrink-0 flex items-center justify-center text-xl font-bold text-emerald-700">
+                    👨‍💻
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">Pernyataan Pengembang Platform</h3>
+                    <p class="text-[10px] text-emerald-700 font-semibold">U. Heri Mukti, S.Tr.Kom. — Guru SMK & Developer</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-[11px] text-slate-600 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+                <p class="italic bg-emerald-50/60 p-3 rounded-xl border border-emerald-100 text-emerald-900 font-medium">
+                    "Platform Asisten Guru Indonesia lahir dari pemahaman mendalam atas tingginya beban administrasi pendidik di sekolah. Visi kami adalah mengembalikan fokus utama guru pada proses mendidik dan berinteraksi bersama siswa."
+                </p>
+
+                <h4 class="font-bold text-slate-800 text-xs">✨ Keunggulan Utama Platform Ini:</h4>
+                <ul class="space-y-2 list-disc list-inside text-slate-700">
+                    <li><strong class="text-slate-800">Pemrosesan Lokal & Aman:</strong> File Excel dan dokumen Anda diproses langsung di browser tanpa menyimpan data kerahasiaan sekolah ke server luar.</li>
+                    <li><strong class="text-slate-800">Integrasi Kurikulum Merdeka:</strong> Penyusunan Modul Ajar dan indikator soal disesuaikan secara dinamis dengan Fase, Capaian Pembelajaran, dan Fasilitas Sekolah.</li>
+                    <li><strong class="text-slate-800">Export Siap Cetak (.docx):</strong> Hasil acakan atau rumusan AI langsung dikemas ke dalam format Word lengkap dengan pengaturan margin dan kop resmi.</li>
+                    <li><strong class="text-slate-800">100% Gratis & Efisien:</strong> Dapat diakses kapan saja oleh seluruh pendidik di Indonesia tanpa biaya berlangganan.</li>
+                </ul>
+            </div>
+
+            <div class="pt-2 text-right">
+                <button id="confirmDevModalBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition-colors cursor-pointer shadow-md shadow-emerald-600/20">
+                    Saya Mengerti & Siap Menggunakan
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- VOLUNTARY SUPPORT DIALOG -->
     <div id="sedekahModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
@@ -501,25 +593,26 @@
         </button>
     </div>
 
-    <!-- STABLE FOOTER -->
+    <!-- STABLE FOOTER DENGAN LINK LEGALITAS ADSENSE -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs space-y-2">
-    <div class="flex justify-center gap-4">
-        <a href="#about" onclick="alert('Teacher Assistant Suite adalah platform alat bantu administrasi guru berbasis AI & otomatisasi lokal.')" class="hover:underline">Tentang Kami</a> |
-        <a href="#privacy" onclick="alert('Kebijakan Privasi: Semua pemrosesan data dilakukan secara lokal di browser Anda. Kami tidak menyimpan dokumen naskah soal pengguna.')" class="hover:underline">Kebijakan Privasi</a> |
-        <a href="#terms" onclick="alert('Ketentuan Layanan: Layanan ini disediakan gratis untuk mendukung efisiensi mengajar pendidik di Indonesia.')" class="hover:underline">Syarat & Ketentuan</a>
-    </div>
-    <p>Teacher Assistant Suite © 2026 | Dibuat oleh U. Heri Mukti, S.Tr.Kom.</p>
-</footer>
+        <div class="flex justify-center gap-4">
+            <a href="#about" onclick="document.getElementById('openDevStatementBtn').click()" class="hover:underline">Tentang Kami</a> |
+            <a href="#privacy" onclick="alert('Kebijakan Privasi: Semua pemrosesan data dilakukan secara lokal di browser Anda. Kami tidak menyimpan dokumen naskah soal pengguna.')" class="hover:underline">Kebijakan Privasi</a> |
+            <a href="#terms" onclick="alert('Ketentuan Layanan: Layanan ini disediakan gratis untuk mendukung efisiensi mengajar pendidik di Indonesia.')" class="hover:underline">Syarat & Ketentuan</a>
+        </div>
+        <p>Asisten Guru Indonesia © 2026 | Dibuat oleh U. Heri Mukti, S.Tr.Kom.</p>
+    </footer>
 
+    <!-- DOMAIN PROTECTION LOCK SCRIPT -->
     <script>
     (function() {
         const allowedHosts = [
-        atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
-        atob("bG9jYWxob3N0"),             
-        atob("MTI3LjAuMC4x"),            
-        "asistenguruindonesia.my.id",     // <-- Tambahkan domain baru di sini
-        "www.asistenguruindonesia.my.id", // <-- Tambahkan versi www di sini
-        ""                 
+            atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
+            atob("bG9jYWxob3N0"),             
+            atob("MTI3LjAuMC4x"),            
+            "asistenguruindonesia.my.id",     
+            "www.asistenguruindonesia.my.id", 
+            ""                 
         ];
         if (!allowedHosts.includes(window.location.hostname)) {
             document.documentElement.innerHTML = "";
@@ -545,7 +638,20 @@
     })();
     </script>
 
+    <!-- LOGIKA WORKSPACE & MODAL INTERAKSI -->
     <script>
+        // LOGIKA POPUP PENGEMBANG
+        const openDevStatementBtn = document.getElementById('openDevStatementBtn');
+        const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
+        const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
+        const devStatementModal = document.getElementById('devStatementModal');
+
+        openDevStatementBtn.addEventListener('click', () => { devStatementModal.classList.remove('hidden'); });
+        closeDevStatementBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
+        confirmDevModalBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
+        devStatementModal.addEventListener('click', (e) => { if(e.target === devStatementModal) devStatementModal.classList.add('hidden'); });
+
+        // LOGIKA MODAL SEDEKAH
         const openSedekahBtn = document.getElementById('openSedekahBtn');
         const closeSedekahBtn = document.getElementById('closeSedekahBtn');
         const sedekahModal = document.getElementById('sedekahModal');
@@ -621,18 +727,18 @@
 
         tabAcakBtn.addEventListener('click', () => {
             activeTab = "acak";
-            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs";
-            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer";
-            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer";
+            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
+            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
             panelAcak.classList.remove('hidden'); panelBuat.classList.add('hidden'); panelModul.classList.add('hidden'); identitasKopCard.classList.remove('hidden');
             exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
         });
 
         tabBuatBtn.addEventListener('click', () => {
             activeTab = "buat";
-            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs";
-            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer";
-            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer";
+            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
+            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
             panelBuat.classList.remove('hidden'); panelAcak.classList.add('hidden'); panelModul.classList.add('hidden'); identitasKopCard.classList.remove('hidden');
             exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
             updateTotalPG();
@@ -641,9 +747,9 @@
 
         tabModulBtn.addEventListener('click', () => {
             activeTab = "modul";
-            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs";
-            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer";
-            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer";
+            tabModulBtn.className = "w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-left transition-all cursor-pointer shadow-xs group";
+            tabAcakBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
+            tabBuatBtn.className = "w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50 font-medium text-left transition-all cursor-pointer group";
             panelModul.classList.remove('hidden'); panelAcak.classList.add('hidden'); panelBuat.classList.add('hidden'); identitasKopCard.classList.add('hidden');
             exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
         });
@@ -806,7 +912,7 @@
             finally { processGenerateBtn.disabled = false; processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; }
         });
 
-        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR (ADVANCED LOGIC ENGINE)
+        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         processModulBtn.addEventListener('click', async () => {
             const mapel = document.getElementById('modulMapel').value.trim();
             const fase = document.getElementById('modulFase').value;
@@ -825,7 +931,7 @@
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI yang sangat teliti, perfeksionis, dan berwawasan luas. Namamu adalah Asisten AI Teacher Assistant Suite. Jangan pernah menyebut dirimu sebagai Gemini atau AI Google. Bertindaklah sebagai Konsultan Pendidikan AI pribadi yang ramah dan ringkas untuk aplikasi Teacher Assistant Suite.Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) yang komprehensif, mendalam, dan siap cetak untuk parameter berikut:
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kementerian Pendidikan dan Kebudayaan RI yang sangat teliti, perfeksionis, dan berwawasan luas. Namamu adalah Asisten AI Teacher Assistant Suite. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) yang komprehensif, mendalam, dan siap cetak untuk parameter berikut:
             
             - Mata Pelajaran: ${mapel}
             - Jenjang / Fase: ${fase}
@@ -834,71 +940,6 @@
             - Dimensi Profil Lulusan Target: ${profilTerpilih}
             - Kondisi Fasilitas Sekolah Realistis: ${fasilitas}
 
-            ATURAN PENULISAN TEKS DAN STRUKTUR (WAJIB DIPATUHI):
-            1. JANGAN PERNAH gunakan simbol Markdown tebal (tanda bintang ganda seperti **teks**), simbol miring (*teks*), tanda pagar (#, ##), maupun garis horizontal (---).
-            2. Tulis judul bab langsung menggunakan angka romawi (Contoh: I. IDENTITAS MODUL).
-            3. Gunakan penomoran normal (1, 2, 3) atau huruf (a, b, c) untuk poin-poin daftar. Jangan gunakan tanda asteris (*) sebagai peluru daftar.
-            4. Hasil harus berupa teks narasi bersih, rapi, formal, tanpa ada satu pun karakter simbol markdown yang mengotori naskah!
-
-            PANDUAN KEDALAMAN MATERI (JANGAN ADA YANG TERLEWAT):
-            - Uraikan materi esensial dari topik tersebut secara eksplisit dan lengkap. Jangan memberikan ringkasan malas seperti "Guru menjelaskan materi X...". Sebaliknya, Tuliskan teks bahan bacaan materi utuhnya di dalam dokumen ini agar guru langsung bisa menggunakannya tanpa mencari referensi luar.
-            - Masukkan skenario alternatif, potensi miskonsepsi siswa pada topik tersebut, serta cara penanganannya.
-
-            STRUKTUR FORMAT OUTPUT NASKAH YANG SAH DAN STANDAR:
-
-            I. IDENTITAS MODUL
-            Nama Penyusun: Nama dikosongkan
-            Institusi: institusi dikosongkan
-            Tahun Penyusunan: tahun dikosongkan
-            Jenjang Sekolah: Jenjang Sesuai Fase
-            Fase / Kelas: ${fase}
-            Mata Pelajaran: ${mapel}
-            Elemen CP: Tuliskan elemen Capaian Pembelajaran yang relevan dengan topik ini
-            Materi Pokok: ${topik}
-            Alokasi Waktu: ${waktu}
-            Target Profil Lulusan: ${profilTerpilih}
-            Sarana dan Prasarana: ${fasilitas}
-            Target Peserta Didik: Reguler / Tipikal
-            Model Pembelajaran: Tatap Muka / Problem Based Learning (Sesuaikan dengan kondisi fasilitas)
-
-            II. CAPAIAN PEMBELAJARAN DAN ALUR TUJUAN PEMBELAJARAN
-            1. Capaian Pembelajaran Akhir Fase: (Gambarkan kalimat kompetensi utuh untuk fase ini)
-            2. Alur Tujuan Pembelajaran (ATP): (Jabarkan tahapan logis pencapaian kompetensi dari awal hingga akhir pertemuan secara terperinci)
-
-            III. KOMPONEN INTI
-            1. Tujuan Pembelajaran: (Tuliskan minimal 3 tujuan pembelajaran spesifik mencakup aspek Kognitif, Afektif, dan Psikomotor menggunakan kata kerja operasional)
-            2. Pemahaman Bermakna: (Manfaat rill materi ini dalam kehidupan sehari-hari atau dunia kerja siswa)
-            3. Pertanyaan Pemantik: (Minimal 3 pertanyaan kritis dan menantang untuk memancing rasa ingin tahu siswa sebelum kelas dimulai)
-
-            IV. KEGIATAN PEMBELAJARAN
-            1. Kegiatan Pendahuluan (Sebutkan durasi dalam menit):
-            a. Orientasi dan Kondisikan Kelas
-            b. Apersepsi (Mengaitkan materi lama dengan topik ${topik})
-            c. Motivasi dan Penyampaian Tujuan Pembelajaran
-            2. Kegiatan Inti (Sebutkan durasi dalam menit - Rancang langkah operasional mendetail yang mencerminkan model pembelajaran terpilih dan integrasi dimensi profil lulusan):
-            a. Orientasi siswa pada masalah
-            b. Mengorganisasi siswa untuk belajar
-            c. Membimbing penyelidikan individu maupun kelompok
-            d. Mengembangkan dan menyajikan hasil karya
-            e. Menganalisis dan mengevaluasi proses pemecahan masalah
-            (Catatan: Jika fasilitas sekolah minim/3T, pastikan instruksi kegiatan sepenuhnya menggunakan media fisik, papan tulis, atau cetak tanpa menuntut perangkat digital)
-            3. Kegiatan Penutup (Sebutkan durasi dalam menit):
-            a. Refleksi Bersama Siswa (Apa yang dipelajari hari ini)
-            b. Kesimpulan Materi Pembahasan
-            c. Tindak Lanjut / Penugasan Rumah Rumah / Doa Penutup
-
-            V. MATERI AJAR LENGKAP (BAHAN BACAAN GURU DAN SISWA)
-            (Jabarkan seluruh materi esensial secara utuh di sini! Tuliskan konsepnya, teorinya, rumusnya, atau kode program/studi kasusnya secara lengkap dan terurai panjang lebar agar tidak ada konten yang terlewat, JANGAN LUPA selipkan baris "REKOMENDASI INPUT GAMBAR DI SINI: [...]" di sela-sela sub-pembahasan materi).
-
-            VI. ASESMEN DAN PENILAIAN
-            1. Asesmen Diagnostik (Non-kognitif awal)
-            2. Asesmen Formatif (Rubrik pengamatan sikap dan proses performa saat diskusi/praktek)
-            3. Asesmen Sumatif (Berikan minimal 3 butir contoh soal evaluasi pilihan ganda atau esai beserta kunci jawabannya secara langsung)
-
-            VII. LEMBAR KERJA PESERTA DIDIK (LKPD)
-            (Sediakan format Lembar Kerja Ringkas yang memuat Judul Aktivitas, Petunjuk Pengerjaan, Tugas/Kasus yang harus diselesaikan siswa, dan tempat pengisian jawaban)
-
-            Wujudkan dokumen ini dalam tata bahasa Indonesia baku yang formal, anggun, sangat detail, dan profesional.
             Format Output wajib dibungkus dalam JSON murni dengan properti "modul_markdown": "isi dokumen lengkap berbentuk format teks string biasa". Jangan gunakan markdown code block di luar JSON.`;
 
             try {
@@ -908,7 +949,6 @@
                 const parsedData = JSON.parse(cleanJsonText);
                 modulAjarGeneratedContent = parsedData.modul_markdown || parsedData.toString();
 
-                // Pembersihan regex berlapis agar aman dari asteris/bintang markdown liar
                 modulAjarGeneratedContent = modulAjarGeneratedContent.replace(/\*\*/g, "").replace(/\*/g, "");
 
                 previewSection.classList.remove('hidden');
@@ -921,7 +961,6 @@
                     </div>
                 `;
                 
-                // Sinkronisasi teks dinamis jika user mengedit pratinjau di dalam textarea
                 document.getElementById('modulEditableArea').addEventListener('input', function() {
                     modulAjarGeneratedContent = this.value;
                 });
@@ -978,7 +1017,7 @@
             previewSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // DOWNLOAD AS WORD (.DOCX) INTEGRATED LOKAL ENGINE
+        // DOWNLOAD AS WORD (.DOCX) INTEGRATED ENGINE
         async function createDocxBlob(title, pgData, essayData, isAnswerKey = false) {
             const { Document, Paragraph, TextRun, AlignmentType } = window.docx;
             const docParagraphs = [];
@@ -996,7 +1035,6 @@
                     let isBold = false;
                     let cleanLine = line.trim();
 
-                    // Format otomatis penebalan judul bab romawi & penomoran kedinasan
                     if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('VI.') || cleanLine.startsWith('VII.') || cleanLine.startsWith('-')) {
                         isBold = true;
                     }
@@ -1122,7 +1160,6 @@
             appendUserMessage(text);
             chatInput.value = "";
 
-            // Loading indicator
             const loadingDiv = document.createElement('div');
             loadingDiv.className = "flex gap-2 items-start loading-msg";
             loadingDiv.innerHTML = `
@@ -1157,8 +1194,8 @@
         // MULTI-LANGUAGE ENGINE ARCHITECTURE
         const i18n = {
             id: {
-                btnDonate: "💝 Apresiasi Dana", lblTerminalStatus: "Sistem: Aktif", lblSessionSync: "Sinkronisasi: OK",
-                lblWorkspaceModes: "Menu Asistent Guru", txtTabAcak: "Mode 1: Pengacak Paket Soal", txtTabBuat: "Mode 2: Pembuat Soal AI",
+                btnDonate: "💝 Apresiasi", lblTerminalStatus: "Sistem: Aktif", lblSessionSync: "Sinkronisasi: OK",
+                lblWorkspaceModes: "Panel Kerja Mengajar", txtTabAcak: "Mode 1: Pengacak Paket Soal", txtTabBuat: "Mode 2: Pembuat Soal AI",
                 lblLayoutConfig: "Format Margin & Dokumen Cetak", lblTypography: "Jenis Font Dokumen", lblFontSize: "Ukuran (pt)",
                 lblMargin: "Margin Kertas (cm)", lblCanvasGeo: "Ukuran Kertas Lembar Kerja", lblBlueprints: "Unduh Master Template Excel",
                 lblInstitutionalManifest: "Atribut Kepala Surat / Kop Lembar Kerja", btnProcessAcak: "⚡ Proses & Unduh Paket Soal Acak",
@@ -1166,8 +1203,8 @@
                 previewTitle: "Pratinjau Hasil Penyusunan Dokumen", btnExportSingleWord: "📥 Download File Word (.docx)"
             },
             en: {
-                btnDonate: "💝 Dana Appreciate", lblTerminalStatus: "System: Active", lblSessionSync: "Synchronization: OK",
-                lblWorkspaceModes: " Teacher Assistant Menu", txtTabAcak: "Mode 1: Question Packet Shuffler", txtTabBuat: "Mode 2: AI Question Generator",
+                btnDonate: "💝 Appreciate", lblTerminalStatus: "System: Active", lblSessionSync: "Synchronization: OK",
+                lblWorkspaceModes: "Teacher Assistant Menu", txtTabAcak: "Mode 1: Question Packet Shuffler", txtTabBuat: "Mode 2: AI Question Generator",
                 lblLayoutConfig: "Margin & Document Print Format", lblTypography: "Document Font Family", lblFontSize: "Size (pt)",
                 lblMargin: "Paper Margin (cm)", lblCanvasGeo: "Worksheet Paper Geometry", lblBlueprints: "Download Master Excel Sheets",
                 lblInstitutionalManifest: "Header Attributes / Worksheet Kop", btnProcessAcak: "⚡ Process & Download Shuffled Packets",
@@ -1180,7 +1217,6 @@
             const data = i18n[lang];
             document.getElementById('openSedekahBtn').textContent = data.btnDonate;
             document.getElementById('lblTerminalStatus').textContent = data.lblTerminalStatus;
-            document.getElementById('lblSessionSync').textContent = data.lblSessionSync;
             document.getElementById('lblWorkspaceModes').textContent = data.lblWorkspaceModes;
             document.getElementById('txtTabAcak').innerHTML = `<span>📊</span> ${data.txtTabAcak}`;
             document.getElementById('txtTabBuat').innerHTML = `<span>🤖</span> ${data.txtTabBuat}`;
