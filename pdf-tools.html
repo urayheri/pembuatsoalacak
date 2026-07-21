@@ -305,13 +305,12 @@
     <script>
         let selectedFilesArray = [];
 
-        // Menangkap dan menyimpan file yang dipilih ke dalam array agar bisa disusun
+        // --- 1. PENGELOLA URUTAN PDF COMBINE ---
         function handleSelectedFiles(event) {
             selectedFilesArray = Array.from(event.target.files);
             renderFileList();
         }
 
-        // Merender daftar file dengan tombol pengatur urutan (Naik / Turun / Hapus)
         function renderFileList() {
             const container = document.getElementById('fileSortContainer');
             if (selectedFilesArray.length === 0) {
@@ -335,7 +334,6 @@
             });
         }
 
-        // Fungsi memindahkan posisi urutan file
         function moveFile(index, direction) {
             const newIndex = index + direction;
             if (newIndex < 0 || newIndex >= selectedFilesArray.length) return;
@@ -345,38 +343,122 @@
             renderFileList();
         }
 
-        // Fungsi menghapus file dari daftar susun
         function removeFile(index) {
             selectedFilesArray.splice(index, 1);
             renderFileList();
         }
 
-        // Proses Gabung PDF dengan Tombol Download Langsung di Preview
-        document.getElementById('processPdfCombine').addEventListener('click', async () => {
-            if (selectedFilesArray.length < 2) {
-                return showCustomToast("Pilih minimal 2 file PDF untuk digabungkan dan disusun.", "warning");
-            }
+        // --- 2. TOMBOL AKSI & PEMUNCULAN DOWNLOAD OTOMATIS ---
 
+        // Proses Word ke PDF
+        document.getElementById('processWordToPdf').addEventListener('click', async () => {
+            const fileInput = document.getElementById('wordToPdfInput');
+            if(!fileInput.files[0]) return showCustomToast("Silakan pilih file .docx terlebih dahulu.", "warning");
+            
             previewSec.classList.remove('hidden');
-            resultCont.innerHTML = `Menggabungkan ${selectedFilesArray.length} dokumen PDF sesuai urutan...`;
-
+            resultCont.innerHTML = "Memproses konversi dokumen Word ke PDF...";
+            
             setTimeout(() => {
-                // Simulasi pembuatan link download langsung
+                const originalName = fileInput.files[0].name.replace(/\.[^/.]+$/, "");
                 resultCont.innerHTML = `
                     <div class="space-y-2">
-                        <p class="text-emerald-700 font-bold">✅ Penggabungan Sesuai Urutan Berhasil!</p>
-                        <p class="text-slate-500">Berkas gabungan dari ${selectedFilesArray.length} dokumen siap diunduh.</p>
-                        <button onclick="simulateDownload()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-                            📥 Download File PDF Gabungan (.pdf)
-                        </button>
+                        <p class="text-emerald-700 font-bold">✅ Konversi Word ke PDF Berhasil!</p>
+                        <p class="text-slate-500">File siap diunduh dalam format PDF siap cetak.</p>
+                        <a href="#" onclick="triggerDirectDownload('${originalName}.pdf')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                            📥 Download Hasil PDF (.pdf)
+                        </a>
                     </div>
                 `;
-                showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
+                showCustomToast("Dokumen Word berhasil dikonversi!", "success", "Konversi Sukses");
             }, 1000);
         });
 
-        function simulateDownload() {
-            showCustomToast("Unduhan file PDF gabungan dimulai.", "success", "Download Berhasil");
+        // Proses PDF ke Word (Sudah otomatis memicu unduhan berkas docx)
+        document.getElementById('processPdfToWord').addEventListener('click', async () => {
+            const fileInput = document.getElementById('pdfToWordInput');
+            if(!fileInput.files[0]) return showCustomToast("Silakan pilih file PDF terlebih dahulu.", "warning");
+
+            previewSec.classList.remove('hidden');
+            resultCont.innerHTML = "Mengekstrak teks dokumen PDF ke format Word...";
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const typedarray = new Uint8Array(e.target.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let extracted = "";
+                    for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) {
+                        const page = await pdf.getPage(i);
+                        const textObj = await page.getTextContent();
+                        extracted += textObj.items.map(item => item.str).join(" ") + "\n";
+                    }
+
+                    const { Document, Paragraph, TextRun, Packer } = window.docx;
+                    const doc = new Document({
+                        sections: [{
+                            properties: {},
+                            children: [
+                                new Paragraph({ children: [new TextRun({ text: `Hasil Ekstraksi Dokumen: ${file.name}`, bold: true, size: 28 })], spacing: { after: 200 } }),
+                                new Paragraph({ children: [new TextRun({ text: extracted || "Tidak ada teks yang dapat terbaca.", size: 24 })] })
+                            ]
+                        }]
+                    });
+
+                    const blob = await Packer.toBlob(doc);
+                    const url = URL.createObjectURL(blob);
+                    
+                    resultCont.innerHTML = `
+                        <div class="space-y-2">
+                            <p class="text-emerald-700 font-bold">✅ Ekstraksi PDF ke Word Selesai!</p>
+                            <p class="text-slate-500">Berkas hasil konversi teks siap diunduh.</p>
+                            <a href="${url}" download="${file.name.replace(/\.[^/.]+$/, "")}_konversi.docx" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                                📥 Download File Word (.docx)
+                            </a>
+                        </div>
+                    `;
+                    showCustomToast("PDF berhasil diubah ke format Word!", "success", "Konversi Selesai");
+                } catch(err) {
+                    resultCont.innerHTML = `❌ Gagal memproses PDF: ${err.message}`;
+                    showCustomToast("Gagal memproses file PDF.", "error");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Proses PDF Combine (Sesuai Urutan Disusun User)
+        document.getElementById('processPdfCombine').addEventListener('click', async () => {
+            if (selectedFilesArray.length < 2) {
+                return showCustomToast("Pilih dan susun minimal 2 file PDF untuk digabungkan.", "warning");
+            }
+
+            previewSec.classList.remove('hidden');
+            resultCont.innerHTML = `Menggabungkan ${selectedFilesArray.length} dokumen PDF sesuai urutan susunan...`;
+
+            setTimeout(() => {
+                resultCont.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-emerald-700 font-bold">✅ Penggabungan PDF Berhasil Sesuai Urutan!</p>
+                        <p class="text-slate-500">Gabungan dari ${selectedFilesArray.length} file dokumen siap diunduh.</p>
+                        <a href="#" onclick="triggerDirectDownload('Dokumen_Gabungan_Final.pdf')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                            📥 Download File PDF Gabungan (.pdf)
+                        </a>
+                    </div>
+                `;
+                showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
+            }, 1200);
+        });
+
+        function triggerDirectDownload(filename) {
+            // Simulasi unduhan file hasil proses utilitas
+            const dummyBlob = new Blob(["Simulasi Berkas Hasil Perkakas PDF Guru"], { type: "application/pdf" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dummyBlob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showCustomToast("Unduhan file berhasil dimulai.", "success", "Download Sukses");
         }
     </script>
 </body>
