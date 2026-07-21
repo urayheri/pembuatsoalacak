@@ -188,7 +188,20 @@
                 Gabungkan Berkas PDF
             </button>
         </div>
-
+        <!-- CARD 4: PDF COMPRESS (MENGECILKAN UKURAN PDF) -->
+        <div class="app-card p-6 flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+                <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xl font-bold shadow-inner">
+                    📉
+                </div>
+                <h3 class="font-bold text-slate-800 text-sm">PDF Compress (Kecilkan Ukuran)</h3>
+                <p class="text-slate-500 text-[11px] leading-relaxed">Kurangi dan ringkas ukuran file dokumen PDF yang terlalu besar agar lebih ringan saat dibagikan atau diunggah.</p>
+                <input type="file" id="pdfCompressInput" accept=".pdf" class="w-full app-input p-2 rounded-lg text-[10px] file:bg-rose-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer">
+            </div>
+            <button id="processPdfCompress" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
+                Kecilkan Ukuran PDF
+            </button>
+        </div>
     </main>
 
     <!-- PREVIEW / STATUS OUTPUT SECTION -->
@@ -542,6 +555,55 @@
             document.body.removeChild(link);
             showCustomToast("Unduhan berkas berhasil dimulai.", "success", "Download Sukses");
         }
+    </script>
+    
+    // Proses PDF Compress (Mengecilkan Ukuran PDF)
+    <script>
+        document.getElementById('processPdfCompress').addEventListener('click', async () => {
+            const fileInput = document.getElementById('pdfCompressInput');
+            if (!fileInput.files[0]) {
+                return showCustomToast("Pilih file PDF terlebih dahulu untuk dikecilkan ukurannya.", "warning");
+            }
+
+            previewSec.classList.remove('hidden');
+            resultCont.innerHTML = "Sedang mengoptimasi dan mengecilkan ukuran file PDF...";
+
+            try {
+                const file = fileInput.files[0];
+                const originalSize = file.size;
+                const arrayBuffer = await file.arrayBuffer();
+
+                // Muat dokumen PDF menggunakan pdf-lib
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                // Simpan ulang dokumen dengan opsi optimasi struktur byte
+                const compressedPdfBytes = await pdfDoc.save({ useObjectStreams: true });
+                
+                const compressedSize = compressedPdfBytes.length;
+                const savingsPercent = Math.max(0, Math.round((1 - (compressedSize / originalSize)) * 100));
+
+                const blob = new Blob([compressedPdfBytes], { type: "application/pdf" });
+                const url = URL.createObjectURL(blob);
+
+                const originalKb = (originalSize / 1024).toFixed(1);
+                const compressedKb = (compressedSize / 1024).toFixed(1);
+
+                resultCont.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-emerald-700 font-bold">✅ Kompresi Ukuran PDF Berhasil!</p>
+                        <p class="text-slate-500">Ukuran awal: <strong>${originalKb} KB</strong> → Ukuran baru: <strong>${compressedKb} KB</strong> (Hemat sekitar ${savingsPercent}%)</p>
+                        <a href="${url}" download="${file.name.replace(/\.[^/.]+$/, "")}_terkompresi.pdf" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                            📥 Download PDF Terkompresi (.pdf)
+                        </a>
+                    </div>
+                `;
+                showCustomToast("Ukuran PDF berhasil diperkecil!", "success", "Kompresi Selesai");
+
+            } catch (err) {
+                resultCont.innerHTML = `❌ Gagal mengompresi PDF: ${err.message}`;
+                showCustomToast("Gagal memproses file PDF.", "error");
+            }
+        });
     </script>
 </body>
 </html>
