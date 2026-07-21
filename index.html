@@ -1187,15 +1187,18 @@
                     const kopGambarElem = document.getElementById('kopGambarInput');
                     const kopGambarFile = kopGambarElem && kopGambarElem.files ? kopGambarElem.files[0] : null;
                     if (kopGambarFile) {
-                        try {
-                            const bufKop = await kopGambarFile.arrayBuffer();
-                            children.push(new Paragraph({ 
-                                alignment: AlignmentType.CENTER, 
-                                children: [new ImageRun({ data: bufKop, transformation: { width: visualKopWidth, height: 95 } })], 
-                                spacing: { after: 200 } 
-                            }));
-                        } catch(e) {}
-                    }
+    try {
+        const bufKop = await kopGambarFile.arrayBuffer();
+        const uint8Kop = new Uint8Array(bufKop);
+        children.push(new Paragraph({ 
+            alignment: AlignmentType.CENTER, 
+            children: [new ImageRun({ data: uint8Kop, transformation: { width: visualKopWidth, height: 95 } })], 
+            spacing: { after: 200 } 
+        }));
+    } catch(e) {
+        console.warn("Gagal memuat gambar Kop:", e);
+    }
+}
                     
                     const hUjian = document.getElementById('ujianHeader').value; 
                     const hTahun = document.getElementById('ujianTahun').value;
@@ -1433,54 +1436,63 @@
             return await window.docx.Packer.toBlob(doc);
         }
         processAcakBtn.addEventListener('click', async () => {
-            const numPackets = parseInt(packetCount.value);
-            const zip = new JSZip(); 
-            const labels = ['A', 'B', 'C', 'D', 'E'];
-            const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
-            const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
+    const numPackets = parseInt(packetCount.value);
+    const zip = new JSZip(); 
+    const labels = ['A', 'B', 'C', 'D', 'E'];
+    const limitPG = parseInt(document.getElementById('limitCountPG').value) || null;
+    const limitEssay = parseInt(document.getElementById('limitCountEssay').value) || null;
+    
+    processAcakBtn.disabled = true;
+    processAcakBtn.textContent = "Sedang mengacak...";
+
+    try {
+        for (let p = 0; p < numPackets; p++) {
+            const packetLetter = String.fromCharCode(65 + p);
+            let shuffledPG = shuffleArray(originalPGQuestions); 
+            let shuffledEssay = shuffleArray(originalEssayQuestions); 
             
-            processAcakBtn.disabled = true;
-            processAcakBtn.textContent = "Sedang mengacak...";
+            if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
+            if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
 
-            for (let p = 0; p < numPackets; p++) {
-                const packetLetter = String.fromCharCode(65 + p);
-                let shuffledPG = shuffleArray(originalPGQuestions); 
-                let shuffledEssay = shuffleArray(originalEssayQuestions); 
-                
-                if (limitPG !== null && limitPG > 0) shuffledPG = shuffledPG.slice(0, limitPG);
-                if (limitEssay !== null && limitEssay > 0) shuffledEssay = shuffledEssay.slice(0, limitEssay);
-
-                const processedPG = shuffledPG.map(q => {
-                    const shuffledOptions = shuffleArray(q.opsi); 
-                    let newKey = '';
-                    shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
-                    return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
-                });
-
-                // Cetak Dokumen Soal (Sudah include lembar kunci di bawahnya)
-                const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
-                zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
-
-                // Cetak Dokumen Terpisah Khusus Kunci Jawaban
-                const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
-                zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
-            }
-
-            zip.generateAsync({ type: 'base64' }).then((base64Content) => {
-                const dataUri = "data:application/zip;base64," + base64Content;
-                const element = document.createElement('a');
-                element.href = dataUri;
-                element.download = "Paket_Ujian_Acak_Final.zip";
-                element.target = "_blank";
-                document.body.appendChild(element); 
-                element.click();
-                document.body.removeChild(element); 
-                
-                processAcakBtn.disabled = false;
-                processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
+            const processedPG = shuffledPG.map(q => {
+                const shuffledOptions = shuffleArray(q.opsi); 
+                let newKey = '';
+                shuffledOptions.forEach((opt, idxOpt) => { if (opt.labelOriginal === q.kunciOriginal) newKey = labels[idxOpt]; });
+                return { soal: q.soal, shuffledOptions, newKey: newKey || q.kunciOriginal, kognitif: q.kognitif };
             });
-        });
 
+            // Cetak Dokumen Soal
+            const soalBlob = await createDocxBlob(`Soal Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, false);
+            zip.file(`Soal_Ujian_Paket_${packetLetter}.docx`, soalBlob);
+
+            // Cetak Dokumen Kunci Jawaban
+            const kunciBlob = await createDocxBlob(`Kunci Jawaban Ujian - Paket ${packetLetter}`, processedPG, shuffledEssay, true);
+            zip.file(`Kunci_Jawaban_Paket_${packetLetter}.docx`, kunciBlob);
+        }
+
+        const base64Content = await zip.generateAsync({ type: 'base64' });
+        const dataUri = "data:application/zip;base64," + base64Content;
+        
+        const element = document.createElement('a');
+        element.href = dataUri;
+        element.download = "Paket_Ujian_Acak_Final.zip";
+        element.target = "_blank";
+        document.body.appendChild(element); 
+        element.click();
+        document.body.removeChild(element);
+
+    } catch (err) {
+        if (typeof showCustomToast === 'function') {
+            showCustomToast("Gagal memproses acak soal: " + err.message, "error");
+        } else {
+            alert("Gagal memproses acak soal: " + err.message);
+        }
+    } finally {
+        // Tombol PASTI kembali aktif walaupun terjadi error
+        processAcakBtn.disabled = false;
+        processAcakBtn.textContent = "📝 Acak & Ekspor ke ZIP";
+    }
+});
         exportSingleWordBtn.addEventListener('click', async () => {
             exportSingleWordBtn.disabled = true;
             try {
