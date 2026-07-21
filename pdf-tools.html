@@ -46,7 +46,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
@@ -335,16 +335,53 @@
 
         // 3. PDF COMBINE HANDLER
         document.getElementById('processPdfCombine').addEventListener('click', async () => {
-            const fileInput = document.getElementById('pdfCombineInput');
-            if(fileInput.files.length < 2) return showCustomToast("Pilih minimal 2 file PDF untuk digabungkan.", "warning");
+            if (selectedFilesArray.length < 2) {
+                return showCustomToast("Pilih dan susun minimal 2 file PDF untuk digabungkan.", "warning");
+            }
 
             previewSec.classList.remove('hidden');
-            resultCont.innerHTML = `Menggabungkan ${fileInput.files.length} dokumen PDF...`;
+            resultCont.innerHTML = `Sedang menggabungkan ${selectedFilesArray.length} dokumen PDF secara lokal...`;
 
-            setTimeout(() => {
-                resultCont.innerHTML = `✅ Berhasil menggabungkan ${fileInput.files.length} berkas PDF menjadi satu dokumen gabungan yang utuh.`;
+            try {
+                // Membuat dokumen PDF baru yang kosong
+                const mergedPdf = await PDFLib.PDFDocument.create();
+
+                for (let i = 0; i < selectedFilesArray.length; i++) {
+                    const file = selectedFilesArray[i];
+                    const arrayBuffer = await file.arrayBuffer();
+                    
+                    // Muat file PDF sumber
+                    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                    
+                    // Salin semua halaman dari file sumber ke dokumen gabungan
+                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                    copiedPages.forEach((page) => {
+                        mergedPdf.addPage(page);
+                    });
+                }
+
+                // Simpan dokumen gabungan menjadi byte array
+                const mergedPdfBytes = await mergedPdf.save();
+                
+                // Buat objek Blob PDF yang valid
+                const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
+                const url = URL.createObjectURL(blob);
+
+                resultCont.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-emerald-700 font-bold">✅ Penggabungan PDF Sesuai Urutan Berhasil!</p>
+                        <p class="text-slate-500">Berkas gabungan dari ${selectedFilesArray.length} dokumen siap diunduh dan dijamin bisa dibuka.</p>
+                        <a href="${url}" download="Dokumen_Gabungan_Final.pdf" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                            📥 Download File PDF Gabungan (.pdf)
+                        </a>
+                    </div>
+                `;
                 showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
-            }, 1200);
+
+            } catch (err) {
+                resultCont.innerHTML = `❌ Gagal menggabungkan PDF: ${err.message}`;
+                showCustomToast("Gagal memproses file PDF. Pastikan file tidak diproteksi password.", "error");
+            }
         });
     </script>
     <script>
