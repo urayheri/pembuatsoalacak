@@ -308,6 +308,7 @@
         }
 
         // Proses Word ke PDF dengan Perbaikan Event & Pemunculan Pop-up Modal
+        // Proses Word ke PDF (Mendukung Teks dan Gambar)
         document.getElementById('processWordToPdf').addEventListener('click', async () => {
             const fileInput = document.getElementById('wordToPdfInput');
             if(!fileInput.files[0]) {
@@ -319,7 +320,7 @@
             btn.textContent = "Sedang Mengonversi...";
 
             previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Sedang membaca dan menyusun dokumen Word ke PDF...";
+            resultCont.innerHTML = "Sedang membaca teks dan gambar dari dokumen Word...";
 
             const file = fileInput.files[0];
             const reader = new FileReader();
@@ -328,36 +329,86 @@
                 try {
                     const arrayBuffer = e.target.result;
                     
-                    // Ekstrak teks dari file .docx menggunakan Mammoth
-                    const mammothResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-                    const extractedText = mammothResult.value || "Dokumen kosong.";
+                    // Gunakan convertToHtml agar gambar dan format elemen terbaca
+                    const mammothResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                    const htmlContent = mammothResult.value;
+
+                    // Buat elemen penampung sementara di memori browser untuk membaca teks dan gambar
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlContent;
 
                     // Buat dokumen PDF baru menggunakan PDFLib
                     const pdfDoc = await PDFLib.PDFDocument.create();
                     let page = pdfDoc.addPage([595.28, 841.89]); // Ukuran A4
                     const { height } = page.getSize();
-                    
                     const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-                    const lines = extractedText.split('\n');
+
                     let y = height - 50;
                     const fontSize = 11;
                     const lineHeight = 15;
 
-                    for (let i = 0; i < lines.length; i++) {
-                        if (y < 50) {
+                    // Ambil seluruh elemen paragraf dan gambar dari hasil konversi Word
+                    const elements = tempDiv.querySelectorAll('p, img');
+
+                    for (let el of elements) {
+                        if (y < 60) {
                             page = pdfDoc.addPage([595.28, 841.89]);
                             y = height - 50;
                         }
 
-                        const safeText = lines[i].replace(/[^\x00-\x7F]/g, " ");
-                        page.drawText(safeText.substring(0, 95), {
-                            x: 50,
-                            y: y,
-                            size: fontSize,
-                            font: font,
-                            color: PDFLib.rgb(0.1, 0.1, 0.1),
-                        });
-                        y -= lineHeight;
+                        if (el.tagName === 'IMG') {
+                            // Jika elemen berupa Gambar
+                            try {
+                                const imgSrc = el.src; // Base64 atau URL gambar dari Word
+                                const imageBytes = await fetch(imgSrc).then(res => res.arrayBuffer());
+                                
+                                let embeddedImage;
+                                if (imgSrc.includes('image/png')) {
+                                    embeddedImage = await pdfDoc.embedPng(imageBytes);
+                                } else {
+                                    embeddedImage = await pdfDoc.embedJpg(imageBytes);
+                                }
+
+                                // Batasi dimensi gambar agar pas di halaman PDF (maks lebar 300px)
+                                const imgDims = embeddedImage.scale(0.5);
+                                let drawWidth = imgDims.width;
+                                let drawHeight = imgDims.height;
+                                if (drawWidth > 300) {
+                                    drawWidth = 300;
+                                    drawHeight = (imgDims.height * 300) / imgDims.width;
+                                }
+
+                                if (y - drawHeight < 50) {
+                                    page = pdfDoc.addPage([595.28, 841.89]);
+                                    y = height - 50;
+                                }
+
+                                page.drawImage(embeddedImage, {
+                                    x: 50,
+                                    y: y - drawHeight,
+                                    width: drawWidth,
+                                    height: drawHeight,
+                                });
+
+                                y -= (drawHeight + 20); // Beri jarak setelah gambar
+                            } catch (imgErr) {
+                                console.warn("Gagal menyematkan gambar:", imgErr);
+                            }
+                        } else {
+                            // Jika elemen berupa Teks Paragraf
+                            const text = el.textContent || "";
+                            if (text.trim() !== "") {
+                                const safeText = text.replace(/[^\x00-\x7F]/g, " ");
+                                page.drawText(safeText.substring(0, 95), {
+                                    x: 50,
+                                    y: y,
+                                    size: fontSize,
+                                    font: font,
+                                    color: PDFLib.rgb(0.1, 0.1, 0.1),
+                                });
+                                y -= lineHeight;
+                            }
+                        }
                     }
 
                     const pdfBytes = await pdfDoc.save();
@@ -365,14 +416,12 @@
                     const url = URL.createObjectURL(blob);
                     const originalName = file.name.replace(/\.[^/.]+$/, "");
 
-                    // Atur tautan unduh pada Pop-up Modal
                     const downloadLink = document.getElementById('wordPdfDownloadLink');
                     downloadLink.href = url;
                     downloadLink.download = `${originalName}.pdf`;
 
-                    resultCont.innerHTML = `✅ Konversi selesai untuk file: <strong>${file.name}</strong>. Silakan unduh melalui jendela pop-up yang muncul.`;
+                    resultCont.innerHTML = `✅ Konversi selesai untuk file: <strong>${file.name}</strong> (Teks & Gambar termuat). Silakan unduh melalui jendela pop-up.`;
                     
-                    // Tampilkan Pop-up Modal Download
                     document.getElementById('wordPdfModal').classList.remove('hidden');
                     showCustomToast("Konversi Word ke PDF berhasil!", "success", "Sukses");
 
@@ -387,7 +436,6 @@
 
             reader.readAsArrayBuffer(file);
         });
-
         // 2. PDF TO WORD HANDLER (Ekstraksi teks dengan Mammoth/PDF.js)
         document.getElementById('processPdfToWord').addEventListener('click', async () => {
             const fileInput = document.getElementById('pdfToWordInput');
