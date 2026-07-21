@@ -1300,26 +1300,54 @@ Format Output JSON Harus Seperti Ini:
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah ALUR TUJUAN PEMBELAJARAN (ATP) dan MODUL AJAR (RPP Plus) lengkap siap cetak dengan parameter:
-            - Mata Pelajaran: ${mapel}
-            - Jenjang/Fase: ${fase}
-            - Topik Pokok: ${topik}
-            - Alokasi Waktu: ${waktu}
-            - Profil Lulusan: ${profilTerpilih}
-            - Fasilitas: ${fasilitas}
+            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI. Buatkan dokumen naskah MODUL AJAR & RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) utuh, sangat rinci, dan siap cetak dengan parameter berikut:
+- Mata Pelajaran: ${mapel}
+- Jenjang/Fase/Kelas: ${fase}
+- Topik Pokok: ${topik}
+- Alokasi Waktu: ${waktu}
+- Target Dimensi Profil Lulusan (DPL): ${profilTerpilih}
+- Fasilitas Sekolah: ${fasilitas}
 
-            📋 WAJIB MEMUAT STRUKTUR BERIKUT:
-            1. INFORMASI UMUM (Identitas, Model Pembelajaran)
-            2. KOMPONEN INTI (Tujuan Pembelajaran, Kegiatan Pembelajaran Rinci, Asesmen & Rubrik)
-            3. LAMPIRAN LENGKAP:
-               - LKPD (Lembar Kerja Peserta Didik)
-               - BAHAN BACAAN GURU & SISWA (Sertakan penjelasan ringkas & jelas)
-               - SISIPKAN GAMBAR / DIAGRAM VISUAL pada Bahan Bacaan menggunakan format kotak diagram teks atau label petunjuk visual seperti:
-                 🖼️ [GAMBAR / DIAGRAM VISUAL: Keterangan gambar atau skema visual topik]
-                 beserta deskripsi visualnya agar memudahkan pemahaman siswa.
-               - GLOSARIUM & DAFTAR PUSTAKA
+📋 STRUKTUR DOKUMEN WAJIB (SANGAT DETAIL & PRESISI):
 
-            PENTING: Tuliskan naskah dokumen utuh langsung saja, TANPA JSON dan TANPA markdown codeblock (\`\`\`).`;
+A. INFORMASI UMUM & IDENTITAS MODUL
+(Tampilkan tabel identitas penyusun, satuan pendidikan, mata pelajaran, fase/kelas, alokasi waktu, dan topik)
+
+B. IDENTIFICATION PEMBELAJARAN MENDALAM
+1. Kesiapan Peserta Didik (Pengetahuan Awal) - Uraikan paragraf rata kiri-kanan.
+2. Identifikasi Materi Pembelajaran (Uraikan aspek Konseptual dan Prosedural).
+3. Pemetaan Dimensi Profil Lulusan (DPL): Sajikan tabel 8 DPL (Keimanan, Kewargaan, Penalaran Kritis, Kreativitas, Kolaborasi, Kesehatan, Kemandirian, Komunikasi) lengkap dengan status target (✓/ -) dan indikatornya.
+
+C. DESAIN PEMBELAJARAN
+1. Capaian Pembelajaran (CP)
+2. Tujuan Pembelajaran (TP) - Poin-poin rasional.
+3. Kerangka Praktik Pedagogis (Pendekatan Deep Learning, Model PBL/Discovery, Metode, Kemitraan, Lingkungan Belajar, Pemanfaatan Digital).
+
+D. ALUR PENGALAMAN BELAJAR (KEGIATAN PEMBELAJARAN RINCI)
+1. Kegiatan Awal (15 Menit) — Memahami & Berkesadaran (Memuat Salam, Doa, Latihan Fokus Teknik STOP, Apersepsi, Pertanyaan Pemantik).
+2. Kegiatan Inti (65 Menit) — Mengaplikasikan & Kolaborasi (Sajikan rinci 5 Sintaks Problem-Based Learning: Orientasi Masalah, Mengorganisasikan Siswa, Membimbing Penyelidikan, Menyajikan Karya, Menganalisis & Evaluasi).
+3. Kegiatan Penutup (10 Menit) — Merefleksikan & Bermakna (Refleksi siswa, Umpan Balik, Tindak Lanjut, Doa).
+
+E. BAHAN AJAR SISIPAN & MATERI BACAAN
+- Tuliskan materi bacaan lengkap & ringkas.
+- WAJIB SISIPKAN DIAGRAM VISUAL dalam bentuk kotak teks/ASCII skema seperti contoh:
+  🖼️ [DIAGRAM VISUAL: ANATOMI STRUKTUR / SCHEME POKOK MATERI]
+  (Sajikan skema alur/pohon hierarki topik dengan garis ASCII/teks rapi).
+
+F. ASESMEN PEMBELAJARAN
+1. Asesmen Diagnostik (Awal Pembelajaran).
+2. Asesmen Formatif: Tabel Rubrik Penilaian Sikap Dimensi Profil Lulusan (memuat kolom No, Nama Murid, L/P, Skor DPL, Total, Nilai).
+3. Asesmen Sumatif: Soal Pilihan Ganda & Uraian beserta Tabel Kunci Jawaban & Pedoman Penskoran.
+
+G. LEMBAR KERJA PESERTA DIDIK (LKPD) PRAKTIKUM
+(Petunjuk kerja, tujuan, dan tugas kelompok).
+
+H. LEMBAR REFLEKSI GURU & LEMBAR PENGESAHAN TANDA TANGAN
+(Tabel tanda tangan Kepala Sekolah dan Guru Mata Pelajaran).
+
+CATATAN PENTING:
+1. Tulislah naskah utuh secara langsung tanpa markdown codeblock (\`\`\`json atau \`\`\`markdown).
+2. Terapkan gaya penulisan narasi formal yang rapi, padat, dan runtut.`;
 
             try {
                 const response = await fetch(proxyUrl, { 
@@ -1372,7 +1400,11 @@ Format Output JSON Harus Seperti Ini:
                 
                 soalContainer.innerHTML = `
                     <div class="p-2 space-y-4">
-                        <textarea id="modulEditableArea" class="w-full h-96 border border-slate-200 rounded-xl p-4 text-xs font-sans bg-slate-50 focus:outline-emerald-500 leading-relaxed" style="white-space: pre-wrap; font-family: 'Plus Jakarta Sans', sans-serif;">${modulAjarGeneratedContent}</textarea>
+                        <textarea id="modulEditableArea" 
+    class="w-full h-[600px] border border-slate-300 rounded-xl p-5 text-xs font-sans bg-white focus:outline-emerald-500 leading-relaxed shadow-inner" 
+    style="white-space: pre-wrap; font-family: 'Plus Jakarta Sans', Arial, sans-serif; text-align: justify;">
+    ${modulAjarGeneratedContent}
+</textarea>
                     </div>
                 `;
                 
@@ -1514,21 +1546,20 @@ Format Output JSON Harus Seperti Ini:
             };
 
             // 1. PENANGANAN MODUL AJAR
-            if (typeof activeTab !== 'undefined' && activeTab === "modul") {
-                const lines = (modulAjarGeneratedContent || "").split('\n');
-                lines.forEach(line => {
-                    let isBold = false;
-                    let cleanLine = line.trim();
-                    if (cleanLine.startsWith('I.') || cleanLine.startsWith('II.') || cleanLine.startsWith('III.') || cleanLine.startsWith('IV.') || cleanLine.startsWith('V.') || cleanLine.startsWith('-')) {
-                        isBold = true;
-                    }
-                    children.push(new Paragraph({
-                        alignment: AlignmentType.JUSTIFIED,
-                        children: formatMathToTextRuns(line, window.docx, customFont, customSize),
-                        spacing: { after: 100 }
-                    }));
-                });
-            } else {
+           if (typeof activeTab !== 'undefined' && activeTab === "modul") {
+    const lines = (modulAjarGeneratedContent || "").split('\n');
+    lines.forEach(line => {
+        let cleanLine = line.trim();
+        if (cleanLine !== "") {
+            // Pengaturan Alignment JUSTIFIED (Rata Kiri-Kanan)
+            children.push(new Paragraph({
+                alignment: AlignmentType.JUSTIFIED, 
+                children: formatMathToTextRuns(cleanLine, window.docx, customFont, customSize),
+                spacing: { after: 120, line: 276 } // Spacing 1.15 line height
+            }));
+        }
+    });
+} else {
                 // 2. KOP SURAT & IDENTITAS
                 if (!isAnswerKey) {
                     const kopGambarElem = document.getElementById('kopGambarInput');
