@@ -84,7 +84,7 @@
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
             <div class="space-y-2 max-w-xl text-center md:text-left">
                 <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pusat Utilitas Dokumen Guru</span><br>
-                <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Word to PDF, PDF to Word, & PDF Combine Terintegrasi</h2>
+                <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">PDF Tools Asisten Guru Indonesia</h2>
                 <p class="text-xs text-emerald-100/90 leading-relaxed">Kelola dan ubah format berkas administrasi pembelajaran Anda dengan aman secara lokal tanpa kuota internet luar.</p>
             </div>
         </div>
@@ -123,16 +123,22 @@
             </button>
         </div>
 
-        <!-- CARD 3: PDF COMBINE -->
+        <!-- CARD 3: PDF COMBINE DENGAN PENGATURAN URUTAN -->
         <div class="app-card p-6 flex flex-col justify-between space-y-4">
             <div class="space-y-3">
                 <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl font-bold shadow-inner">
                     📚
                 </div>
                 <h3 class="font-bold text-slate-800 text-sm">PDF Combine / Merge</h3>
-                <p class="text-slate-500 text-[11px] leading-relaxed">Gabungkan beberapa lembar atau dokumen PDF terpisah menjadi satu kesatuan dokumen tunggal yang terstruktur.</p>
-                <input type="file" id="pdfCombineInput" accept=".pdf" multiple class="w-full app-input p-2 rounded-lg text-[10px] file:bg-emerald-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer">
+                <p class="text-slate-500 text-[11px] leading-relaxed">Gabungkan beberapa lembar PDF menjadi satu file utuh. Anda dapat mengatur urutan posisinya.</p>
+                <input type="file" id="pdfCombineInput" accept=".pdf" multiple class="w-full app-input p-2 rounded-lg text-[10px] file:bg-emerald-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer" onchange="handleSelectedFiles(event)">
             </div>
+
+            <!-- Area Daftar Susunan File -->
+            <div id="fileSortContainer" class="space-y-1.5 max-h-32 overflow-y-auto">
+                <p class="text-[10px] text-slate-400 italic">Belum ada berkas dipilih...</p>
+            </div>
+
             <button id="processPdfCombine" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
                 Gabungkan Berkas PDF
             </button>
@@ -295,6 +301,83 @@
                 showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
             }, 1200);
         });
+    </script>
+    <script>
+        let selectedFilesArray = [];
+
+        // Menangkap dan menyimpan file yang dipilih ke dalam array agar bisa disusun
+        function handleSelectedFiles(event) {
+            selectedFilesArray = Array.from(event.target.files);
+            renderFileList();
+        }
+
+        // Merender daftar file dengan tombol pengatur urutan (Naik / Turun / Hapus)
+        function renderFileList() {
+            const container = document.getElementById('fileSortContainer');
+            if (selectedFilesArray.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-slate-400 italic">Belum ada berkas dipilih...</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            selectedFilesArray.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between bg-slate-50 border border-slate-200 px-2 py-1.5 rounded-lg text-[10px]";
+                item.innerHTML = `
+                    <span class="truncate max-w-[140px] font-medium text-slate-700">${index + 1}. ${file.name}</span>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="moveFile(${index}, -1)" class="px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-slate-700 font-bold" title="Pindah ke Atas">▲</button>
+                        <button type="button" onclick="moveFile(${index}, 1)" class="px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-slate-700 font-bold" title="Pindah ke Bawah">▼</button>
+                        <button type="button" onclick="removeFile(${index})" class="px-1.5 py-0.5 bg-red-100 hover:bg-red-200 rounded text-red-600 font-bold" title="Hapus">✕</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Fungsi memindahkan posisi urutan file
+        function moveFile(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= selectedFilesArray.length) return;
+            const temp = selectedFilesArray[index];
+            selectedFilesArray[index] = selectedFilesArray[newIndex];
+            selectedFilesArray[newIndex] = temp;
+            renderFileList();
+        }
+
+        // Fungsi menghapus file dari daftar susun
+        function removeFile(index) {
+            selectedFilesArray.splice(index, 1);
+            renderFileList();
+        }
+
+        // Proses Gabung PDF dengan Tombol Download Langsung di Preview
+        document.getElementById('processPdfCombine').addEventListener('click', async () => {
+            if (selectedFilesArray.length < 2) {
+                return showCustomToast("Pilih minimal 2 file PDF untuk digabungkan dan disusun.", "warning");
+            }
+
+            previewSec.classList.remove('hidden');
+            resultCont.innerHTML = `Menggabungkan ${selectedFilesArray.length} dokumen PDF sesuai urutan...`;
+
+            setTimeout(() => {
+                // Simulasi pembuatan link download langsung
+                resultCont.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-emerald-700 font-bold">✅ Penggabungan Sesuai Urutan Berhasil!</p>
+                        <p class="text-slate-500">Berkas gabungan dari ${selectedFilesArray.length} dokumen siap diunduh.</p>
+                        <button onclick="simulateDownload()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+                            📥 Download File PDF Gabungan (.pdf)
+                        </button>
+                    </div>
+                `;
+                showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
+            }, 1000);
+        });
+
+        function simulateDownload() {
+            showCustomToast("Unduhan file PDF gabungan dimulai.", "success", "Download Berhasil");
+        }
     </script>
 </body>
 </html>
