@@ -722,31 +722,31 @@
         }
     </script>
 
-    <!-- DOMAIN PROTECTION LOCK SCRIPT (SAFEGUARDED) -->
-    <script>
-        (function() {
-            const allowedHosts = [
-                atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
-                atob("bG9jYWxob3N0"),             
-                atob("MTI3LjAuMC4x"),            
-                "asistenguruindonesia.my.id",     
-                "www.asistenguruindonesia.my.id", 
-                ""                 
-            ];
-            if (!allowedHosts.includes(window.location.hostname)) {
-                document.documentElement.innerHTML = "";
-                window.location.replace("https://google.com");
-                return;
-            }
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.onkeydown = function(e) {
-                if (e.keyCode === 123) return false;
-                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
-                if (e.ctrlKey && e.keyCode === 85) return false;
-                if (e.ctrlKey && e.keyCode === 83) return false;
-            };
-        })();
-    </script>
+    <!-- DOMAIN PROTECTION LOCK SCRIPT (PERBAIKAN / AMAN) -->
+<script>
+    (function() {
+        const allowedHosts = [
+            atob("dXJheWhlcmkuZ2l0aHViLmlv"), 
+            atob("bG9jYWxob3N0"),             
+            atob("MTI3LjAuMC4x"),            
+            "asistenguruindonesia.my.id",     
+            "www.asistenguruindonesia.my.id", 
+            ""                 
+        ];
+        if (!allowedHosts.includes(window.location.hostname)) {
+            document.documentElement.innerHTML = "";
+            window.location.replace("https://google.com");
+            return;
+        }
+        
+        // Pengamanan shortcut keyboard menggunakan preventDefault() yang benar
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123) { e.preventDefault(); }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); }
+            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); }
+        });
+    })();
+</script>
 
     <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT) -->
     <script>
