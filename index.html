@@ -368,7 +368,30 @@
                     </p>
                     <img src="curriculum.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>';" alt="Modul Icon" class="w-8 h-8">
                 </div>
-                
+                <!-- ⬇️ 1. MASUKKAN KODE FORM INPUT ADMINISTRASI DI SINI ⬇️ -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4">
+    <div>
+      <label class="block text-xs font-bold text-slate-700 mb-1">Nama Guru Mata Pelajaran:</label>
+      <input type="text" id="inputNamaGuru" value="U. Heri Mukti, S.Tr.Kom." class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white" placeholder="Nama Guru beserta Gelar">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-slate-700 mb-1">NIP Guru:</label>
+      <input type="text" id="inputNipGuru" value="-" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white" placeholder="NIP Guru (isi - jika non-NIP)">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kepala Sekolah:</label>
+      <input type="text" id="inputNamaKepsek" value="Suherwan, S.Pd." class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white" placeholder="Nama Kepala Sekolah beserta Gelar">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-slate-700 mb-1">NIP Kepala Sekolah:</label>
+      <input type="text" id="inputNipKepsek" value="19681020 199802 1 005" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white" placeholder="NIP Kepala Sekolah">
+    </div>
+    <div class="md:col-span-2">
+      <label class="block text-xs font-bold text-slate-700 mb-1">Nama Satuan Pendidikan (Sekolah):</label>
+      <input type="text" id="inputNamaSekolah" value="SMKN 1 Semparuk" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white" placeholder="Contoh: SMKN 1 Semparuk">
+    </div>
+  </div>
+  <!-- ⬆️ AKHIR KODE FORM ADMINISTRASI ⬆️ -->
                 <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-4 text-xs">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1">
@@ -1288,6 +1311,11 @@ Format Output JSON Harus Seperti Ini:
             const topik = document.getElementById('modulTopik').value.trim();
             const waktu = document.getElementById('modulWaktu').value.trim();
             const fasilitas = document.getElementById('modulFasilitas').value;
+            const namaGuru = document.getElementById('inputNamaGuru').value;
+            const nipGuru = document.getElementById('inputNipGuru').value;
+            const namaKepsek = document.getElementById('inputNamaKepsek').value;
+            const nipKepsek = document.getElementById('inputNipKepsek').value;
+            const namaSekolah = document.getElementById('inputNamaSekolah').value;
 
             const checkboxes = document.querySelectorAll('#panelModul input[name="dimensiProfil"]:checked');
             const profilTerpilih = Array.from(checkboxes).map(cb => cb.value).join(', ');
@@ -1307,47 +1335,51 @@ Format Output JSON Harus Seperti Ini:
 - Alokasi Waktu: ${waktu}
 - Target Dimensi Profil Lulusan (DPL): ${profilTerpilih}
 - Fasilitas Sekolah: ${fasilitas}
+- Nama Guru: ${namaGuru}
+- NIP Guru: ${nipGuru}
+- Nama Kepala Sekolah: ${namaKepsek}
+- NIP Kepala Sekolah: ${nipKepsek}
+- Nama Sekolah: ${namaSekolah}
 
-📋 STRUKTUR DOKUMEN WAJIB (SANGAT DETAIL & PRESISI):
+📋 ATURAN FORMAT LAYOUT DOKUMEN:
 
-A. INFORMASI UMUM & IDENTITAS MODUL
-(Tampilkan tabel identitas penyusun, satuan pendidikan, mata pelajaran, fase/kelas, alokasi waktu, dan topik)
+A. KHUSUS BAGIAN DALAM TABEL GRID UTAMA 2 KOLOM (DARI IDENTITAS SAMPAI PENGALAMAN BELAJAR KHAS PDF):
+Sajikan bagian awal ini ke dalam struktur Tabel Grid 2 Kolom (Kolom Kiri: Label Seksi, Kolom Kanan: Isi Rinci Rata Kiri-Kanan) mencakup:
+1. Identitas: Nama Guru, Satuan Pendidikan, Mapel, Materi, Alokasi Waktu.
+2. Identifikasi:
+   a) Kesiapan Peserta Didik (Uraian narasi analitis).
+   b) Materi Pembelajaran (Uraian aspek Konseptual & Prosedural).
+   c) Dimensi Profil Lulusan (DPL): Sajikan Tabel Grid 8 Kotak Checkbox (DPL 1 s/d DPL 8 dengan tanda ✓ pada DPL yang relevan).
+3. Desain Pembelajaran: Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), Praktik Pedagogis (Model PBL/Discovery, Metode), Kemitraan, Lingkungan Belajar, Pemanfaatan Digital.
+4. Pengalaman Belajar (BATAS AKHIR TABEL GRID):
+   - Memahami: Kegiatan Awal (10 menit) memuat Doa, Cek Kehadiran, Latihan Fokus Teknik STOP, Apersepsi, Tes Awal.
+   - Mengaplikasikan: Kegiatan Inti (75 menit) memuat runtutan Sintaks a-f (Orientasi Masalah, Identifikasi Masalah, Pengumpulan Data, Pengolahan Data, Pembuktian dengan Spin Wheel, Menarik Kesimpulan).
+   - Merefleksikan: Kegiatan Penutup (5 menit) memuat Refleksi Murid, Umpan Balik, Tindak Lanjut, Doa.
 
-B. IDENTIFICATION PEMBELAJARAN MENDALAM
-1. Kesiapan Peserta Didik (Pengetahuan Awal) - Uraikan paragraf rata kiri-kanan.
-2. Identifikasi Materi Pembelajaran (Uraikan aspek Konseptual dan Prosedural).
-3. Pemetaan Dimensi Profil Lulusan (DPL): Sajikan tabel 8 DPL (Keimanan, Kewargaan, Penalaran Kritis, Kreativitas, Kolaborasi, Kesehatan, Kemandirian, Komunikasi) lengkap dengan status target (✓/ -) dan indikatornya.
+B. BAGIAN DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP):
+Tuliskan bagian-bagian berikut di luar tabel grid utama dengan format narasi & tabel terpisah:
 
-C. DESAIN PEMBELAJARAN
-1. Capaian Pembelajaran (CP)
-2. Tujuan Pembelajaran (TP) - Poin-poin rasional.
-3. Kerangka Praktik Pedagogis (Pendekatan Deep Learning, Model PBL/Discovery, Metode, Kemitraan, Lingkungan Belajar, Pemanfaatan Digital).
+1. BAHAN AJAR SISIPAN MATERI PEMBELAJARAN
+   - Pengertian & Kedudukan Materi
+   - Karakteristik Elemen Utama
+   - WAJIB SISIPKAN DIAGRAM VISUAL ASCII ANATOMI/HIRARKI MATERI
+   - Naskah Contoh Sintaks/Kode/Aplikasi Standar.
 
-D. ALUR PENGALAMAN BELAJAR (KEGIATAN PEMBELAJARAN RINCI)
-1. Kegiatan Awal (15 Menit) — Memahami & Berkesadaran (Memuat Salam, Doa, Latihan Fokus Teknik STOP, Apersepsi, Pertanyaan Pemantik).
-2. Kegiatan Inti (65 Menit) — Mengaplikasikan & Kolaborasi (Sajikan rinci 5 Sintaks Problem-Based Learning: Orientasi Masalah, Mengorganisasikan Siswa, Membimbing Penyelidikan, Menyajikan Karya, Menganalisis & Evaluasi).
-3. Kegiatan Penutup (10 Menit) — Merefleksikan & Bermakna (Refleksi siswa, Umpan Balik, Tindak Lanjut, Doa).
+2. ASESMEN PEMBELAJARAN
+   - A. Asesmen Diagnostik Formatif Awal (Tes Lisan 3 soal)
+   - B. Penilaian Formatif LKPD
+   - C. Rubrik Skor Penilaian LKPD Praktikum + Rumus Nilai
+   - D. Tabel Penilaian Formatif Hasil Praktikum Murid (Kolom NO, NAMA MURID, L/P, SKOR, NILAI, KET)
+   - E. Soal Penilaian Sumatif Akhir (Soal Uraian, B-S, PG berbasis Diagram)
+   - F. Tabel Kunci Jawaban Penilaian Sumatif & Pedoman Penskoran
+   - G. Rubrik Observasi Sikap Murid DPL (Tabel Indikator & Tabel Skor DPL Per Murid)
 
-E. BAHAN AJAR SISIPAN & MATERI BACAAN
-- Tuliskan materi bacaan lengkap & ringkas.
-- WAJIB SISIPKAN DIAGRAM VISUAL dalam bentuk kotak teks/ASCII skema seperti contoh:
-  🖼️ [DIAGRAM VISUAL: ANATOMI STRUKTUR / SCHEME POKOK MATERI]
-  (Sajikan skema alur/pohon hierarki topik dengan garis ASCII/teks rapi).
+3. LEMBAR REFLEKSI GURU (Pertanyaan evaluasi diri guru)
 
-F. ASESMEN PEMBELAJARAN
-1. Asesmen Diagnostik (Awal Pembelajaran).
-2. Asesmen Formatif: Tabel Rubrik Penilaian Sikap Dimensi Profil Lulusan (memuat kolom No, Nama Murid, L/P, Skor DPL, Total, Nilai).
-3. Asesmen Sumatif: Soal Pilihan Ganda & Uraian beserta Tabel Kunci Jawaban & Pedoman Penskoran.
+4. LEMBAR PENGESAHAN TANDA TANGAN
+   Mengetahui, Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}) di Semparuk.
 
-G. LEMBAR KERJA PESERTA DIDIK (LKPD) PRAKTIKUM
-(Petunjuk kerja, tujuan, dan tugas kelompok).
-
-H. LEMBAR REFLEKSI GURU & LEMBAR PENGESAHAN TANDA TANGAN
-(Tabel tanda tangan Kepala Sekolah dan Guru Mata Pelajaran).
-
-CATATAN PENTING:
-1. Tulislah naskah utuh secara langsung tanpa markdown codeblock (\`\`\`json atau \`\`\`markdown).
-2. Terapkan gaya penulisan narasi formal yang rapi, padat, dan runtut.`;
+CATATAN FONT & PARAGRAF: Terapkan gaya penulisan narasi formal, rinci, dan rata kiri-kanan (justified).`;
 
             try {
                 const response = await fetch(proxyUrl, { 
