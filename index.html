@@ -1574,8 +1574,11 @@ BAGIAN B: DI LUAR TABEL GRID UTAMA (SANGAT DETAIL & LENGKAP)
                 return str.replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
             };
 
-            // 1. PENANGANAN EKSPOR MODUL AJAR (PARSER TABEL MARKDOWN ADVANCED)
+           // 1. PENANGANAN EKSPOR MODUL AJAR (AMAN & BEBAS ERROR HEADINGLEVEL)
 if (typeof activeTab !== 'undefined' && activeTab === "modul") {
+    // Ambil pustaka docx dari window agar aman
+    const { Paragraph, Table, TableRow, TableCell, AlignmentType, WidthType, BorderStyle } = window.docx || {};
+
     // Bersihkan teks dari sintaks LaTeX yang merusak layout
     let cleanText = (modulAjarGeneratedContent || "")
         .replace(/\$\$/g, '')
@@ -1596,17 +1599,14 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
         const docxRows = [];
         
         tableRowsBuffer.forEach((rowStr, rowIndex) => {
-            // Bersihkan dan ambil isi sel di antara karakter '|'
             let rawCells = rowStr.split('|');
             if (rawCells.length >= 3) {
-                // Buang elemen kosong di awal & akhir akibat split('|')
                 let cells = rawCells.slice(1, rawCells.length - 1).map(c => c.trim());
                 
                 // Abaikan baris separator seperti | :--- | :--- |
                 if (cells.some(c => c.includes('---'))) return;
 
                 const rowCells = cells.map(cellText => {
-                    // Penanganan line-break <br> di dalam sel tabel
                     const cellLines = cellText.split(/<br\s*\/?>/gi);
                     const cellParagraphs = cellLines.map(lineStr => {
                         return new Paragraph({
@@ -1633,39 +1633,32 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
             }
         });
 
-        // Masukkan objek Tabel Word nyata ke dokumen
         if (docxRows.length > 0) {
             children.push(new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: docxRows
             }));
-            children.push(new Paragraph({ spacing: { after: 120 } })); // Spasi setelah tabel
+            children.push(new Paragraph({ spacing: { after: 120 } }));
         }
 
-        tableRowsBuffer = []; // Reset buffer
+        tableRowsBuffer = [];
     };
 
     lines.forEach(line => {
         let cleanLine = line.trim();
         
-        // Cek apakah baris ini merupakan bagian dari Tabel Markdown
+        // Cek apakah baris merupakan Tabel Markdown
         if (cleanLine.startsWith('|') && cleanLine.endsWith('|')) {
             tableRowsBuffer.push(cleanLine);
         } else {
-            // Jika bertemu teks biasa, cetak tabel yang terkumpul terlebih dahulu
             flushTableBuffer();
 
             if (cleanLine !== "") {
-                // Menentukan apakah ini Judul (Heading) atau Paragraf Biasa
+                // Bersihkan simbol pagar (#) jika ada, dan buat Paragraf biasa dengan opsi Bold jika Judul
                 let isHeading = cleanLine.startsWith('#');
-                let headingLevel = HeadingLevel.HEADING_2;
                 let textContent = cleanLine.replace(/^#+\s*/, '');
 
-                if (cleanLine.startsWith('# ')) headingLevel = HeadingLevel.HEADING_1;
-                else if (cleanLine.startsWith('### ')) headingLevel = HeadingLevel.HEADING_3;
-
                 children.push(new Paragraph({
-                    heading: isHeading ? headingLevel : undefined,
                     alignment: isHeading ? AlignmentType.LEFT : AlignmentType.JUSTIFIED, 
                     children: formatMathToTextRuns(textContent, window.docx, customFont, customSize),
                     spacing: { before: isHeading ? 180 : 0, after: 120, line: 276 }
@@ -1674,7 +1667,6 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
         }
     });
 
-    // Flushing sisa tabel jika berada di paling akhir dokumen
     flushTableBuffer();
 } else {
                 // 2. KOP SURAT & IDENTITAS
