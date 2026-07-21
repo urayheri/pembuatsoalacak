@@ -104,8 +104,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-            
-
             <!-- LANGUAGE SWITCHER -->
             <div class="flex bg-slate-100 border border-slate-200 rounded-lg p-0.5">
                 <button id="langIdBtn" class="px-3 py-1 rounded-md text-[10px] font-bold cursor-pointer transition-all bg-white text-emerald-700 shadow-xs">ID</button>
@@ -124,29 +122,28 @@
     </header>
 
     <!-- HERO BANNER PROMOSI DENGAN MASKOT INTERAKTIF -->
-<div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner relative overflow-hidden">
-    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-        <div class="space-y-2 max-w-xl text-center md:text-left">
-            <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Otomasi Pendidikan 2026</span>
-            <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Solusi Cerdas Menyusun Soal & Modul Ajar Kurikulum Merdeka</h2>
-            <p class="text-xs text-emerald-100/90 leading-relaxed">Hemat hingga 80% waktu administrasi mengajar Anda. Proses aman secara lokal tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
-        </div>
-        
-        <!-- MASKOT HERO DENGAN BADGE POP-UP -->
-        <div class="shrink-0 relative group cursor-pointer" id="heroMascotTrigger">
+    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner relative overflow-hidden">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+            <div class="space-y-2 max-w-xl text-center md:text-left">
+                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Otomasi Pendidikan 2026</span>
+                <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Solusi Cerdas Menyusun Soal & Modul Ajar Kurikulum Merdeka</h2>
+                <p class="text-xs text-emerald-100/90 leading-relaxed">Hemat hingga 80% waktu administrasi mengajar Anda. Proses aman secara lokal tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
+            </div>
             
-            <!-- Tombol Pop-up Melayang di Dekat Maskot -->
-            <button type="button" class="absolute -top-4 left-1/2 -translate-x-1/2 z-20 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-[10px] px-3 py-1 rounded-full shadow-lg border border-amber-200 flex items-center gap-1.5 animate-bounce whitespace-nowrap cursor-pointer">
-                <span>✨ Keunggulan Web</span>
-            </button>
+            <!-- MASKOT HERO DENGAN BADGE POP-UP -->
+            <div class="shrink-0 relative group cursor-pointer" id="heroMascotTrigger">
+                <!-- Tombol Pop-up Melayang di Dekat Maskot -->
+                <button type="button" class="absolute -top-4 left-1/2 -translate-x-1/2 z-20 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-[10px] px-3 py-1 rounded-full shadow-lg border border-amber-200 flex items-center gap-1.5 animate-bounce whitespace-nowrap cursor-pointer">
+                    <span>✨ Keunggulan Web</span>
+                </button>
 
-            <!-- Ring Lingkaran Maskot -->
-            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/10 backdrop-blur-md border-2 border-emerald-300/40 hover:border-amber-300 flex items-center justify-center p-2 shadow-2xl transition-all duration-300 group-hover:scale-105 group-hover:bg-white/20">
-                <img src="teacher-hero.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>';" alt="Maskot Guru AI" class="w-full h-full object-contain filter drop-shadow-lg transition-transform duration-300 group-hover:rotate-2">
+                <!-- Ring Lingkaran Maskot -->
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/10 backdrop-blur-md border-2 border-emerald-300/40 hover:border-amber-300 flex items-center justify-center p-2 shadow-2xl transition-all duration-300 group-hover:scale-105 group-hover:bg-white/20">
+                    <img src="teacher-hero.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>';" alt="Maskot Guru AI" class="w-full h-full object-contain filter drop-shadow-lg transition-transform duration-300 group-hover:rotate-2">
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- MAIN DASHBOARD WINDOW -->
     <main class="container mx-auto px-4 py-8 max-w-5xl flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -600,7 +597,7 @@
     <!-- STABLE FOOTER DENGAN LINK LEGALITAS ADSENSE -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs space-y-2">
         <div class="flex justify-center gap-4">
-            <a href="#about" onclick="document.getElementById('openDevStatementBtn').click()" class="hover:underline">Tentang Kami</a> |
+            <a href="#about" id="footerAboutLink" class="hover:underline">Tentang Kami</a> |
             <a href="#privacy" onclick="alert('Kebijakan Privasi: Semua pemrosesan data dilakukan secara lokal di browser Anda. Kami tidak menyimpan dokumen naskah soal pengguna.')" class="hover:underline">Kebijakan Privasi</a> |
             <a href="#terms" onclick="alert('Ketentuan Layanan: Layanan ini disediakan gratis untuk mendukung efisiensi mengajar pendidik di Indonesia.')" class="hover:underline">Syarat & Ketentuan</a>
         </div>
@@ -640,36 +637,44 @@
             }
         }, 100);
     })();
-        // Membuka Pop-up Keunggulan Web saat Maskot/Badge diklik
-const heroMascotTrigger = document.getElementById('heroMascotTrigger');
-if (heroMascotTrigger) {
-    heroMascotTrigger.addEventListener('click', () => {
-        devStatementModal.classList.remove('hidden');
-    });
-}
     </script>
 
-    <!-- LOGIKA WORKSPACE & MODAL INTERAKSI -->
+    <!-- LOGIKA WORKSPACE & MODAL INTERAKSI (SINGLE UNIFIED SCRIPT) -->
     <script>
-        // LOGIKA POPUP PENGEMBANG
-        const openDevStatementBtn = document.getElementById('openDevStatementBtn');
+        // LOGIKA POPUP PENGEMBANG & KEUNGGULAN WEB (ANTI-ERROR SAFE CHECK)
         const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
         const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
         const devStatementModal = document.getElementById('devStatementModal');
+        const heroMascotTrigger = document.getElementById('heroMascotTrigger');
+        const openDevStatementBtn = document.getElementById('openDevStatementBtn');
+        const footerAboutLink = document.getElementById('footerAboutLink');
 
-        openDevStatementBtn.addEventListener('click', () => { devStatementModal.classList.remove('hidden'); });
-        closeDevStatementBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
-        confirmDevModalBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
-        devStatementModal.addEventListener('click', (e) => { if(e.target === devStatementModal) devStatementModal.classList.add('hidden'); });
+        function openKeunggulanModal() {
+            if (devStatementModal) {
+                devStatementModal.classList.remove('hidden');
+            }
+        }
+
+        if (heroMascotTrigger) heroMascotTrigger.addEventListener('click', openKeunggulanModal);
+        if (openDevStatementBtn) openDevStatementBtn.addEventListener('click', openKeunggulanModal);
+        if (footerAboutLink) footerAboutLink.addEventListener('click', (e) => { e.preventDefault(); openKeunggulanModal(); });
+
+        if (closeDevStatementBtn) closeDevStatementBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
+        if (confirmDevModalBtn) confirmDevModalBtn.addEventListener('click', () => { devStatementModal.classList.add('hidden'); });
+        if (devStatementModal) {
+            devStatementModal.addEventListener('click', (e) => { 
+                if(e.target === devStatementModal) devStatementModal.classList.add('hidden'); 
+            });
+        }
 
         // LOGIKA MODAL SEDEKAH
         const openSedekahBtn = document.getElementById('openSedekahBtn');
         const closeSedekahBtn = document.getElementById('closeSedekahBtn');
         const sedekahModal = document.getElementById('sedekahModal');
 
-        openSedekahBtn.addEventListener('click', () => { sedekahModal.classList.remove('hidden'); });
-        closeSedekahBtn.addEventListener('click', () => { sedekahModal.classList.add('hidden'); });
-        sedekahModal.addEventListener('click', (e) => { if(e.target === sedekahModal) sedekahModal.classList.add('hidden'); });
+        if (openSedekahBtn) openSedekahBtn.addEventListener('click', () => { sedekahModal.classList.remove('hidden'); });
+        if (closeSedekahBtn) closeSedekahBtn.addEventListener('click', () => { sedekahModal.classList.add('hidden'); });
+        if (sedekahModal) sedekahModal.addEventListener('click', (e) => { if(e.target === sedekahModal) sedekahModal.classList.add('hidden'); });
 
         const tabAcakBtn = document.getElementById('tabAcakBtn');
         const tabBuatBtn = document.getElementById('tabBuatBtn');
@@ -801,7 +806,6 @@ if (heroMascotTrigger) {
                 reader.readAsArrayBuffer(file);
             }
         });
-        
 
         excelInput.addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
