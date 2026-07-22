@@ -19,191 +19,209 @@
 <body class="bg-[#0b0f19] text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
 
     <!-- Top Navigation Bar -->
-    <header class="border-b border-slate-800 bg-[#0b0f19]/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-emerald-600 to-emerald-400 text-slate-950 p-2.5 rounded-xl shadow-lg shadow-emerald-900/20 font-bold text-lg flex items-center justify-center">
-                    <i class="fa-solid fa-file-word"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-base font-bold tracking-tight text-white">Asisten Guru Indonesia</h1>
-                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold px-2 py-0.5 rounded-full">PROMAX UTILITIES</span>
-                    </div>
-                    <p class="text-xs text-slate-400">Otomasi Berkas Kurikulum Merdeka & Administrasi Pendidik</p>
-                </div>
-            </div>
-            <a href="index.html" class="px-4 py-2 text-xs font-semibold bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl transition flex items-center shadow-sm">
-                <i class="fa-solid fa-house me-2 text-emerald-400"></i> Beranda Utama
-            </a>
-        </div>
-    </header>
-
-    <!-- Main Content Area -->
-    <main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow">
-        
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-3">
-                <i class="fa-solid fa-bolt text-yellow-400"></i> Ekstraksi Naskah Dokumen PDF ke Word (.docx)
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">Konverter PDF ke Word</h2>
-            <p class="text-sm text-slate-400 max-w-xl mx-auto">Salin dan sunting kembali isi naskah dari Modul Ajar, Surat Edaran, atau Buku Teks PDF Anda langsung ke format Microsoft Word.</p>
-        </div>
-
-        <!-- Upload Dropzone Card -->
-        <div class="bg-slate-900/60 backdrop-blur border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-xl mb-6 relative overflow-hidden group">
-            <div class="absolute -right-16 -top-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-emerald-500/60 bg-slate-950/40 hover:bg-slate-900/50 transition-all rounded-xl p-8 sm:p-10 text-center cursor-pointer relative">
-                <input type="file" id="fileInput" accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                <div class="flex flex-col items-center justify-center space-y-3">
-                    <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-105 transition">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                    </div>
-                    <div>
-                        <p class="text-base font-semibold text-slate-200" id="uploadText">Pilih atau Seret Berkas PDF (`.pdf`) ke Sini</p>
-                        <p class="text-xs text-slate-400 mt-1">Sistem otomatis membaca teks dan menyusunnya kembali ke file Word</p>
-                    </div>
-                    <span class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition">
-                        <i class="fa-solid fa-folder-open me-2"></i> Cari Berkas PDF
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Status & Result Area -->
-        <div id="resultContainer" class="hidden bg-slate-900/80 border border-slate-800 p-6 rounded-2xl shadow-lg text-center space-y-4">
-            <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl mx-auto flex items-center justify-center text-xl">
-                <i class="fa-solid fa-file-circle-check"></i>
+<header class="border-b border-slate-800 bg-[#0b0f19]/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-emerald-600 to-emerald-400 text-slate-950 p-2.5 rounded-xl shadow-lg shadow-emerald-900/20 font-bold text-lg flex items-center justify-center">
+                <i class="fa-solid fa-file-word"></i>
             </div>
             <div>
-                <h3 class="font-bold text-slate-200 text-base" id="fileNameDisplay">dokumen.docx</h3>
-                <p class="text-xs text-slate-400 mt-1" id="fileStats">Ekstraksi teks berhasil dilakukan.</p>
-            </div>
-            <div class="flex justify-center gap-3 pt-2">
-                <button id="downloadBtn" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center">
-                    <i class="fa-solid fa-download me-2"></i> Unduh File Word (.docx)
-                </button>
-                <button id="resetBtn" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
-                    Konversi File Lain
-                </button>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-base font-bold tracking-tight text-white">Asisten Guru Indonesia</h1>
+                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold px-2 py-0.5 rounded-full">PROMAX UTILITIES</span>
+                </div>
+                <p class="text-xs text-slate-400">Otomasi Berkas Kurikulum Merdeka & Administrasi Pendidik</p>
             </div>
         </div>
+        <a href="index.html" class="px-4 py-2 text-xs font-semibold bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-xl transition flex items-center shadow-sm">
+            <i class="fa-solid fa-house me-2 text-emerald-400"></i> Beranda Utama
+        </a>
+    </div>
+</header>
 
-    </main>
+<!-- Main Content Area -->
+<main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow">
+    
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-3">
+            <i class="fa-solid fa-bolt text-yellow-400"></i> Ekstraksi Naskah Dokumen PDF ke Word (.docx)
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">Konverter PDF ke Word</h2>
+        <p class="text-sm text-slate-400 max-w-xl mx-auto">Salin dan sunting kembali isi naskah dari Modul Ajar, Surat Edaran, atau Dokumen PDF Anda langsung ke format Microsoft Word.</p>
+    </div>
 
-    <!-- Footer -->
-    <footer class="bg-slate-950 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
-        <p>&copy; 2026 Asisten Guru Indonesia — Pemrosesan Aman Langsung di Perangkat (Offline-First)</p>
-    </footer>
+    <!-- Upload Dropzone Card -->
+    <div class="bg-slate-900/60 backdrop-blur border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-xl mb-6 relative overflow-hidden group">
+        <div class="absolute -right-16 -top-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-emerald-500/60 bg-slate-950/40 hover:bg-slate-900/50 transition-all rounded-xl p-8 sm:p-10 text-center cursor-pointer relative">
+            <input type="file" id="fileInput" accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+            <div class="flex flex-col items-center justify-center space-y-3">
+                <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-105 transition">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <div>
+                    <p class="text-base font-semibold text-slate-200" id="uploadText">Pilih atau Seret Berkas PDF (`.pdf`) ke Sini</p>
+                    <p class="text-xs text-slate-400 mt-1">Sistem otomatis memindai teks dan menyusunnya kembali ke file Word</p>
+                </div>
+                <span class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition">
+                    <i class="fa-solid fa-folder-open me-2"></i> Cari Berkas PDF
+                </span>
+            </div>
+        </div>
+    </div>
 
-    <!-- JavaScript Engine -->
-    <script>
-        const fileInput = document.getElementById('fileInput');
-        const dropZone = document.getElementById('dropZone');
-        const uploadText = document.getElementById('uploadText');
-        const resultContainer = document.getElementById('resultContainer');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const fileStats = document.getElementById('fileStats');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const resetBtn = document.getElementById('resetBtn');
+    <!-- Status & Result Area -->
+    <div id="resultContainer" class="hidden bg-slate-900/80 border border-slate-800 p-6 rounded-2xl shadow-lg text-center space-y-4">
+        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl mx-auto flex items-center justify-center text-xl">
+            <i class="fa-solid fa-file-circle-check"></i>
+        </div>
+        <div>
+            <h3 class="font-bold text-slate-200 text-base" id="fileNameDisplay">dokumen.docx</h3>
+            <p class="text-xs text-slate-400 mt-1" id="fileStats">Ekstraksi teks berhasil dilakukan.</p>
+        </div>
+        <div class="flex justify-center gap-3 pt-2">
+            <button id="downloadBtn" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center">
+                <i class="fa-solid fa-download me-2"></i> Unduh File Word (.docx)
+            </button>
+            <button id="resetBtn" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+                Konversi File Lain
+            </button>
+        </div>
+    </div>
 
-        let generatedDocxBlob = null;
-        let originalFileName = "";
+</main>
 
-        fileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+<!-- Footer -->
+<footer class="bg-slate-950 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+    <p>&copy; 2026 Asisten Guru Indonesia — Pemrosesan Aman Langsung di Perangkat (Offline-First)</p>
+</footer>
 
-            if (!file.name.endsWith('.pdf')) {
-                alert("Harap unggah file berformat .pdf");
+<!-- JavaScript Engine Terperinci -->
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const uploadText = document.getElementById('uploadText');
+    const resultContainer = document.getElementById('resultContainer');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const fileStats = document.getElementById('fileStats');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let generatedDocxBlob = null;
+    let originalFileName = "";
+
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.name.endsWith('.pdf')) {
+            alert("Harap unggah file berformat .pdf");
+            return;
+        }
+
+        originalFileName = file.name;
+        uploadText.textContent = "Sedang memindai halaman dan menyusun teks PDF...";
+        dropZone.classList.add('opacity-50');
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdfDocument = await loadingTask.promise;
+            
+            let extractedBody = "";
+
+            for (let i = 1; i <= pdfDocument.numPages; i++) {
+                const page = await pdfDocument.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                if (textContent.items.length === 0) continue;
+
+                let lastY = null;
+                let pageHtml = `<div style="margin-bottom: 20px;">`;
+
+                // Urutkan posisi teks secara vertikal & horizontal agar tidak acak-acakan
+                textContent.items.sort((a, b) => {
+                    const yA = a.transform[5];
+                    const yB = b.transform[5];
+                    if (Math.abs(yA - yB) > 5) {
+                        return yB - yA; // Dari atas ke bawah
+                    }
+                    return a.transform[4] - b.transform[4]; // Dari kiri ke kanan
+                });
+
+                textContent.items.forEach((item) => {
+                    const currentY = item.transform[5];
+                    if (lastY !== null && Math.abs(currentY - lastY) > 8) {
+                        pageHtml += `<br/>`;
+                    }
+                    pageHtml += `<span>${escapeHtml(item.str)} </span>`;
+                    lastY = currentY;
+                });
+
+                pageHtml += `</div>`;
+                extractedBody += pageHtml;
+            }
+
+            if (!extractedBody.trim()) {
+                alert("Berkas PDF ini terdeteksi sebagai hasil pemindaian (scan gambar) tanpa teks digital. Harap gunakan dokumen PDF teks asli.");
+                uploadText.textContent = "Pilih atau Seret Berkas PDF (`.pdf`) ke Sini";
+                dropZone.classList.remove('opacity-50');
                 return;
             }
 
-            originalFileName = file.name;
-            uploadText.textContent = "Sedang membaca & mengekstrak teks PDF...";
-            dropZone.classList.add('opacity-50');
+            const fullHtmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Converted Document</title></head><body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5;">${extractedBody}</body></html>`;
 
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-                const pdfDocument = await loadingTask.promise;
-                
-                let fullHtmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Converted Document</title></head><body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">`;
+            const converted = htmlDocx.asBlob(fullHtmlContent);
+            generatedDocxBlob = converted;
 
-                for (let i = 1; i <= pdfDocument.numPages; i++) {
-                    const page = await pdfDocument.getPage(i);
-                    const textContent = await page.getTextContent();
-                    
-                    let pageText = `<div style="margin-bottom: 20px;">`;
-                    let lastY = null;
+            fileNameDisplay.textContent = originalFileName.replace(/\.pdf$/i, '.docx');
+            fileStats.textContent = `Berhasil mengekstrak teks dari ${pdfDocument.numPages} halaman dokumen.`;
 
-                    textContent.items.forEach((item) => {
-                        // Pengelompokan baris teks sederhana berdasarkan posisi vertikal (Y)
-                        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 10) {
-                            pageText += `<br/>`;
-                        }
-                        pageText += `<span>${escapeHtml(item.str)} </span>`;
-                        lastY = item.transform[5];
-                    });
+            dropZone.parentElement.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
 
-                    pageText += `</div>`;
-                    fullHtmlContent += pageText;
-                }
-
-                fullHtmlContent += `</body></html>`;
-
-                // Konversi string HTML menjadi Blob format Word (.docx)
-                const converted = htmlDocx.asBlob(fullHtmlContent);
-                generatedDocxBlob = converted;
-
-                fileNameDisplay.textContent = originalFileName.replace(/\.pdf$/i, '.docx');
-                fileStats.textContent = `Berhasil mengekstrak ${pdfDocument.numPages} halaman dokumen.`;
-
-                dropZone.parentElement.classList.add('hidden');
-                resultContainer.classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Gagal memproses PDF:", error);
-                alert("Gagal membaca dokumen PDF. Pastikan file tidak terkunci atau rusak.");
-                uploadText.textContent = "Pilih atau Seret Berkas PDF (`.pdf`) ke Sini";
-                dropZone.classList.remove('opacity-50');
-            }
-        });
-
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        downloadBtn.addEventListener('click', () => {
-            if (!generatedDocxBlob) return;
-            const url = URL.createObjectURL(generatedDocxBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = originalFileName.replace(/\.pdf$/i, '.docx');
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-
-        resetBtn.addEventListener('click', () => {
-            fileInput.value = "";
-            generatedDocxBlob = null;
+        } catch (error) {
+            console.error("Gagal memproses PDF:", error);
+            alert("Terjadi kesalahan saat membaca dokumen PDF.");
             uploadText.textContent = "Pilih atau Seret Berkas PDF (`.pdf`) ke Sini";
             dropZone.classList.remove('opacity-50');
-            resultContainer.classList.add('hidden');
-            dropZone.parentElement.classList.remove('hidden');
-        });
+        }
+    });
 
-        // Proteksi Inspeksi Elemen
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase() === 'U')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    </script>
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    downloadBtn.addEventListener('click', () => {
+        if (!generatedDocxBlob) return;
+        const url = URL.createObjectURL(generatedDocxBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = originalFileName.replace(/\.pdf$/i, '.docx');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        fileInput.value = "";
+        generatedDocxBlob = null;
+        uploadText.textContent = "Pilih atau Seret Berkas PDF (`.pdf`) ke Sini";
+        dropZone.classList.remove('opacity-50');
+        resultContainer.classList.add('hidden');
+        dropZone.parentElement.classList.remove('hidden');
+    });
+
+    // Proteksi Inspeksi Elemen
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase() === 'U')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
 </body>
 </html>
