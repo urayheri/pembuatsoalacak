@@ -1087,42 +1087,57 @@
         });
 
         materiFileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            fileMateriStatus.textContent = "Sedang memindai data dokumen...";
-            fileMateriStatus.className = "text-[10px] text-emerald-600 font-medium block mt-0.5";
-            extractedTextFromDocument = ""; const reader = new FileReader();
-            
-            if (file.name.endsWith('.docx')) {
-                reader.onload = function(event) {
-                    try {
-                        const arrayBuffer = event.target.result;
-                        mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
-                            extractedTextFromDocument = result.value;
-                            fileMateriStatus.textContent = `✓ Struktur data teks dimuat (${extractedTextFromDocument.split(' ').length} kata).`;
-                            fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                        });
-                    } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
-                };
-                reader.readAsArrayBuffer(file);
-            } else if (file.name.endsWith('.pdf')) {
-                reader.onload = async function(event) {
-                    try {
-                        const typedarray = new Uint8Array(event.target.result);
-                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                        let textContent = "";
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i); const textObj = await page.getTextContent();
-                            textContent += textObj.items.map(item => item.str).join(" ") + "\n";
-                        }
-                        extractedTextFromDocument = textContent;
-                        fileMateriStatus.textContent = `✓ Berkas PDF Berhasil Dimuat (${extractedTextFromDocument.split(' ').length} kata).`;
-                        fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                    } catch(err) { fileMateriStatus.className = "text-[10px] text-red-500 block"; }
-                };
-                reader.readAsArrayBuffer(file);
+    const file = e.target.files[0]; 
+    if (!file) return;
+    
+    fileMateriStatus.textContent = "Sedang memindai data dokumen...";
+    fileMateriStatus.className = "text-[10px] text-emerald-600 font-medium block mt-0.5";
+    processGenerateBtn.disabled = true; // Kunci tombol sementara
+    
+    extractedTextFromDocument = ""; 
+    const reader = new FileReader();
+    
+    if (file.name.endsWith('.docx')) {
+        reader.onload = function(event) {
+            try {
+                const arrayBuffer = event.target.result;
+                mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
+                    extractedTextFromDocument = result.value || "";
+                    fileMateriStatus.textContent = `✓ Berkas Word berhasil dimuat (${extractedTextFromDocument.split(/\s+/).filter(Boolean).length} kata).`;
+                    fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                    processGenerateBtn.disabled = false; // Buka kunci tombol
+                });
+            } catch(err) { 
+                fileMateriStatus.textContent = "❌ Gagal membaca berkas Word.";
+                fileMateriStatus.className = "text-[10px] text-red-500 block"; 
+                processGenerateBtn.disabled = false;
             }
-        });
-
+        };
+        reader.readAsArrayBuffer(file);
+    } else if (file.name.endsWith('.pdf')) {
+        reader.onload = async function(event) {
+            try {
+                const typedarray = new Uint8Array(event.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let textContent = "";
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i); 
+                    const textObj = await page.getTextContent();
+                    textContent += textObj.items.map(item => item.str).join(" ") + "\n";
+                }
+                extractedTextFromDocument = textContent || "";
+                fileMateriStatus.textContent = `✓ Berkas PDF berhasil dimuat (${extractedTextFromDocument.split(/\s+/).filter(Boolean).length} kata).`;
+                fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                processGenerateBtn.disabled = false; // Buka kunci tombol
+            } catch(err) { 
+                fileMateriStatus.textContent = "❌ Gagal membaca berkas PDF.";
+                fileMateriStatus.className = "text-[10px] text-red-500 block"; 
+                processGenerateBtn.disabled = false;
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+});
         excelInput.addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
             fileStatus.textContent = "Berkas: " + file.name;
