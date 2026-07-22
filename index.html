@@ -1180,7 +1180,12 @@
 
         // ACTION BUTTON 2: AI QUESTION GENERATION (ENHANCED FOR COMPLEX MATHEMATICS)
         processGenerateBtn.addEventListener('click', async () => {
-            const materi = extractedTextFromDocument.trim() || materiInputText.value.trim();
+            // KODE PERBAIKAN (AMAN & PRESISI):
+const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
+const manualText = materiInputText.value ? materiInputText.value.trim() : "";
+
+// Prioritaskan teks dari file unggahan, jika kosong baru gunakan teks manual
+const materi = fileText !== "" ? fileText : manualText;
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
             
             if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
