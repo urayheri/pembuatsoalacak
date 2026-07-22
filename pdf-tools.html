@@ -4,28 +4,17 @@
     <!-- SCRIPT PROTEKSI INSPECT & DEVELOPER TOOLS -->
     <script>
         (function() {
-            // 1. Blokir Klik Kanan (Context Menu)
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-            });
-
-            // 2. Blokir Tombol Pintas Shortcut (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S)
+            document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
             document.onkeydown = function(e) {
-                // F12
                 if (e.keyCode === 123) return false;
-                // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
                 if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
-                // Ctrl+U (View Source)
                 if (e.ctrlKey && e.keyCode === 85) return false;
-                // Ctrl+S (Save Page)
                 if (e.ctrlKey && e.keyCode === 83) return false;
             };
-
-            // 3. Deteksi Pembukaan Console / Developer Tools (Auto Crash / Blank Page)
             setInterval(function() {
                 console.clear();
                 const startTime = +new Date();
-                debugger; // Memicu jeda jika inspector terbuka
+                debugger;
                 const endTime = +new Date();
                 if (endTime - startTime > 100) {
                     document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-weight:bold;color:#ef4444;background:#f4f6f9;padding:20px;text-align:center;'>⚠️ AKSES DITOLAK. Developer Tools terdeteksi aktif pada halaman ini.</div>";
@@ -35,726 +24,88 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perkakas PDF Guru - Asisten Guru Indonesia ProMax AI</title>
-    
-    <link class="js-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📑</text></svg>">
+    <title>Perkakas PDF Guru - Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📑</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
-            color: #334155;
-        }
-
-        .app-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
-            border-radius: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .app-card:hover {
-            box-shadow: 0 20px 30px -10px rgba(16, 185, 129, 0.08);
-        }
-
-        .app-input {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            color: #1e293b;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .app-input:focus {
-            border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
-            outline: none;
-        }
-
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
-        ::-webkit-scrollbar-thumb:hover { background: #059669; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%); }
+        .app-card { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; border-radius: 16px; transition: all 0.3s ease; }
+        .app-card:hover { transform: translateY(-3px); box-shadow: 0 20px 30px -10px rgba(16, 185, 129, 0.12); }
     </style>
 </head>
-<body class="text-xs antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-50 selection:text-emerald-800">
+<body class="text-xs antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- HEADER & NAVBAR UTAMA -->
+    <!-- HEADER -->
     <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between shadow-xs">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-emerald-600/20 transform hover:scale-105 transition-transform cursor-pointer">
-                📑
-            </div>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-emerald-600/20">📑</div>
             <div>
-                <h1 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                    Asisten Guru Indonesia <span class="text-[9px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-emerald-700 font-extrabold shadow-2xs">Utilities</span>
+                <h1 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    Asisten Guru Indonesia <span class="text-[9px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-emerald-700 font-extrabold">Utilities</span>
                 </h1>
-                <p class="text-[10px] text-slate-500 font-medium">Konversi & Penggabungan Dokumen Administrasi Sekolah</p>
+                <p class="text-[10px] text-slate-500 font-medium">Pilih Perkakas Administrasi Dokumen Sekolah</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3">
-            <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-lg transition-all cursor-pointer text-[11px] flex items-center gap-1.5">
-                <span>←</span> Kembali ke Beranda
-            </a>
+        <div>
+            <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-lg text-[11px]">← Beranda Utama</a>
         </div>
     </header>
 
-    <!-- HERO BANNER PROMOSI DENGAN MASKOT INTERAKTIF -->
-    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner relative overflow-hidden">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+    <!-- HERO BANNER -->
+    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-8 px-6 shadow-inner">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="space-y-2 max-w-xl text-center md:text-left">
-                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Otomasi Pendidikan 2026</span><br>
-                <h2 class="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">Solusi Cerdas Menyusun Soal & Modul Ajar Kurikulum Merdeka</h2>
-                <p class="text-xs text-emerald-100/90 leading-relaxed">Hemat hingga 80% waktu administrasi mengajar Anda. Proses aman secara lokal tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
-            </div>
-            
-            <!-- MASKOT HERO DENGAN BADGE POP-UP -->
-            <div class="shrink-0 relative group cursor-pointer" id="heroMascotTrigger">
-                <!-- Tombol Pop-up Melayang di Dekat Maskot -->
-                <button type="button" class="absolute -top-4 left-1/2 -translate-x-1/2 z-20 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-[10px] px-3 py-1 rounded-full shadow-lg border border-amber-200 flex items-center gap-1.5 animate-bounce whitespace-nowrap cursor-pointer">
-                    <span>Pdf Tools</span>
-                </button>
-
-                <!-- Ring Lingkaran Maskot -->
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/10 backdrop-blur-md border-2 border-emerald-300/40 hover:border-amber-300 flex items-center justify-center p-2 shadow-2xl transition-all duration-300 group-hover:scale-105 group-hover:bg-white/20">
-                    <img src="teacher-hero.png" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>';" alt="Maskot Guru AI" class="w-full h-full object-contain filter drop-shadow-lg transition-transform duration-300 group-hover:rotate-2">
-                </div>
+                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Otomasi Pendidikan 2026</span>
+                <h2 class="text-xl md:text-2xl font-extrabold">Solusi Cerdas Menyusun Dokumen Administrasi Guru</h2>
+                <p class="text-xs text-emerald-100/90">Proses aman secara lokal di browser tanpa mengunggah dokumen rahasia sekolah ke internet.</p>
             </div>
         </div>
     </div>
 
-    <!-- MAIN WORKSPACE -->
-    <main class="container mx-auto px-4 py-8 max-w-5xl flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- MAIN MENU GRID -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        <!-- CARD 1: WORD TO PDF -->
-        <div class="app-card p-6 flex flex-col justify-between space-y-4">
+        <a href="word-to-pdf.html" class="app-card p-6 flex flex-col justify-between space-y-4 cursor-pointer group">
             <div class="space-y-3">
-                <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xl font-bold shadow-inner">
-                    📄
-                </div>
-                <h3 class="font-bold text-slate-800 text-sm">Word ke PDF (.docx → .pdf)</h3>
-                <p class="text-slate-500 text-[11px] leading-relaxed">Konversikan naskah modul ajar atau soal dari format Word ke dokumen PDF siap cetak dengan akurasi tinggi.</p>
-                <input type="file" id="wordToPdfInput" accept=".docx" class="w-full app-input p-2 rounded-lg text-[10px] file:bg-blue-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xl font-bold">📄</div>
+                <h3 class="font-bold text-slate-800 text-sm group-hover:text-blue-600">Word ke PDF</h3>
+                <p class="text-slate-500 text-[11px]">Konversi naskah modul ajar atau soal dari Word (.docx) ke PDF siap cetak.</p>
             </div>
-            <button type="button" id="processWordToPdf" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer z-10 relative">
-                Proses Word ke PDF
-            </button>
-        </div>
+            <span class="w-full py-2 bg-blue-600 group-hover:bg-blue-700 text-white font-bold rounded-lg text-center text-xs">Buka Fitur →</span>
+        </a>
 
-        <!-- POP-UP MODAL DOWNLOAD KHUSUS WORD TO PDF -->
-        <div id="wordPdfModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
-            <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-100 text-center transform scale-95 transition-all">
-                <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
-                    🎉
-                </div>
-                <div class="space-y-1">
-                    <h3 class="font-extrabold text-slate-800 text-sm">Konversi Selesai!</h3>
-                    <p id="wordPdfModalDesc" class="text-slate-600 text-[11px] leading-relaxed">File dokumen PDF Anda sudah siap diunduh.</p>
-                </div>
-                <div class="space-y-2 pt-2">
-                    <a id="wordPdfDownloadLink" href="#" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-colors shadow-md inline-flex items-center justify-center gap-2 cursor-pointer">
-                        📥 Download File PDF Sekarang
-                    </a>
-                    <button type="button" onclick="closeWordPdfModal()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-colors cursor-pointer">
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- CARD 2: PDF TO WORD -->
-        <div class="app-card p-6 flex flex-col justify-between space-y-4">
+        <a href="pdf-to-word.html" class="app-card p-6 flex flex-col justify-between space-y-4 cursor-pointer group">
             <div class="space-y-3">
-                <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl font-bold shadow-inner">
-                    📝
-                </div>
-                <h3 class="font-bold text-slate-800 text-sm">PDF ke Word (.pdf → .docx)</h3>
-                <p class="text-slate-500 text-[11px] leading-relaxed">Ekstrak teks dari dokumen PDF perpustakaan atau lampiran dinas agar dapat disunting kembali di Microsoft Word.</p>
-                <input type="file" id="pdfToWordInput" accept=".pdf" class="w-full app-input p-2 rounded-lg text-[10px] file:bg-amber-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl font-bold">📝</div>
+                <h3 class="font-bold text-slate-800 text-sm group-hover:text-amber-600">PDF ke Word</h3>
+                <p class="text-slate-500 text-[11px]">Ekstrak teks dari PDF lampiran dinas/buku agar dapat disunting kembali.</p>
             </div>
-            <button id="processPdfToWord" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
-                Proses PDF ke Word
-            </button>
-        </div>
+            <span class="w-full py-2 bg-amber-600 group-hover:bg-amber-700 text-white font-bold rounded-lg text-center text-xs">Buka Fitur →</span>
+        </a>
 
-        <!-- CARD 3: PDF COMBINE DENGAN PENGATURAN URUTAN -->
-        <div class="app-card p-6 flex flex-col justify-between space-y-4">
+        <a href="pdf-combine.html" class="app-card p-6 flex flex-col justify-between space-y-4 cursor-pointer group">
             <div class="space-y-3">
-                <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl font-bold shadow-inner">
-                    📚
-                </div>
-                <h3 class="font-bold text-slate-800 text-sm">PDF Combine / Merge</h3>
-                <p class="text-slate-500 text-[11px] leading-relaxed">Gabungkan beberapa lembar PDF menjadi satu file utuh. Anda dapat mengatur urutan posisinya.</p>
-                <input type="file" id="pdfCombineInput" accept=".pdf" multiple class="w-full app-input p-2 rounded-lg text-[10px] file:bg-emerald-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer" onchange="handleSelectedFiles(event)">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl font-bold">📚</div>
+                <h3 class="font-bold text-slate-800 text-sm group-hover:text-emerald-600">PDF Combine</h3>
+                <p class="text-slate-500 text-[11px]">Gabungkan beberapa lembar file PDF menjadi satu file utuh dengan urutan kustom.</p>
             </div>
+            <span class="w-full py-2 bg-emerald-600 group-hover:bg-emerald-700 text-white font-bold rounded-lg text-center text-xs">Buka Fitur →</span>
+        </a>
 
-            <!-- Area Daftar Susunan File -->
-            <div id="fileSortContainer" class="space-y-1.5 max-h-32 overflow-y-auto">
-                <p class="text-[10px] text-slate-400 italic">Belum ada berkas dipilih...</p>
-            </div>
-
-            <button id="processPdfCombine" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
-                Gabungkan Berkas PDF
-            </button>
-        </div>
-        <!-- CARD 4: PDF COMPRESS (MENGECILKAN UKURAN PDF) -->
-        <div class="app-card p-6 flex flex-col justify-between space-y-4">
+        <a href="pdf-compress.html" class="app-card p-6 flex flex-col justify-between space-y-4 cursor-pointer group">
             <div class="space-y-3">
-                <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xl font-bold shadow-inner">
-                    📉
-                </div>
-                <h3 class="font-bold text-slate-800 text-sm">PDF Compress (Kecilkan Ukuran)</h3>
-                <p class="text-slate-500 text-[11px] leading-relaxed">Kurangi dan ringkas ukuran file dokumen PDF yang terlalu besar agar lebih ringan saat dibagikan atau diunggah.</p>
-                <input type="file" id="pdfCompressInput" accept=".pdf" class="w-full app-input p-2 rounded-lg text-[10px] file:bg-rose-600 file:border-0 file:text-white file:font-semibold file:px-2.5 file:py-0.5 file:rounded-md file:mr-2 file:cursor-pointer">
+                <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xl font-bold">📉</div>
+                <h3 class="font-bold text-slate-800 text-sm group-hover:text-rose-600">PDF Compress</h3>
+                <p class="text-slate-500 text-[11px]">Kecilkan ukuran file PDF yang terlalu besar agar lebih ringan diunggah.</p>
             </div>
-            <button id="processPdfCompress" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-all shadow-md text-xs cursor-pointer">
-                Kecilkan Ukuran PDF
-            </button>
-        </div>
+            <span class="w-full py-2 bg-rose-600 group-hover:bg-rose-700 text-white font-bold rounded-lg text-center text-xs">Buka Fitur →</span>
+        </a>
+
     </main>
 
-    <!-- PREVIEW / STATUS OUTPUT SECTION -->
-    <div class="container mx-auto px-4 max-w-5xl mb-8">
-        <div id="pdfToolPreviewSection" class="hidden app-card p-6 space-y-3 bg-white">
-            <h3 class="font-bold text-slate-700 text-xs" id="pdfToolStatusTitle">Status Proses Utilitas</h3>
-            <div id="pdfToolResultContainer" class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700"></div>
-        </div>
-    </div>
-
-    <!-- POP-UP NOTIFIKASI TOAST -->
-    <div id="customToastModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
-        <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-100 text-center transform scale-90 opacity-0 transition-all duration-300 relative" id="customToastBox">
-            <div id="toastIconBg" class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce">
-                <span id="toastIcon">⚠️</span>
-            </div>
-            <div class="space-y-1">
-                <h3 id="toastTitle" class="font-extrabold text-slate-800 text-sm">Pemberitahuan Sistem</h3>
-                <p id="toastMessage" class="text-slate-600 text-[11px] leading-relaxed">Pesan notifikasi.</p>
-            </div>
-            <button id="closeToastBtn" type="button" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-md">
-                Paham & Tutup
-            </button>
-        </div>
-    </div>
-
-    <!-- STABLE FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs space-y-2">
-        <p>Asisten Guru Indonesia © 2026 | Perkakas PDF Terintegrasi</p>
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs">
+        Asisten Guru Indonesia © 2026 | Perkakas PDF Terintegrasi
     </footer>
-
-    <!-- SCRIPT UTILITY LOGIC -->
-    <script>
-        function showCustomToast(message, type = 'error', title = null) {
-            const toastModal = document.getElementById('customToastModal');
-            const toastBox = document.getElementById('customToastBox');
-            const toastIcon = document.getElementById('toastIcon');
-            const toastIconBg = document.getElementById('toastIconBg');
-            const toastTitle = document.getElementById('toastTitle');
-            const toastMessage = document.getElementById('toastMessage');
-            const closeToastBtn = document.getElementById('closeToastBtn');
-
-            if (!toastModal) { alert(message); return; }
-
-            if (type === 'error') {
-                toastIcon.textContent = '❌';
-                toastIconBg.className = 'w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
-                toastTitle.textContent = title || 'Gagal Memproses Data';
-            } else if (type === 'warning') {
-                toastIcon.textContent = '⚠️';
-                toastIconBg.className = 'w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
-                toastTitle.textContent = title || 'Perhatian!';
-            } else {
-                toastIcon.textContent = '🎉';
-                toastIconBg.className = 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
-                toastTitle.textContent = title || 'Berhasil!';
-            }
-
-            toastMessage.textContent = message;
-            toastModal.classList.remove('hidden');
-            setTimeout(() => {
-                toastBox.classList.remove('scale-90', 'opacity-0');
-                toastBox.classList.add('scale-100', 'opacity-100');
-            }, 10);
-
-            const closeAction = () => {
-                toastBox.classList.remove('scale-100', 'opacity-100');
-                toastBox.classList.add('scale-90', 'opacity-0');
-                setTimeout(() => toastModal.classList.add('hidden'), 200);
-            };
-
-            closeToastBtn.onclick = closeAction;
-            toastModal.onclick = (e) => { if (e.target === toastModal) closeAction(); };
-        }
-
-        const previewSec = document.getElementById('pdfToolPreviewSection');
-        const resultCont = document.getElementById('pdfToolResultContainer');
-
-        // 1. WORD TO PDF HANDLER (Simulasi konversi lokal berstandar dokumen)
-        // Fungsi Penutup Modal Pop-up Word to PDF
-        function closeWordPdfModal() {
-            document.getElementById('wordPdfModal').classList.add('hidden');
-        }
-
-        // Proses Word ke PDF dengan Perbaikan Event & Pemunculan Pop-up Modal
-        // Proses Word ke PDF (Mendukung Teks dan Gambar)
-        document.getElementById('processWordToPdf').addEventListener('click', async () => {
-            const fileInput = document.getElementById('wordToPdfInput');
-            if(!fileInput.files[0]) {
-                return showCustomToast("Silakan pilih file .docx terlebih dahulu.", "warning");
-            }
-            
-            const btn = document.getElementById('processWordToPdf');
-            btn.disabled = true;
-            btn.textContent = "Sedang Mengonversi...";
-
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Sedang membaca teks dan gambar dari dokumen Word...";
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-
-            reader.onload = async function(e) {
-                try {
-                    const arrayBuffer = e.target.result;
-                    
-                    // Gunakan convertToHtml agar gambar dan format elemen terbaca
-                    const mammothResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
-                    const htmlContent = mammothResult.value;
-
-                    // Buat elemen penampung sementara di memori browser untuk membaca teks dan gambar
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = htmlContent;
-
-                    // Buat dokumen PDF baru menggunakan PDFLib
-                    const pdfDoc = await PDFLib.PDFDocument.create();
-                    let page = pdfDoc.addPage([595.28, 841.89]); // Ukuran A4
-                    const { height } = page.getSize();
-                    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-
-                    let y = height - 50;
-                    const fontSize = 11;
-                    const lineHeight = 15;
-
-                    // Ambil seluruh elemen paragraf dan gambar dari hasil konversi Word
-                    const elements = tempDiv.querySelectorAll('p, img');
-
-                    for (let el of elements) {
-                        if (el.tagName === 'IMG') {
-                            // Jika elemen berupa Gambar
-                            try {
-                                const imgSrc = el.src; 
-                                const imageBytes = await fetch(imgSrc).then(res => res.arrayBuffer());
-                                
-                                let embeddedImage;
-                                if (imgSrc.includes('image/png')) {
-                                    embeddedImage = await pdfDoc.embedPng(imageBytes);
-                                } else {
-                                    embeddedImage = await pdfDoc.embedJpg(imageBytes);
-                                }
-
-                                // ATURAN UKURAN PROPORTIONAL (Maksimal Lebar & Tinggi agar tidak meluber)
-                                const maxW = 400; // Lebar maksimal dalam pt
-                                const maxH = 300; // Tinggi maksimal dalam pt
-                                let imgDims = embeddedImage.scale(1);
-                                
-                                if (imgDims.width > maxW) {
-                                    imgDims = embeddedImage.scale(maxW / imgDims.width);
-                                }
-                                if (imgDims.height > maxH) {
-                                    imgDims = embeddedImage.scale(maxH / imgDims.height);
-                                }
-
-                                // Cek sisa halaman, jika tidak cukup buat halaman baru
-                                if (y - imgDims.height < 50) {
-                                    page = pdfDoc.addPage([595.28, 841.89]);
-                                    y = height - 50;
-                                }
-
-                                // POSISI GAMBAR DI TENGAH HALAMAN (CENTER ALIGNMENT)
-                                const centerX = (595.28 - imgDims.width) / 2;
-                                y -= imgDims.height;
-
-                                page.drawImage(embeddedImage, {
-                                    x: centerX,
-                                    y: y,
-                                    width: imgDims.width,
-                                    height: imgDims.height,
-                                });
-
-                                y -= 20; // Jarak aman setelah gambar sebelum teks keterangan
-                            } catch (imgErr) {
-                                console.warn("Gagal menyematkan gambar:", imgErr);
-                            }
-                        } else {
-                            // Jika elemen berupa Teks Paragraf / Keterangan Gambar
-                            const text = el.textContent || "";
-                            if (text.trim() !== "") {
-                                if (y < 50) {
-                                    page = pdfDoc.addPage([595.28, 841.89]);
-                                    y = height - 50;
-                                }
-
-                                const safeText = text.replace(/[^\x00-\x7F]/g, " ");
-                                
-                                // Teks Keterangan diatur di tengah (Center) agar rapi seperti layout dokumentasi
-                                page.drawText(safeText.substring(0, 100), {
-                                    x: 70,
-                                    y: y,
-                                    size: 10,
-                                    font: font,
-                                    color: PDFLib.rgb(0.2, 0.2, 0.2),
-                                });
-                                y -= 18; // Spasi antar baris teks keterangan
-                            }
-                        }
-                    }
-                    const pdfBytes = await pdfDoc.save();
-                    const blob = new Blob([pdfBytes], { type: "application/pdf" });
-                    const url = URL.createObjectURL(blob);
-                    const originalName = file.name.replace(/\.[^/.]+$/, "");
-
-                    const downloadLink = document.getElementById('wordPdfDownloadLink');
-                    downloadLink.href = url;
-                    downloadLink.download = `${originalName}.pdf`;
-
-                    resultCont.innerHTML = `✅ Konversi selesai untuk file: <strong>${file.name}</strong> (Teks & Gambar termuat). Silakan unduh melalui jendela pop-up.`;
-                    
-                    document.getElementById('wordPdfModal').classList.remove('hidden');
-                    showCustomToast("Konversi Word ke PDF berhasil!", "success", "Sukses");
-
-                } catch (err) {
-                    resultCont.innerHTML = `❌ Gagal mengonversi file: ${err.message}`;
-                    showCustomToast("Gagal memproses file Word.", "error");
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = "Proses Word ke PDF";
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-        });
-        // 2. PDF TO WORD HANDLER (Ekstraksi teks dengan Mammoth/PDF.js)
-        document.getElementById('processPdfToWord').addEventListener('click', async () => {
-            const fileInput = document.getElementById('pdfToWordInput');
-            if(!fileInput.files[0]) return showCustomToast("Silakan pilih file PDF terlebih dahulu.", "warning");
-
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Mengekstrak teks dokumen PDF ke format Word...";
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const typedarray = new Uint8Array(e.target.result);
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let extracted = "";
-                    for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
-                        const page = await pdf.getPage(i);
-                        const textObj = await page.getTextContent();
-                        extracted += textObj.items.map(item => item.str).join(" ") + "\n";
-                    }
-
-                    // Buat file docx hasil ekstraksi
-                    const { Document, Paragraph, TextRun, Packer } = window.docx;
-                    const doc = new Document({
-                        sections: [{
-                            properties: {},
-                            children: [
-                                new Paragraph({ children: [new TextRun({ text: `Hasil Ekstraksi dari: ${file.name}`, bold: true, size: 28 })], spacing: { after: 200 } }),
-                                new Paragraph({ children: [new TextRun({ text: extracted || "Tidak ada teks terbaca.", size: 24 })] })
-                            ]
-                        }]
-                    });
-
-                    const blob = await Packer.toBlob(doc);
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = file.name.replace(/\.[^/.]+$/, "") + "_konversi.docx";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-
-                    resultCont.innerHTML = `✅ Berhasil mengekstrak file <strong>${file.name}</strong> ke Word (.docx). Unduhan otomatis dimulai.`;
-                    showCustomToast("PDF berhasil diubah ke format Word!", "success", "Konversi Selesai");
-                } catch(err) {
-                    resultCont.innerHTML = `❌ Gagal memproses PDF: ${err.message}`;
-                    showCustomToast("Gagal memproses file PDF.", "error");
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // 3. PDF COMBINE HANDLER
-        document.getElementById('processPdfCombine').addEventListener('click', async () => {
-            if (selectedFilesArray.length < 2) {
-                return showCustomToast("Pilih dan susun minimal 2 file PDF untuk digabungkan.", "warning");
-            }
-
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = `Sedang menggabungkan ${selectedFilesArray.length} dokumen PDF secara lokal...`;
-
-            try {
-                // Membuat dokumen PDF baru yang kosong
-                const mergedPdf = await PDFLib.PDFDocument.create();
-
-                for (let i = 0; i < selectedFilesArray.length; i++) {
-                    const file = selectedFilesArray[i];
-                    const arrayBuffer = await file.arrayBuffer();
-                    
-                    // Muat file PDF sumber
-                    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                    
-                    // Salin semua halaman dari file sumber ke dokumen gabungan
-                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
-                    copiedPages.forEach((page) => {
-                        mergedPdf.addPage(page);
-                    });
-                }
-
-                // Simpan dokumen gabungan menjadi byte array
-                const mergedPdfBytes = await mergedPdf.save();
-                
-                // Buat objek Blob PDF yang valid
-                const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
-                const url = URL.createObjectURL(blob);
-
-                resultCont.innerHTML = `
-                    <div class="space-y-2">
-                        <p class="text-emerald-700 font-bold">✅ Penggabungan PDF Sesuai Urutan Berhasil!</p>
-                        <p class="text-slate-500">Berkas gabungan dari ${selectedFilesArray.length} dokumen siap diunduh dan dijamin bisa dibuka.</p>
-                        <a href="${url}" download="Dokumen_Gabungan_Final.pdf" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-                            📥 Download File PDF Gabungan (.pdf)
-                        </a>
-                    </div>
-                `;
-                showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
-
-            } catch (err) {
-                resultCont.innerHTML = `❌ Gagal menggabungkan PDF: ${err.message}`;
-                showCustomToast("Gagal memproses file PDF. Pastikan file tidak diproteksi password.", "error");
-            }
-        });
-    </script>
-    <script>
-        let selectedFilesArray = [];
-
-        // --- 1. PENGELOLA URUTAN PDF COMBINE ---
-        function handleSelectedFiles(event) {
-            selectedFilesArray = Array.from(event.target.files);
-            renderFileList();
-        }
-
-        function renderFileList() {
-            const container = document.getElementById('fileSortContainer');
-            if (selectedFilesArray.length === 0) {
-                container.innerHTML = '<p class="text-[10px] text-slate-400 italic">Belum ada berkas dipilih...</p>';
-                return;
-            }
-
-            container.innerHTML = '';
-            selectedFilesArray.forEach((file, index) => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between bg-slate-50 border border-slate-200 px-2 py-1.5 rounded-lg text-[10px]";
-                item.innerHTML = `
-                    <span class="truncate max-w-[140px] font-medium text-slate-700">${index + 1}. ${file.name}</span>
-                    <div class="flex items-center gap-1">
-                        <button type="button" onclick="moveFile(${index}, -1)" class="px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-slate-700 font-bold" title="Pindah ke Atas">▲</button>
-                        <button type="button" onclick="moveFile(${index}, 1)" class="px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-slate-700 font-bold" title="Pindah ke Bawah">▼</button>
-                        <button type="button" onclick="removeFile(${index})" class="px-1.5 py-0.5 bg-red-100 hover:bg-red-200 rounded text-red-600 font-bold" title="Hapus">✕</button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function moveFile(index, direction) {
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= selectedFilesArray.length) return;
-            const temp = selectedFilesArray[index];
-            selectedFilesArray[index] = selectedFilesArray[newIndex];
-            selectedFilesArray[newIndex] = temp;
-            renderFileList();
-        }
-
-        function removeFile(index) {
-            selectedFilesArray.splice(index, 1);
-            renderFileList();
-        }
-
-        // --- 2. TOMBOL AKSI & PEMUNCULAN DOWNLOAD OTOMATIS ---
-
-        // Proses Word ke PDF
-        document.getElementById('processWordToPdf').addEventListener('click', async () => {
-            const fileInput = document.getElementById('wordToPdfInput');
-            if(!fileInput.files[0]) return showCustomToast("Silakan pilih file .docx terlebih dahulu.", "warning");
-            
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Memproses konversi dokumen Word ke PDF...";
-            
-            setTimeout(() => {
-                const originalName = fileInput.files[0].name.replace(/\.[^/.]+$/, "");
-                resultCont.innerHTML = `
-                    <div class="space-y-2">
-                        <p class="text-emerald-700 font-bold">✅ Konversi Word ke PDF Berhasil!</p>
-                        <p class="text-slate-500">File siap diunduh dalam format PDF siap cetak.</p>
-                        <a href="#" onclick="triggerDirectDownload('${originalName}.pdf')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-                            📥 Download Hasil PDF (.pdf)
-                        </a>
-                    </div>
-                `;
-                showCustomToast("Dokumen Word berhasil dikonversi!", "success", "Konversi Sukses");
-            }, 1000);
-        });
-
-        // Proses PDF ke Word (Sudah otomatis memicu unduhan berkas docx)
-        document.getElementById('processPdfToWord').addEventListener('click', async () => {
-            const fileInput = document.getElementById('pdfToWordInput');
-            if(!fileInput.files[0]) return showCustomToast("Silakan pilih file PDF terlebih dahulu.", "warning");
-
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Mengekstrak teks dokumen PDF ke format Word...";
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const typedarray = new Uint8Array(e.target.result);
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let extracted = "";
-                    for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) {
-                        const page = await pdf.getPage(i);
-                        const textObj = await page.getTextContent();
-                        extracted += textObj.items.map(item => item.str).join(" ") + "\n";
-                    }
-
-                    const { Document, Paragraph, TextRun, Packer } = window.docx;
-                    const doc = new Document({
-                        sections: [{
-                            properties: {},
-                            children: [
-                                new Paragraph({ children: [new TextRun({ text: `Hasil Ekstraksi Dokumen: ${file.name}`, bold: true, size: 28 })], spacing: { after: 200 } }),
-                                new Paragraph({ children: [new TextRun({ text: extracted || "Tidak ada teks yang dapat terbaca.", size: 24 })] })
-                            ]
-                        }]
-                    });
-
-                    const blob = await Packer.toBlob(doc);
-                    const url = URL.createObjectURL(blob);
-                    
-                    resultCont.innerHTML = `
-                        <div class="space-y-2">
-                            <p class="text-emerald-700 font-bold">✅ Ekstraksi PDF ke Word Selesai!</p>
-                            <p class="text-slate-500">Berkas hasil konversi teks siap diunduh.</p>
-                            <a href="${url}" download="${file.name.replace(/\.[^/.]+$/, "")}_konversi.docx" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-                                📥 Download File Word (.docx)
-                            </a>
-                        </div>
-                    `;
-                    showCustomToast("PDF berhasil diubah ke format Word!", "success", "Konversi Selesai");
-                } catch(err) {
-                    resultCont.innerHTML = `❌ Gagal memproses PDF: ${err.message}`;
-                    showCustomToast("Gagal memproses file PDF.", "error");
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // Proses PDF Combine (Sesuai Urutan Disusun User)
-        document.getElementById('processPdfCombine').addEventListener('click', async () => {
-            if (selectedFilesArray.length < 2) {
-                return showCustomToast("Pilih dan susun minimal 2 file PDF untuk digabungkan.", "warning");
-            }
-
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = `Menggabungkan ${selectedFilesArray.length} dokumen PDF sesuai urutan susunan...`;
-
-            setTimeout(() => {
-                resultCont.innerHTML = `
-                    <div class="space-y-2">
-                        <p class="text-emerald-700 font-bold">✅ Penggabungan PDF Berhasil Sesuai Urutan!</p>
-                        <p class="text-slate-500">Gabungan dari ${selectedFilesArray.length} file dokumen siap diunduh.</p>
-                        <a href="#" onclick="triggerDirectDownload('Dokumen_Gabungan_Final.pdf')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-                            📥 Download File PDF Gabungan (.pdf)
-                        </a>
-                    </div>
-                `;
-                showCustomToast("Penggabungan PDF berhasil!", "success", "Merge Selesai");
-            }, 1200);
-        });
-
-        function triggerDirectDownload(filename, contentText = "Dokumen Hasil Konversi Perkakas PDF Guru") {
-            // Membuat Blob dengan format penulisan file yang valid
-            const blob = new Blob([contentText], { type: "application/pdf" });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showCustomToast("Unduhan berkas berhasil dimulai.", "success", "Download Sukses");
-        }
-    </script>
-    
-    // Proses PDF Compress (Mengecilkan Ukuran PDF)
-    <script>
-        document.getElementById('processPdfCompress').addEventListener('click', async () => {
-            const fileInput = document.getElementById('pdfCompressInput');
-            if (!fileInput.files[0]) {
-                return showCustomToast("Pilih file PDF terlebih dahulu untuk dikecilkan ukurannya.", "warning");
-            }
-
-            previewSec.classList.remove('hidden');
-            resultCont.innerHTML = "Sedang mengoptimasi dan mengecilkan ukuran file PDF...";
-
-            try {
-                const file = fileInput.files[0];
-                const originalSize = file.size;
-                const arrayBuffer = await file.arrayBuffer();
-
-                // Muat dokumen PDF menggunakan pdf-lib
-                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                
-                // Simpan ulang dokumen dengan opsi optimasi struktur byte
-                const compressedPdfBytes = await pdfDoc.save({ useObjectStreams: true });
-                
-                const compressedSize = compressedPdfBytes.length;
-                const savingsPercent = Math.max(0, Math.round((1 - (compressedSize / originalSize)) * 100));
-
-                const blob = new Blob([compressedPdfBytes], { type: "application/pdf" });
-                const url = URL.createObjectURL(blob);
-
-                const originalKb = (originalSize / 1024).toFixed(1);
-                const compressedKb = (compressedSize / 1024).toFixed(1);
-
-                resultCont.innerHTML = `
-                    <div class="space-y-2">
-                        <p class="text-emerald-700 font-bold">✅ Kompresi Ukuran PDF Berhasil!</p>
-                        <p class="text-slate-500">Ukuran awal: <strong>${originalKb} KB</strong> → Ukuran baru: <strong>${compressedKb} KB</strong> (Hemat sekitar ${savingsPercent}%)</p>
-                        <a href="${url}" download="${file.name.replace(/\.[^/.]+$/, "")}_terkompresi.pdf" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-                            📥 Download PDF Terkompresi (.pdf)
-                        </a>
-                    </div>
-                `;
-                showCustomToast("Ukuran PDF berhasil diperkecil!", "success", "Kompresi Selesai");
-
-            } catch (err) {
-                resultCont.innerHTML = `❌ Gagal mengompresi PDF: ${err.message}`;
-                showCustomToast("Gagal memproses file PDF.", "error");
-            }
-        });
-    </script>
 </body>
 </html>
