@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter Word ke PDF - Asisten Guru Indonesia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mammoth.js (Docx to HTML) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- html2pdf.js (HTML to PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Script Proteksi Inspeksi Elemen -->
+    <script>
+        // 1. Matikan Menu Klik Kanan (Context Menu)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // 2. Matikan Shortcuts Keyboard untuk DevTools
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl + Shift + I (Inspect Element)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + Shift + J (Console)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + Shift + C (Select Element)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + U (View Page Source)
+            if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 3. Deteksi & Seringkan Debugger jika DevTools Dibuka
+        setInterval(function() {
+            const startTime = performance.now();
+            debugger;
+            const endTime = performance.now();
+            if (endTime - startTime > 100) {
+                // Opsional: Lakukan tindakan jika pengguna memaksa membuka DevTools (misal reload/redirect)
+                // window.location.reload();
+            }
+        }, 1000);
+    </script>
+</body>
+    <style>
+        /* CSS khusus untuk kontainer konversi agar format PDF rapi */
+        .pdf-render-area {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            padding: 20mm;
+            width: 210mm; /* Standar A4 */
+            box-sizing: border-box;
+        }
+        .pdf-render-area table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .pdf-render-area table, .pdf-render-area th, .pdf-render-area td {
+            border: 1px solid black;
+            padding: 6px 8px;
+        }
+        .pdf-render-area img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-emerald-700 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-emerald-700 p-2.5 rounded-lg shadow font-bold text-xl">
+                    <i class="fa-solid me-1 fa-file-pdf"></i> AGI
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold leading-tight">Konverter Word ke PDF</h1>
+                    <p class="text-xs text-emerald-100">Portal Alat Bantu Guru - Asisten Guru Indonesia</p>
+                </div>
+            </div>
+            <div class="text-right text-xs bg-emerald-800/60 px-3 py-1.5 rounded-full border border-emerald-600">
+                <i class="fa-solid fa-bolt text-yellow-300 me-1"></i> Mode Batch / Banyak File
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="max-w-5xl mx-auto w-full px-4 py-8 flex-grow">
+        
+        <!-- Upload Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8 text-center">
+            <div id="dropZone" class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/40 hover:bg-emerald-50 transition-all rounded-xl p-8 cursor-pointer relative">
+                <input type="file" id="fileInput" multiple accept=".docx" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                <div class="flex flex-col items-center justify-center space-y-3">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <div>
+                        <p class="text-lg font-semibold text-slate-700">Pilih atau Seret Berkas Word (`.docx`) Ke Sini</p>
+                        <p class="text-sm text-slate-500 mt-1">Anda bisa memilih <span class="font-bold text-emerald-600">banyak file sekaligus</span> tanpa batasan jumlah</p>
+                    </div>
+                    <span class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow transition">
+                        <i class="fa-solid fa-folder-open me-2"></i> Cari Berkas
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar & Status -->
+        <div id="actionContainer" class="hidden flex flex-wrap justify-between items-center gap-4 mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div>
+                <h3 class="font-semibold text-slate-800" id="totalFilesText">0 Berkas Diunggah</h3>
+                <p class="text-xs text-slate-500">Siap diproses menjadi dokumen PDF berkualitas tinggi</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="clearAllBtn" class="px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 border border-red-200 rounded-lg transition">
+                    <i class="fa-solid fa-trash me-1"></i> Hapus Semua
+                </button>
+                <button id="processAllBtn" class="px-5 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow transition flex items-center">
+                    <i class="fa-solid fa-gears me-2"></i> Konversi Semua ke PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- File List Queue -->
+        <div id="fileList" class="space-y-3">
+            <!-- Daftar file akan dirender dinamis via JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Hidden Rendering Area (Digunakan untuk menampung HTML sementara sebelum di-PDF-kan) -->
+    <div id="renderAreaContainer" class="fixed -left-[9999px] top-0">
+        <div id="renderArea" class="pdf-render-area"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>&copy; Asisten Guru Indonesia — Solusi Digital Administrasi & Pembelajaran Guru</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let fileQueue = [];
+
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const fileListContainer = document.getElementById('fileList');
+        const actionContainer = document.getElementById('actionContainer');
+        const totalFilesText = document.getElementById('totalFilesText');
+        const processAllBtn = document.getElementById('processAllBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const renderArea = document.getElementById('renderArea');
+
+        // Handle File Selection
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(Array.from(e.target.files));
+            fileInput.value = ""; // Reset input
+        });
+
+        // Drag & Drop Handling
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-emerald-600', 'bg-emerald-100/50');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-emerald-600', 'bg-emerald-100/50');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-emerald-600', 'bg-emerald-100/50');
+            if (e.dataTransfer.files.length > 0) {
+                handleFiles(Array.from(e.dataTransfer.files));
+            }
+        });
+
+        function handleFiles(files) {
+            const validFiles = files.filter(f => f.name.endsWith('.docx'));
+            if (validFiles.length < files.length) {
+                alert("Beberapa file diabaikan karena bukan berformat .docx");
+            }
+
+            validFiles.forEach(file => {
+                const id = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+                fileQueue.push({
+                    id: id,
+                    file: file,
+                    status: 'pending', // pending, processing, completed, error
+                    pdfBlob: null
+                });
+            });
+
+            updateUI();
+        }
+
+        function updateUI() {
+            if (fileQueue.length > 0) {
+                actionContainer.classList.remove('hidden');
+                totalFilesText.textContent = `${fileQueue.length} Berkas Siap Diproses`;
+            } else {
+                actionContainer.classList.add('hidden');
+            }
+
+            fileListContainer.innerHTML = "";
+
+            fileQueue.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4";
+
+                let statusBadge = `<span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium"><i class="fa-regular fa-clock me-1"></i> Menunggu</span>`;
+                
+                if (item.status === 'processing') {
+                    statusBadge = `<span class="text-xs bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-medium"><i class="fa-solid fa-spinner fa-spin me-1"></i> Memproses...</span>`;
+                } else if (item.status === 'completed') {
+                    statusBadge = `<span class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-medium"><i class="fa-solid fa-circle-check me-1"></i> Selesai</span>`;
+                } else if (item.status === 'error') {
+                    statusBadge = `<span class="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-medium"><i class="fa-solid fa-triangle-exclamation me-1"></i> Gagal</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3 min-w-[250px]">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-file-word"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-800 truncate max-w-[280px] sm:max-w-[380px]" title="${item.file.name}">${item.file.name}</h4>
+                            <p class="text-xs text-slate-400">${(item.file.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        ${statusBadge}
+                        ${item.status === 'completed' ? `
+                            <button onclick="downloadSingle('${item.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-md shadow transition">
+                                <i class="fa-solid fa-download me-1"></i> Unduh PDF
+                            </button>
+                        ` : ''}
+                        <button onclick="removeItem('${item.id}')" class="text-slate-400 hover:text-red-500 p-1.5 transition" title="Hapus">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                    </div>
+                `;
+
+                fileListContainer.appendChild(card);
+            });
+        }
+
+        function removeItem(id) {
+            fileQueue = fileQueue.filter(item => item.id !== id);
+            updateUI();
+        }
+
+        clearAllBtn.addEventListener('click', () => {
+            fileQueue = [];
+            updateUI();
+        });
+
+        // Proses Konversi Satu Berkas
+        async function convertDocxToPdf(item) {
+            item.status = 'processing';
+            updateUI();
+
+            try {
+                const arrayBuffer = await item.file.arrayBuffer();
+                
+                // 1. Ubah DOCX ke HTML dengan Mammoth.js
+                const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                renderArea.innerHTML = result.value || "<p>[Dokumen Kosong]</p>";
+
+                // 2. Konfigurasi pencetakan PDF
+                const pdfOptions = {
+                    margin:       0,
+                    filename:     item.file.name.replace(/\.docx$/i, '.pdf'),
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // 3. Generasi PDF
+                const pdfWorker = html2pdf().set(pdfOptions).from(renderArea);
+                item.pdfBlob = await pdfWorker.output('blob');
+                item.status = 'completed';
+
+            } catch (error) {
+                console.error("Gagal memproses file:", error);
+                item.status = 'error';
+            }
+
+            renderArea.innerHTML = ""; // Bersihkan buffer render
+            updateUI();
+        }
+
+        // Proses Semua File secara Berurutan (Batching)
+        processAllBtn.addEventListener('click', async () => {
+            processAllBtn.disabled = true;
+            processAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            for (let item of fileQueue) {
+                if (item.status !== 'completed') {
+                    await convertDocxToPdf(item);
+                }
+            }
+
+            processAllBtn.disabled = false;
+            processAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        });
+
+        // Unduh File PDF Individu
+        function downloadSingle(id) {
+            const item = fileQueue.find(i => i.id === id);
+            if (item && item.pdfBlob) {
+                const url = URL.createObjectURL(item.pdfBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = item.file.name.replace(/\.docx$/i, '.pdf');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+    </script>
+</body>
+</html>
