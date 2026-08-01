@@ -2077,19 +2077,34 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
             setTimeout(() => chatbotWindow.classList.add('hidden'), 200);
         });
 
-        function appendUserMessage(msg) {
-            const userMsgDiv = document.createElement('div');
-            userMsgDiv.className = "flex gap-2 items-start justify-end";
-            userMsgDiv.innerHTML = `
-                <div class="bg-emerald-600 text-white p-2.5 rounded-2xl rounded-tr-xs shadow-2xs max-w-[85%] leading-relaxed">
-                    ${msg}
-                </div>
-            `;
-            chatMessages.appendChild(userMsgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        // ARRAY UNTUK MENYIMPAN RIWAYAT CHAT (AGAR AI INGET DAN NYAMBUNG)
+let chatHistory = [];
 
-        function appendAiMessage(msg) {
+function appendUserMessage(msg) {
+    // 1. Simpan ke riwayat percakapan
+    chatHistory.push({
+        role: "user",
+        parts: [{ text: msg }]
+    });
+
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = "flex gap-2 items-start justify-end";
+    userMsgDiv.innerHTML = `
+        <div class="bg-emerald-600 text-white p-2.5 rounded-2xl rounded-tr-xs shadow-2xs max-w-[85%] leading-relaxed">
+            ${msg}
+        </div>
+    `;
+    chatMessages.appendChild(userMsgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function appendAiMessage(msg) {
+    // 2. Simpan balasan AI ke riwayat percakapan
+    chatHistory.push({
+        role: "model",
+        parts: [{ text: msg }]
+    });
+
     const aiMsgDiv = document.createElement('div');
     aiMsgDiv.className = "flex gap-2 items-start";
     aiMsgDiv.innerHTML = `
@@ -2107,49 +2122,64 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-        function sendQuickPrompt(promptText) {
-            chatInput.value = promptText;
-            chatForm.dispatchEvent(new Event('submit'));
-        }
+// LOGIKA SUBMIT CHAT DENGAN RIWAYAT LENGKAP
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if(!text) return;
 
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if(!text) return;
+    // Tampilkan & simpan pesan user
+    appendUserMessage(text);
+    chatInput.value = "";
 
-            appendUserMessage(text);
-            chatInput.value = "";
+    // Indikator Loading
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = "flex gap-2 items-start loading-msg";
+    loadingDiv.innerHTML = `
+        <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5 animate-spin">🌀</div>
+        <div class="bg-white border border-slate-200 p-2 rounded-2xl text-slate-400 italic text-[10px]">
+            Sistem AI sedang berpikir...
+        </div>
+    `;
+    chatMessages.appendChild(loadingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = "flex gap-2 items-start loading-msg";
-            loadingDiv.innerHTML = `
-                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5 animate-spin">🌀</div>
-                <div class="bg-white border border-slate-200 p-2 rounded-2xl text-slate-400 italic text-[10px]">
-                    Sistem AI sedang berpikir...
-                </div>
-            `;
-            chatMessages.appendChild(loadingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+    const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
-            const chatPrompt = `Bertindaklah sebagai Konsultan Pendidikan AI yang ramah, ringkas, dan sangat membantu guru sekolah. Jawab pertanyaan guru berikut dalam waktu singkat tanpa simbol markdown berlebihan: ${text}`;
+    // PENTING: Sisipkan System Prompt sebagai arahan awal di konteks pertama jika riwayat masih baru
+    let contentsToSend = [...chatHistory];
+    
+    // Jika ini obrolan pertama, berikan instruksi peran AI di awal
+    if (contentsToSend.length === 1) {
+        contentsToSend[0].parts[0].text = `Bertindaklah sebagai Konsultan Pendidikan AI yang ramah, ringkas, dan sangat membantu guru sekolah. Ingat semua konteks percakapan sebelumnya. Pertanyaan/instruksi pengguna: ${text}`;
+    }
 
-            try {
-                const response = await fetch(proxyUrl, { method: "POST", body: JSON.stringify({ contents: [{ parts: [{ text: chatPrompt }] }] }) });
-                const rawText = await response.text();
-                let reply = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
-                reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
-
-                const loader = chatMessages.querySelector('.loading-msg');
-                if(loader) loader.remove();
-
-                appendAiMessage(reply);
-            } catch (err) {
-                const loader = chatMessages.querySelector('.loading-msg');
-                if(loader) loader.remove();
-                appendAiMessage("Maaf, koneksi server AI sedang padat. Silakan coba tanyakan kembali.");
-            }
+    try {
+        // Kirim SELURUH riwayat percakapan (chatHistory), bukan cuma pesan terakhir!
+        const response = await fetch(proxyUrl, { 
+            method: "POST", 
+            body: JSON.stringify({ contents: contentsToSend }) 
         });
+        
+        const rawText = await response.text();
+        let reply = JSON.parse(rawText).candidates[0].content.parts[0].text.trim();
+        reply = reply.replace(/\*\*/g, "").replace(/\*/g, "");
+
+        const loader = chatMessages.querySelector('.loading-msg');
+        if(loader) loader.remove();
+
+        // Tampilkan & simpan balasan AI
+        appendAiMessage(reply);
+    } catch (err) {
+        const loader = chatMessages.querySelector('.loading-msg');
+        if(loader) loader.remove();
+        
+        // Hapus pesan pengguna terakhir dari riwayat jika gagal dikirim agar data tidak kacau
+        chatHistory.pop();
+        
+        appendAiMessage("Maaf, koneksi server AI sedang padat. Silakan coba tanyakan kembali.");
+    }
+});
 
         // MULTI-LANGUAGE ENGINE ARCHITECTURE
         const i18n = {
