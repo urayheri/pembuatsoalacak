@@ -791,69 +791,64 @@
          * @param {string} text - Teks masukan yang memuat notasi matematika ($...$ atau $$...$$)
          * @returns {Array<{type: 'text'|'math-inline'|'math-block', value: string}>}
          */
-        function parseMathTextRuns(text) {
-          if (!text) return [];
+       /**
+ * Memecah teks dan membersihkan notasi LaTeX mentah agar terbungkus $...$ dengan benar.
+ */
+function parseMathTextRuns(text) {
+  if (!text) return [];
 
-          const runs = [];
-          // Regex untuk mencocokkan $$...$$ (block) dan $...$ (inline)
-          const regex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$)/g;
-          let lastIndex = 0;
-          let match;
+  // Auto-fix: Bungkus perintah LaTeX berdiri sendiri yang lupa dibungkus $...$ oleh AI
+  let preprocessedText = text.replace(/(?<!\$)(Control|\\(frac|sqrt|sum|int|lim|alpha|beta|theta|pi|pm|leq|geq|neq|times|div|bar|vec|hat))(\{.*?\})*(?!\$)/g, '$$&$');
 
-          while ((match = regex.exec(text)) !== null) {
-            // Teks biasa sebelum simbol $
-            if (match.index > lastIndex) {
-              runs.push({
-                type: 'text',
-                value: text.slice(lastIndex, match.index)
-              });
-            }
+  const runs = [];
+  const regex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$)/g;
+  let lastIndex = 0;
+  let match;
 
-            const matchedStr = match[0];
-            if (matchedStr.startsWith('$$') && matchedStr.endsWith('$$')) {
-              // Block math ($$ ... $$)
-              runs.push({
-                type: 'math-block',
-                value: matchedStr.slice(2, -2).trim()
-              });
-            } else {
-              // Inline math ($ ... $)
-              runs.push({
-                type: 'math-inline',
-                value: matchedStr.slice(1, -1).trim()
-              });
-            }
+  while ((match = regex.exec(preprocessedText)) !== null) {
+    if (match.index > lastIndex) {
+      runs.push({
+        type: 'text',
+        value: preprocessedText.slice(lastIndex, match.index)
+      });
+    }
 
-            lastIndex = regex.lastIndex;
-          }
+    const matchedStr = match[0];
+    if (matchedStr.startsWith('$$') && matchedStr.endsWith('$$')) {
+      runs.push({
+        type: 'math-block',
+        value: matchedStr.slice(2, -2).trim()
+      });
+    } else {
+      runs.push({
+        type: 'math-inline',
+        value: matchedStr.slice(1, -1).trim()
+      });
+    }
 
-          // Sisa teks setelah match terakhir
-          if (lastIndex < text.length) {
-            runs.push({
-              type: 'text',
-              value: text.slice(lastIndex)
-            });
-          }
+    lastIndex = regex.lastIndex;
+  }
 
-          return runs;
-        }
+  if (lastIndex < preprocessedText.length) {
+    runs.push({
+      type: 'text',
+      value: preprocessedText.slice(lastIndex)
+    });
+  }
 
-        /**
-         * Mengonversi teks yang memuat matematika LaTeX menjadi larik docx.TextRun
-         * yang mendukung superskrip (^), subskrip (_), dan simbol matematika untuk ekspor Word (.docx).
-         */
-        function formatMathToTextRuns(text, docx, customFont, customSize) {
-            const { TextRun } = docx;
+  return runs;
+}
 
-            // [TAMBAHAN] Pre-processing: Tangani kasus jika AI lupa membungkus rumus dengan $...$
-            text = text.replace(/\\[Ss]igma/g, '∑ ')
-                       .replace(/\\[Ss]um/g, '∑ ')
-                       .replace(/\\cdot/g, '· ')
-                       .replace(/\\times/g, '× ')
-                       .replace(/\\div/g, '÷ ');
+/**
+ * Mengonversi LaTeX menjadi Unicode Matematika Presisi Tinggi untuk Dokumen Word (.docx)
+ */
+function formatMathToTextRuns(text, docx, customFont, customSize) {
+  const { TextRun } = docx;
 
-            const parsed = parseMathTextRuns(text);
-            const runs = [];
+  if (!text) return [new TextRun({ text: "", font: customFont, size: customSize })];
+
+  const parsed = parseMathTextRuns(text);
+  const runs = [];
 
   parsed.forEach(item => {
     if (item.type === 'text') {
@@ -861,44 +856,51 @@
     } else {
       let mathVal = item.value;
 
-      // --- CLEANUP SINTAKS LATEX TABEL & MACRO KHUSUS ---
+      // 1. Clean-up Makro & Tabel LaTeX
       mathVal = mathVal
-        .replace(/\\text\{([^}]+)\}/g, '$1')       // \text{Nilai} -> Nilai
-        .replace(/\\bar\{([^}]+)\}/g, '$1̄')        // \bar{x} -> x̄
-        .replace(/\\begin\{array\}\{[^}]+\}/g, '') // Hapus \begin{array}{...}
-        .replace(/\\end\{array\}/g, '')           // Hapus \end{array}
-        .replace(/\\hline/g, '')                  // Hapus \hline
-        .replace(/\\\\/g, ' | ')                   // Ganti \\ (baris baru tabel) jadi pemisah '|'
-        .replace(/&/g, ' = ');                     // Ganti & jadi '='
+        .replace(/\\text\{([^}]+)\}/g, '$1')
+        .replace(/\\mathrm\{([^}]+)\}/g, '$1')
+        .replace(/\\mathbf\{([^}]+)\}/g, '$1')
+        .replace(/\\bar\{([^}]+)\}/g, '$1̄')
+        .replace(/\\vec\{([^}]+)\}/g, '$1⃗')
+        .replace(/\\begin\{array\}\{[^}]+\}/g, '')
+        .replace(/\\end\{array\}/g, '')
+        .replace(/\\hline/g, '')
+        .replace(/\\\\/g, ' | ')
+        .replace(/&/g, ' = ');
 
-      // --- PENANGANAN KHUSUS NOTASI SIGMA (\sum) ---
-      // Konversi \sum_{bottom}^{top} -> Σ_(bottom)^(top)
+      // 2. Transformasi Pecahan Bersarang (\frac{a}{b}) -> (a)/(b)
+      while (/\\frac\{([^}]+)\}\{([^}]+)\}/.test(mathVal)) {
+        mathVal = mathVal.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)');
+      }
+
+      // 3. Transformasi Akar (\sqrt{x})
+      mathVal = mathVal.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+
+      // 4. Konversi Notasi Sigma & Integral
       mathVal = mathVal
         .replace(/\\sum_\{([^}]+)\}\^\{([^}]+)\}/g, '∑_($1)^($2) ')
-        .replace(/\\sum_\{([^}]+)\}\^([0-9a-zA-Z]+)/g, '∑_($1)^($2) ')
-        .replace(/\\sum=([0-9a-zA-Z]+)\^([0-9a-zA-Z]+)/g, '∑_($1)^($2) ')
-        .replace(/\\sum_([0-9a-zA-Z]+)=([0-9a-zA-Z]+)\^([0-9a-zA-Z]+)/g, '∑_($1=$2)^($3) ')
-        .replace(/\\sum_([0-9a-zA-Z]+)\^([0-9a-zA-Z]+)/g, '∑_($1)^($2) ')
-        .replace(/\\sum/g, '∑ ');
+        .replace(/\\sum_\{([^}]+)\}/g, '∑_($1) ')
+        .replace(/\\sum/g, '∑ ')
+        .replace(/\\int_\{([^}]+)\}\^\{([^}]+)\}/g, '∫_($1)^($2) ')
+        .replace(/\\int/g, '∫ ');
 
-      // Penggantian simbol umum LaTeX ke Unicode
-      mathVal = mathVal
-        .replace(/\\times/g, '×')
-        .replace(/\\div/g, '÷')
-        .replace(/\\pm/g, '±')
-        .replace(/\\leq/g, '≤')
-        .replace(/\\geq/g, '≥')
-        .replace(/\\neq/g, '≠')
-        .replace(/\\infty/g, '∞')
-        .replace(/\\pi/g, 'π')
-        .replace(/\\alpha/g, 'α')
-        .replace(/\\beta/g, 'β')
-        .replace(/\\theta/g, 'θ')
-        .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-        .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1/$2)');
+      // 5. Konversi Simbol Matematika Standar ke Unicode
+      const symbolMap = {
+        '\\times': '×', '\\div': '÷', '\\pm': '±', '\\cdot': '·',
+        '\\leq': '≤', '\\geq': '≥', '\\neq': '≠', '\\approx': '≈',
+        '\\infty': '∞', '\\pi': 'π', '\\alpha': 'α', '\\beta': 'β',
+        '\\theta': 'θ', '\\sigma': 'σ', '\\delta': 'δ', '\\lambda': 'λ',
+        '\\rightarrow': '→', '\\Rightarrow': '⇒', '\\forall': '∀', '\\exists': '∃'
+      };
 
-      // Parsing Pangkat (^) dan Subskrip (_)
-      const subSuperRegex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z]+)|_\{([^}]+)\}|_([0-9a-zA-Z]+))/g;
+      Object.keys(symbolMap).forEach(sym => {
+        const regexSym = new RegExp(sym.replace('\\', '\\\\'), 'g');
+        mathVal = mathVal.replace(regexSym, symbolMap[sym]);
+      });
+
+      // 6. Parsing Superskrip (^) dan Subskrip (_) untuk Ekspor Word (Sangat Rapi)
+      const subSuperRegex = /(\^\{([^}]+)\}|\^([0-9a-zA-Z\+\-]+)|_\{([^}]+)\}|_([0-9a-zA-Z\+\-]+))/g;
       let lastIdx = 0;
       let subMatch;
 
@@ -1260,6 +1262,11 @@ ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
 📋 ATURAN FORMAT OPSI & JSON:
 - Jangan tambahkan prefiks huruf (A, B, C, D, E) pada teks opsi pilihan ganda.
 - Wajib mengembalikan output MURNI berupa objek JSON tanpa pembungkus markdown codeblock (\`\`\`json ... \`\`\`).
+ATURAN KHUSUS NOTASI MATEMATIKA:
+1. SEMUA persamaan matematika, variabel, pecahan, dan rumus WAJIB dibungkus dengan tanda $ ... $ (Contoh: $f(x) = \frac{x^2 + 2x}{x - 1}$).
+2. DILARANG menggunakan sintaks tabel LaTeX seperti \begin{array}, \begin{matrix}, atau \hline.
+3. Untuk pecahan, gunakan format sederhana \frac{pembilang}{penyebut}.
+4. Untuk pangkat gunakan ^{} dan subskrip _{} (Contoh: $x^{2}$, $a_{n}$).
 
 Format Output JSON Harus Seperti Ini:
 {
