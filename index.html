@@ -2090,17 +2090,22 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
         }
 
         function appendAiMessage(msg) {
-            const aiMsgDiv = document.createElement('div');
-            aiMsgDiv.className = "flex gap-2 items-start";
-            aiMsgDiv.innerHTML = `
-                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">🤖</div>
-                <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-xs text-slate-700 shadow-2xs max-w-[85%] leading-relaxed">
-                    ${msg}
-                </div>
-            `;
-            chatMessages.appendChild(aiMsgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+    const aiMsgDiv = document.createElement('div');
+    aiMsgDiv.className = "flex gap-2 items-start";
+    aiMsgDiv.innerHTML = `
+        <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">🤖</div>
+        <div class="space-y-1 max-w-[85%]">
+            <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-xs text-slate-700 shadow-2xs leading-relaxed whitespace-pre-wrap">
+                ${msg}
+            </div>
+            <button type="button" onclick="copyChatText(this)" class="text-[9px] font-semibold text-slate-400 hover:text-emerald-600 transition-colors flex items-center gap-1 px-1 py-0.5 rounded cursor-pointer self-start">
+                📋 Salin Teks
+            </button>
+        </div>
+    `;
+    chatMessages.appendChild(aiMsgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
         function sendQuickPrompt(promptText) {
             chatInput.value = promptText;
@@ -2191,6 +2196,54 @@ if (typeof activeTab !== 'undefined' && activeTab === "modul") {
 
         document.getElementById('langIdBtn').addEventListener('click', () => { switchLanguage('id'); });
         document.getElementById('langEnBtn').addEventListener('click', () => { switchLanguage('en'); });
+        // FUNGSI UNTUK MENYALIN TEKS BALASAN CHAT AI
+function copyChatText(button) {
+    // Mengambil teks dari elemen pesan (saudara/sibling sebelum tombol)
+    const messageContainer = button.previousElementSibling;
+    if (!messageContainer) return;
+    
+    // Ambil teks murni tanpa tag HTML
+    const textToCopy = messageContainer.innerText || messageContainer.textContent;
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showCopyFeedback(button);
+        }).catch(err => {
+            fallbackCopyText(textToCopy, button);
+        });
+    } else {
+        fallbackCopyText(textToCopy, button);
+    }
+}
+
+// Fallback jika navigator.clipboard tidak didukung oleh browser lama / HTTP
+function fallbackCopyText(text, button) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showCopyFeedback(button);
+    } catch (err) {
+        showCustomToast("Gagal menyalin teks", "error");
+    }
+    document.body.removeChild(textArea);
+}
+
+// Efek visual saat tombol berhasil diklik
+function showCopyFeedback(button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = "✓ Tersalin!";
+    button.classList.add('bg-emerald-100', 'text-emerald-700');
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove('bg-emerald-100', 'text-emerald-700');
+    }, 2000);
+}
     </script>
 </body>
 </html>
