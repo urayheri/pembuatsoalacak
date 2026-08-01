@@ -1363,9 +1363,9 @@ Format Output JSON Harus Seperti Ini:
 
             const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
 
-            const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI dan Pakar Pendidikan Matematika/Sains Profesional. Buatkan dokumen naskah RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (DEEP LEARNING) yang SANGAT LENGKAP, PANJANG, MENDALAM, dan SANGAT DETAIL dalam bentuk paragraf naratif utuh (bukan poin-poin terpotong), persis seperti dokumen resmi guru profesional.
+    const promptText = `Bertindaklah sebagai Konsultan Ahli Kurikulum Merdeka Kemendikbudristek RI dan Pakar Pendidikan Matematika/Sains Profesional. Buatkan dokumen naskah MODUL AJAR / RPP PLUS KURIKULUM MERDEKA yang SANGAT LENGKAP, SANGAT DETAIL, PANJANG, DAN UTUH TANPA RINGKASAN/DIPOTONG.
 
-📌 DATA ADMINISTRASI UTAMA:
+📌 INFORMASI ADMINISTRASI:
 - Nama Guru: ${namaGuru}
 - NIP Guru: ${nipGuru}
 - Satuan Pendidikan: ${namaSekolah}
@@ -1373,59 +1373,56 @@ Format Output JSON Harus Seperti Ini:
 - NIP Kepala Sekolah: ${nipKepsek}
 - Mata Pelajaran: ${mapel}
 - Fase / Kelas: ${fase}
-- Topik / Materi: ${topik}
+- Topik / Materi Utama: ${topik}
 - Alokasi Waktu: ${waktu}
-- Target Profil Lulusan: ${profilTerpilih}
+- Dimensi Profil Lulusan: ${profilTerpilih}
 - Kondisi Fasilitas: ${fasilitas}
 
-⚠️ ATURAN KHUSUS PENULISAN RUMUS, PANGKAT & MATEMATIKA (WAJIB DIPATUHI):
-1. Jika materi/soal memuat rumus matematika, fisika, atau kimia, PENULISAN RUMUS HARUS BENAR DAN PRESISI.
-2. DILARANG KERAS menggunakan simbol segitiga/caret (^), sintaks LaTeX mentah seperti \\sum, \\Sigma, \\frac, atau \\begin{array} yang merusak dokumen Word.
-3. Untuk penulisan pangkat, WAJIB menggunakan angka superskrip Unicode yang bersih atau menuliskannya secara eksplisit (Contoh: tuliskan "x²", "x³", atau uraikan perkaliannya seperti "x dikali x", BUKAN menggunakan "x^2").
-4. Contoh lambang Sigma: Gunakan simbol huruf kapital Yunani asli (∑), BUKAN kode teks.
-5. Sajikan perhitungan atau langkah penyelesaian rumus secara runtut, bertahap, dan jelas agar mudah dipahami oleh siswa.
+📐 ATURAN KHUSUS PENULISAN RUMUS & NOTASI MATEMATIKA (SANGAT KETAT):
+1. SEMUA persamaan matematika, variabel, pecahan, dan rumus WAJIB dibungkus dengan tanda $ ... $ (Contoh: $f(x) = \frac{x^2 + 2x}{x - 1}$).
+2. DILARANG KERAS menggunakan sintaks tabel LaTeX seperti \begin{array}, \begin{matrix}, \hline, atau \text{...}!
+3. PANGKAT & SUBSKRIP: WAJIB gunakan format kurung kurawal ^{ } dan _{ }. Contoh: $x^{2}$, $a_{n}$, $f(x) = 3x^{3} - 2x + 5$. DILARANG menggunakan tanda caret/segitiga berdiri sendiri seperti x^2.
+4. PECAHAN & AKAR: Gunakan \frac{pembilang}{penyebut} dan \sqrt{isi_akar}. Contoh: $\frac{1}{2}$, $\sqrt{x^2 + y^2}$.
+5. SIMBOL SIMBOL KHUSUS: Gunakan notasi standar LaTeX terbungkus $ ... $ seperti $\Sigma$, $\int$, $\cdot$, $\times$, $\div$, $\pm$, $\leq$, $\geq$, $\neq$, $\pi$, $\alpha$, $\beta$.
+6. RUNTUTAN LANGKAH: Sajikan perhitungan atau langkah penurunan rumus secara bertahap dan rinci dari awal hingga akhir agar mudah dipahami peserta didik.
 
-⚠️ ATURAN MUTLAK FORMAT & GAYA PENULISAN:
-1. JANGAN MEMBUAT RINGKASAN. Tuliskan setiap bagian secara panjang, bernarasi deskriptif, dan mendalam (minimal setara dokumen setebal 5-8 halaman jika diekspor ke Word).
-2. HANYA GUNAKAN TABEL MARKDOWN (2 Kolom) pada Bagian Identitas dan Desain Pembelajaran. Bagian isi materi, langkah pembelajaran, bahan ajar, asesmen, dan refleksi WAJIB ditulis dalam bentuk PARAGRAF NARATIF UTUH dan SUB-HEADING yang jelas.
-3. Penulisan paragraf wajib menggunakan perataan rata kanan-kiri (Justify) secara konseptual dengan penjelasan yang sangat bernas.
+⚠️ PETUNJUK PENULISAN UMUM (MENCEGAH MODUL TERPOTONG):
+1. TULISKAN SEMUA BAGIAN SECARA EKSPLISIT DAN RINCI. Dilarang keras menggunakan frasa seperti "(lanjutkan sendiri)", "(sesuaikan dengan sekolah)", atau "(dst.)".
+2. Buat narasi penjelasan materi dan langkah pembelajaran secara mendalam dan terstruktur.
 
-📋 STRUKTUR DOKUMEN UTUH YANG WAJIB DIHASILKAN:
+📋 STRUKTUR ISI MODUL AJAR LENGKAP:
 
-BAGIAN I: IDENTITAS & ANALISIS KONDISI PEMBELAJARAN
-- Uraikan secara naratif identitas pembelajaran.
-- Uraikan Analisis Kesiapan Peserta Didik secara mendalam berdasarkan karakteristik siswa dan fasilitas sekolah.
-- Uraikan Karakteristik Materi Pembelajaran (Aspek Konseptual, Prosedural, serta pemetaan rumus/konsep dasar jika ada).
-- Uraikan Target Dimensi Profil Lulusan (DPL) yang dipilih secara kontekstual.
+BAGIAN I: IDENTITAS DAN INFORMASI UMUM
+- Identitas Modul (Nama Sekolah, Guru, Fase, Mapel, Alokasi Waktu).
+- Kompetensi Awal (Pengetahuan/keterampilan prasyarat yang harus dimiliki siswa).
+- Target Dimensi Profil Lulusan & Indikator Pencapaiannya.
+- Sarana dan Prasarana (Disesuaikan dengan kondisi: ${fasilitas}).
+- Target Peserta Didik & Model Pembelajaran yang Digunakan.
 
-BAGIAN II: DESAIN INSTRUKSIONAL & CAPAIAN
-- Rumusan Capaian Pembelajaran (CP) dan Tujuan Pembelajaran (TP) yang diturunkan secara operasional.
-- Pemilihan Model Pembelajaran (Problem Based Learning / Discovery Learning), Metode, Kemitraan Pembelajaran, Lingkungan Belajar, dan Pemanfaatan Digital.
+BAGIAN II: KOMPONEN INTI & DESAIN PEMBELAJARAN
+- Capaian Pembelajaran (CP) dan Tujuan Pembelajaran (TP) Operasional.
+- Pemahaman Bermakna (Manfaat materi dalam kehidupan nyata).
+- Pertanyaan Pemantik (Minimal 3-5 pertanyaan pemantik diskusi).
 
-BAGIAN III: PENGALAMAN BELAJAR MENDALAM (LANGKAH-LANGKAH PEMBELAJARAN)
-- A. Memahami (Kegiatan Awal / 15-20 Menit): Uraikan narasi pembuka kelas, teknik kesadaran penuh (STOP), apersepsi bermakna, dan pelaksanaan Tes Awal.
-- B. Mengaplikasikan (Kegiatan Inti / Alokasi Waktu Sesuai JP): Uraikan secara naratif panjang berbasis sintaks (1. Orientasi Masalah/Studi Kasus; 2. Identifikasi Masalah; 3. Pengumpulan Data/Eksplorasi Rumus; 4. Pengolahan Data di LKPD; 5. Pembuktian/Presentasi; 6. Penarikan Kesimpulan kolektif).
-- C. Merefleksikan (Kegiatan Penutup / 10-15 Menit): Uraikan proses refleksi pemahaman siswa, umpan balik konstruktif guru, tindak lanjut, dan doa penutup.
+BAGIAN III: LANGKAH-LANGKAH PEMBELAJARAN DETAIL (RINCI PER MENIT)
+- A. Kegiatan Pendahuluan: Orientasi, Apersepsi, Motivasi, dan Tes Awal (Uraikan kalimat narasi guru secara utuh).
+- B. Kegiatan Inti: Uraikan sintaks model pembelajaran secara runtut (Diskusi, Eksplorasi Materi/Rumus, Pengerjaan LKPD, Presentasi Kelompok, Clarification/Umpan Balik).
+- C. Kegiatan Penutup: Simpulan bersama, Refleksi singkat, Tindak lanjut, Penutup & Doa.
 
-BAGIAN IV: BAHAN AJAR / RINGKASAN MATERI PEMBELAJARAN
-- Berikan uraian materi teks pembelajaran yang mendalam, lengkap dengan konsep dasar, rumus utama (tanpa simbol segitiga/caret, menggunakan karakter Unicode bersih seperti ∑ dan ²/³), penurunan konsep, serta contoh soal beserta penyelesaian lengkapnya.
+BAGIAN IV: RANGKUMAN MATERIAL / BAHAN AJAR UTAMA
+- Sajikan materi bacaan lengkap untuk guru dan siswa (Penjelasan konsep dasar, penurunan rumus utama, contoh soal matematika/aplikatif beserta langkah pembahasannya secara runut).
 
-BAGIAN V: INSTRUMEN ASESMEN & EVALUASI LENGKAP
-- A. Asesmen Diagnostik Awal (Daftar pertanyaan lisan/tertulis beserta kunci jawaban).
-- B. Lembar Kerja Peserta Didik (LKPD) lengkap dengan panduan penyelesaian perhitungan/soal.
-- C. Rubrik Skor Penilaian LKPD dan Rumus Penghitungan Nilai Akhir.
-- D. Tabel Penilaian Formatif Proses (Format tabel markdown rapi: NO | NAMA MURID | L/P | SKOR | NILAI | KET).
-- E. Soal Penilaian Sumatif (Sediakan minimal 3-5 soal Uraian/Essay HOTS atau perhitungan matematis yang menantang).
-- F. Kunci Jawaban dan Langkah Pembahasan Rinci Penilaian Sumatif.
-- G. Rubrik Observasi Sikap Dimensi Profil Lulusan (DPL) lengkap dengan tabel rekapitulasi penilaian per siswa untuk seluruh anggota kelas.
+BAGIAN V: INSTRUMEN ASESMEN LENGKAP & RUBRIK
+- A. Asesmen Diagnostik Awal (Soal + Kunci Jawaban Rinci).
+- B. Lembar Kerja Peserta Didik (LKPD) Lengkap dengan Soal Perhitungan/Tugas Praktik.
+- C. Rubrik Penilaian Unjuk Kerja & Sikap.
+- D. Asesmen Sumatif (Sediakan minimal 5 soal evaluasi HOTS beserta Pembahasan Rumus Rinci dan Pedoman Penskoran).
 
-BAGIAN VI: LEMBAR REFLEKSI GURU
-- Berisi 5 pertanyaan reflektif mendalam bagi pendidik untuk mengevaluasi efektivitas pembelajaran.
+BAGIAN VI: LEMBAR REFLEKSI GURU & SISWA
+- 5 Pertanyaan reflektif untuk Guru dan 5 pertanyaan reflektif untuk Siswa.
 
-BAGIAN VII: LEMBAR PENGESAHAN / TANDA TANGAN
-- Format tanda tangan resmi sekolah yang rapi dan proporsional untuk Kepala Sekolah (${namaKepsek} / NIP. ${nipKepsek}) dan Guru Mata Pelajaran (${namaGuru} / NIP. ${nipGuru}).
-`;
-
+BAGIAN VII: LEMBAR PENGESAHAN
+- Format Tanda Tangan Resmi antara Kepala Sekolah (${namaKepsek}) dan Guru Mata Pelajaran (${namaGuru}).`;
             try {
                 const response = await fetch(proxyUrl, { 
                     method: "POST",
