@@ -1187,63 +1187,59 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
         });
 
         // ACTION BUTTON 2: AI QUESTION GENERATION (ENHANCED FOR COMPLEX MATHEMATICS)
-        processGenerateBtn.addEventListener('click', async () => {
-            // KODE PERBAIKAN (AMAN & PRESISI):
-const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
-const manualText = materiInputText.value ? materiInputText.value.trim() : "";
+       processGenerateBtn.addEventListener('click', async () => {
+    const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
+    const manualText = materiInputText.value ? materiInputText.value.trim() : "";
+    const materi = fileText !== "" ? fileText : manualText;
+    
+    const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
+    
+    if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
 
-// Prioritaskan teks dari file unggahan, jika kosong baru gunakan teks manual
-const materi = fileText !== "" ? fileText : manualText;
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
-            
-            if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
+    const kuotaKognitif = {
+        "C1": parseInt(document.getElementById('countC1').value) || 0,
+        "C2": parseInt(document.getElementById('countC2').value) || 0,
+        "C3": parseInt(document.getElementById('countC3').value) || 0,
+        "C4": parseInt(document.getElementById('countC4').value) || 0,
+        "C5": parseInt(document.getElementById('countC5').value) || 0,
+        "C6": parseInt(document.getElementById('countC6').value) || 0
+    };
+    const totalPGMinta = Object.values(kuotaKognitif).reduce((a, b) => a + b, 0);
 
-            const kuotaKognitif = {
-                "C1": parseInt(document.getElementById('countC1').value) || 0,
-                "C2": parseInt(document.getElementById('countC2').value) || 0,
-                "C3": parseInt(document.getElementById('countC3').value) || 0,
-                "C4": parseInt(document.getElementById('countC4').value) || 0,
-                "C5": parseInt(document.getElementById('countC5').value) || 0,
-                "C6": parseInt(document.getElementById('countC6').value) || 0
-            };
-            const totalPGMinta = Object.values(kuotaKognitif).reduce((a, b) => a + b, 0);
+    const kuotaEssayKognitif = {
+        "C1": parseInt(document.getElementById('countEssayC1').value) || 0,
+        "C2": parseInt(document.getElementById('countEssayC2').value) || 0,
+        "C3": parseInt(document.getElementById('countEssayC3').value) || 0,
+        "C4": parseInt(document.getElementById('countEssayC4').value) || 0,
+        "C5": parseInt(document.getElementById('countEssayC5').value) || 0,
+        "C6": parseInt(document.getElementById('countEssayC6').value) || 0
+    };
+    const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
 
-            const kuotaEssayKognitif = {
-                "C1": parseInt(document.getElementById('countEssayC1').value) || 0,
-                "C2": parseInt(document.getElementById('countEssayC2').value) || 0,
-                "C3": parseInt(document.getElementById('countEssayC3').value) || 0,
-                "C4": parseInt(document.getElementById('countEssayC4').value) || 0,
-                "C5": parseInt(document.getElementById('countEssayC5').value) || 0,
-                "C6": parseInt(document.getElementById('countEssayC6').value) || 0
-            };
-            const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
+    if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
 
-            if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
+    previewSection.classList.remove('hidden');
+    exportSingleWordBtn.classList.add('hidden');
+    previewTitle.textContent = "Sedang Memproses Naskah Soal...";
+    soalContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-12 space-y-3">
+            <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi, mohon tunggu...</p>
+        </div>
+    `;
+    previewSection.scrollIntoView({ behavior: 'smooth' });
 
-            // TAMPILKAN PREVIEW AREA DENGAN INDIKATOR LOADING
-            previewSection.classList.remove('hidden');
-            exportSingleWordBtn.classList.add('hidden');
-            previewTitle.textContent = "Sedang Memproses Naskah Soal...";
-            soalContainer.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 space-y-3">
-                    <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi & simbol matematika, mohon tunggu...</p>
-                </div>
-            `;
-            previewSection.scrollIntoView({ behavior: 'smooth' });
+    processGenerateBtn.disabled = true;
+    processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
 
-            processGenerateBtn.disabled = true;
-            processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
+    let coreTaskInstruction = "";
+    const modeDipilih = documentTypeMode.value;
 
-            let coreTaskInstruction = "";
-            const modeDipilih = documentTypeMode.value;
-
-            if (modeDipilih === "soal_lama") {
-                coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4500)}". Anda harus membuatkan naskah soal baru variatif/clone question.`;
-            } else {
-                coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4500)}".`;
-            }
-
+    if (modeDipilih === "soal_lama") {
+        coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4000)}". Buatkan naskah soal baru variatif/clone question.`;
+    } else {
+        coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4000)}".`;
+    }
             // PROMPT AI DENGAN INSTRUKSI FORMULASI MATEMATIKA LENGKAP & PRESISI
             const rawPromptText = `Bertindaklah sebagai Ahli Penyusun Soal Evaluasi Pendidikan dan Pakar Matematika/Sains. ${coreTaskInstruction}
 
@@ -1294,50 +1290,60 @@ Format Output JSON Harus Seperti Ini:
 }`;
 
             try {
-                const response = await fetch(proxyUrl, { 
-                    method: "POST", 
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) 
-                });
-                
-                const rawText = await response.text();
-                let cleanJsonText = "";
-
-                try {
-                    const parsedResponse = JSON.parse(rawText);
-                    if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
-                        cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
-                    } else {
-                        cleanJsonText = rawText;
-                    }
-                } catch (e) {
-                    cleanJsonText = rawText;
-                }
-
-                cleanJsonText = cleanJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
-
-                const parsedData = JSON.parse(cleanJsonText);
-                
-                originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
-                    const cleanOpsi = (q.opsi || []).map(opt => {
-                        let text = typeof opt === 'object' ? (opt.teks || "") : opt;
-                        text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
-                        return { teks: text };
-                    });
-                    return { ...q, opsi: cleanOpsi };
-                });
-
-                originalEssayQuestions = parsedData.essay || [];
-                renderEditorUI();
-
-            } catch (err) { 
-                soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal memuat preview: ${err.message}</div>`;
-                showCustomToast("Gagal memproses respons AI: " + err.message, "error"); 
-            } finally { 
-                processGenerateBtn.disabled = false; 
-                processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
-            }
+        const response = await fetch(proxyUrl, { 
+            method: "POST", 
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) 
         });
+        
+        const rawText = await response.text();
+        
+        if (rawText.includes("<!DOCTYPE") || rawText.includes("<html") || rawText.includes("405 Not Allowed")) {
+            throw new Error("Server Apps Script menolak permintaan HTML/405. Pastikan setting deployment 'Anyone'.");
+        }
+
+        let cleanJsonText = rawText;
+
+        try {
+            const parsedResponse = JSON.parse(rawText);
+            if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
+                cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
+            }
+        } catch (e) {
+            // Biarkan cleanJsonText tetap isi rawText jika berwujud string murni
+        }
+
+        // Sanitasi teks dari karakter perusak JSON
+        cleanJsonText = cleanJsonText
+            .replace(/```json/gi, '')
+            .replace(/```/g, '')
+            .replace(/[\u0000-\u001F]+/g, " ") // Hapus karakter kontrol perusak JSON
+            .trim();
+
+        const parsedData = JSON.parse(cleanJsonText);
+        
+        originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
+            const cleanOpsi = (q.opsi || []).map(opt => {
+                let text = typeof opt === 'object' ? (opt.teks || "") : opt;
+                text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
+                return { teks: text };
+            });
+            return { ...q, opsi: cleanOpsi };
+        });
+
+        originalEssayQuestions = parsedData.essay || [];
+        
+        // Panggil rendering editor
+        renderEditorUI();
+
+    } catch (err) { 
+        soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal memuat preview: ${err.message}<br><br><span class="font-normal text-[10px]">Saran: Coba kurangi jumlah total soal yang diminta atau pastikan koneksi internet stabil.</span></div>`;
+        showCustomToast("Gagal memproses respons AI: " + err.message, "error"); 
+    } finally { 
+        processGenerateBtn.disabled = false; 
+        processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
+    }
+});
 
         // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         processModulBtn.addEventListener('click', async () => {
