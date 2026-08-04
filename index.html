@@ -1431,10 +1431,29 @@ BAGIAN VII: LEMBAR PENGESAHAN
                 });
 
                 const rawText = await response.text();
-                
-                if (rawText.includes("405 Not Allowed") || rawText.includes("<html") || rawText.includes("<!DOCTYPE")) {
-                    throw new Error("Server Apps Script menolak permintaan (HTTP 405). Pastikan setting deployment di-set ke 'Anyone'.");
-                }
+
+// 1. Cek apakah respons yang diterima berupa HTML Error / Halaman Login Google
+if (rawText.includes("<!DOCTYPE") || rawText.includes("<html") || rawText.includes("405 Not Allowed")) {
+    throw new Error("Server Apps Script menolak permintaan atau mengembalikan error HTML. Pastikan deployment Apps Script di-set ke 'Anyone'.");
+}
+
+let cleanJsonText = "";
+
+try {
+    const parsedResponse = JSON.parse(rawText);
+    if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
+        cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
+    } else {
+        cleanJsonText = rawText;
+    }
+} catch (e) {
+    cleanJsonText = rawText;
+}
+
+// Membersihkan codeblock markdown ```json jika ada
+cleanJsonText = cleanJsonText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+const parsedData = JSON.parse(cleanJsonText);
 
                 let aiResponseText = "";
                 try {
