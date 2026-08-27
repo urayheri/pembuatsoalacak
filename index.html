@@ -1079,13 +1079,14 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
             exportSingleWordBtn.classList.add('hidden'); previewSection.classList.add('hidden');
         });
 
-        materiFileInput.addEventListener('change', async (e) => {
+        // 1. IMPROVED FILE READER HANDLER (ASYNCHRONOUS & SAFE)
+materiFileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0]; 
     if (!file) return;
     
-    fileMateriStatus.textContent = "Sedang memindai data dokumen...";
-    fileMateriStatus.className = "text-[10px] text-emerald-600 font-medium block mt-0.5";
-    processGenerateBtn.disabled = true; // Kunci tombol sementara
+    fileMateriStatus.textContent = "⏳ Memindai isi dokumen...";
+    fileMateriStatus.className = "text-[10px] text-amber-600 font-semibold block mt-0.5";
+    processGenerateBtn.disabled = true; // Kunci tombol saat membaca file
     
     extractedTextFromDocument = ""; 
     const reader = new FileReader();
@@ -1095,13 +1096,24 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
             try {
                 const arrayBuffer = event.target.result;
                 mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
-                    extractedTextFromDocument = result.value || "";
-                    fileMateriStatus.textContent = `✓ Berkas Word berhasil dimuat (${extractedTextFromDocument.split(/\s+/).filter(Boolean).length} kata).`;
-                    fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                    processGenerateBtn.disabled = false; // Buka kunci tombol
+                    extractedTextFromDocument = (result.value || "").trim();
+                    const wordCount = extractedTextFromDocument.split(/\s+/).filter(Boolean).length;
+                    
+                    if (wordCount === 0) {
+                        fileMateriStatus.textContent = "⚠️ Berkas Word kosong atau tidak terbaca.";
+                        fileMateriStatus.className = "text-[10px] text-amber-500 block";
+                    } else {
+                        fileMateriStatus.textContent = `✓ Berkas Word terbaca (${wordCount} kata). Siap diproses!`;
+                        fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                    }
+                    processGenerateBtn.disabled = false;
+                }).catch(err => {
+                    fileMateriStatus.textContent = "❌ Gagal menguraikan struktur Word (.docx).";
+                    fileMateriStatus.className = "text-[10px] text-red-500 block";
+                    processGenerateBtn.disabled = false;
                 });
             } catch(err) { 
-                fileMateriStatus.textContent = "❌ Gagal membaca berkas Word.";
+                fileMateriStatus.textContent = "❌ Gagal membaca file Word.";
                 fileMateriStatus.className = "text-[10px] text-red-500 block"; 
                 processGenerateBtn.disabled = false;
             }
@@ -1113,17 +1125,26 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
                 const typedarray = new Uint8Array(event.target.result);
                 const pdf = await pdfjsLib.getDocument(typedarray).promise;
                 let textContent = "";
+                
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i); 
                     const textObj = await page.getTextContent();
                     textContent += textObj.items.map(item => item.str).join(" ") + "\n";
                 }
-                extractedTextFromDocument = textContent || "";
-                fileMateriStatus.textContent = `✓ Berkas PDF berhasil dimuat (${extractedTextFromDocument.split(/\s+/).filter(Boolean).length} kata).`;
-                fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
-                processGenerateBtn.disabled = false; // Buka kunci tombol
+                
+                extractedTextFromDocument = textContent.trim();
+                const wordCount = extractedTextFromDocument.split(/\s+/).filter(Boolean).length;
+                
+                if (wordCount === 0) {
+                    fileMateriStatus.textContent = "⚠️ PDF terlindungi/berupa hasil scan gambar (pindai OCR diperlukan).";
+                    fileMateriStatus.className = "text-[10px] text-amber-500 block";
+                } else {
+                    fileMateriStatus.textContent = `✓ Berkas PDF terbaca (${wordCount} kata). Siap diproses!`;
+                    fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                }
+                processGenerateBtn.disabled = false;
             } catch(err) { 
-                fileMateriStatus.textContent = "❌ Gagal membaca berkas PDF.";
+                fileMateriStatus.textContent = "❌ Gagal membaca isi PDF.";
                 fileMateriStatus.className = "text-[10px] text-red-500 block"; 
                 processGenerateBtn.disabled = false;
             }
@@ -1131,70 +1152,19 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
         reader.readAsArrayBuffer(file);
     }
 });
-        excelInput.addEventListener('change', (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            fileStatus.textContent = "Berkas: " + file.name;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const ws = workbook.Sheets[workbook.SheetNames[0]];
-                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    const header = rows[0]; let keyIndex = -1, cogIndex = -1;
-                    
-                    for(let i=0; i<header.length; i++) {
-                        if(header[i] && header[i].toString().toLowerCase().includes('kunci')) keyIndex = i;
-                        if(header[i] && (header[i].toString().toLowerCase().includes('kognitif') || header[i].toString().toLowerCase().includes('kesulitan'))) cogIndex = i;
-                    }
-                    if (keyIndex === -1) keyIndex = header.length - 1;
-                    if(cogIndex !== -1 && cogIndex < keyIndex) optionCountGlobal = cogIndex - 1;
-                    else optionCountGlobal = keyIndex - 1;
 
-                    originalPGQuestions = []; originalEssayQuestions = [];
-                    const labels = ['A', 'B', 'C', 'D', 'E'];
-                    for(let i = 1; i < rows.length; i++) {
-                        const r = rows[i];
-                        if (r[0]) {
-                            let isEssay = true;
-                            for(let j = 1; j <= optionCountGlobal; j++) { if (r[j] && r[j].toString().trim() !== "") { isEssay = false; break; } }
-                            if (r[keyIndex] && r[keyIndex].toString().trim() !== "" && isEssay) {
-                                isEssay = true;
-                            } else if (r[keyIndex] && r[keyIndex].toString().trim() !== "") {
-                                isEssay = false;
-                            }
-                            const kognitifVal = cogIndex !== -1 ? (r[cogIndex] || "").toString().trim().toUpperCase() : "";
-                            if (isEssay) { 
-                                originalEssayQuestions.push({ 
-                                    soal: r[0], 
-                                    kunci: r[keyIndex] ? r[keyIndex].toString().trim() : "", 
-                                    kognitif: kognitifVal 
-                                }); 
-                            } 
-                            else {
-                                const optionsArray = [];
-                                for(let j = 1; j <= optionCountGlobal; j++) { optionsArray.push({ teks: r[j] || "-", labelOriginal: labels[j-1] }); }
-                                originalPGQuestions.push({ soal: r[0], opsi: optionsArray, kunciOriginal: r[keyIndex].toString().trim().toUpperCase(), kognitif: kognitifVal });
-                            }
-                        }
-                    }
-                    previewSection.classList.remove('hidden'); 
-                    soalContainer.innerHTML = `<p class="text-xs font-bold text-emerald-700">Berhasil memetakan ${originalPGQuestions.length} Pilihan Ganda dan ${originalEssayQuestions.length} Uraian ke dalam aplikasi.</p>`;
-                    processAcakBtn.disabled = false;
-                } catch (err) { showCustomToast("Ketidakcocokan struktur berkas tabel excel: " + err.message, "error"); }
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // ACTION BUTTON 2: AI QUESTION GENERATION (ENHANCED FOR COMPLEX MATHEMATICS)
-       processGenerateBtn.addEventListener('click', async () => {
+// 2. ROBUST GENERATE QUESTION PROCESSOR
+processGenerateBtn.addEventListener('click', async () => {
+    // Utamakan teks dari file unggahan, jika kosong baru ambil dari textarea manual
     const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
     const manualText = materiInputText.value ? materiInputText.value.trim() : "";
     const materi = fileText !== "" ? fileText : manualText;
     
     const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
     
-    if(!materi) return showCustomToast("Silakan lampirkan ringkasan materi atau berkas referensi terlebih dahulu.", "warning");
+    if(!materi) {
+        return showCustomToast("Silakan lampirkan berkas referensi (PDF/Word) atau ketik ringkasan materi terlebih dahulu.", "warning", "Materi Belum Ada");
+    }
 
     const kuotaKognitif = {
         "C1": parseInt(document.getElementById('countC1').value) || 0,
@@ -1216,7 +1186,9 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
     };
     const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
 
-    if(totalPGMinta === 0 && totalEssayMinta === 0) return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
+    if(totalPGMinta === 0 && totalEssayMinta === 0) {
+        return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
+    }
 
     previewSection.classList.remove('hidden');
     exportSingleWordBtn.classList.add('hidden');
@@ -1224,7 +1196,7 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
     soalContainer.innerHTML = `
         <div class="flex flex-col items-center justify-center py-12 space-y-3">
             <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-xs font-bold text-slate-600">AI sedang memformulasikan soal evaluasi, mohon tunggu...</p>
+            <p class="text-xs font-bold text-slate-600">AI sedang memproses naskah dokumen materi Anda...</p>
         </div>
     `;
     previewSection.scrollIntoView({ behavior: 'smooth' });
@@ -1232,64 +1204,49 @@ function formatMathToTextRuns(text, docx, customFont, customSize) {
     processGenerateBtn.disabled = true;
     processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
 
-    let coreTaskInstruction = "";
+    // Potong teks materi secukupnya (maksimal 6.000 karakter) agar tidak membentur batas payload proxy
+    const safeMateriText = materi.substring(0, 6000);
     const modeDipilih = documentTypeMode.value;
+    let coreTaskInstruction = modeDipilih === "soal_lama"
+        ? `Menganalisis KUMPULAN SOAL LAMA berikut: "${safeMateriText}". Buatkan naskah soal baru yang variatif/clone question.`
+        : `Membuat naskah bank soal baru berdasarkan REFERENSI MATERI berikut: "${safeMateriText}".`;
 
-    if (modeDipilih === "soal_lama") {
-        coreTaskInstruction = `Tugas Anda adalah menganalisis berkas kumpulan SOAL LAMA berikut: "${materi.substring(0, 4000)}". Buatkan naskah soal baru variatif/clone question.`;
-    } else {
-        coreTaskInstruction = `Tugas Anda adalah membuat naskah bank soal baru berdasarkan bahan materi berikut: "${materi.substring(0, 4000)}".`;
-    }
-            // PROMPT AI DENGAN INSTRUKSI FORMULASI MATEMATIKA LENGKAP & PRESISI
-            const rawPromptText = `Bertindaklah sebagai Ahli Penyusun Soal Evaluasi Pendidikan dan Pakar Matematika/Sains. ${coreTaskInstruction}
+    const rawPromptText = `Bertindaklah sebagai Ahli Penyusun Soal Evaluasi Pendidikan. ${coreTaskInstruction}
 
-Kriteria Jumlah Soal:
-- Total Pilihan Ganda harus tepat ${totalPGMinta} soal dengan rincian kognitif: C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}.
-- Total Uraian/Essay harus tepat ${totalEssayMinta} soal.
+Target Jumlah Soal:
+- Total Pilihan Ganda: tepat ${totalPGMinta} soal (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}).
+- Total Uraian/Essay: tepat ${totalEssayMinta} soal.
 
-ATURAN KHUSUS NOTASI & BAHASA MATEMATIKA:
-1. DILARANG MENGGUNAKAN SINTAKS TABEL LATEX seperti \\begin{array}, \\begin{matrix}, \\hline, \\text{...}, atau \\bar{...}!
-2. Jika ada data tabel atau frekuensi, sajikan dalam bentuk teks biasa yang rapi dan mudah dibaca. Contoh:
-   "Nilai (x) dan Frekuensi (f): [70: 3], [80: 4], [90: 2], [100: 1]" atau tulisan rata-rata menggunakan simbol "x̄" atau "mean (x̄)".
-3. Pembungkus Notasi Matematika Sederhana: Gunakan $ ... $ untuk persamaan matematika biasa. Contoh: $x^2 + 2x - 5 = 0$ atau $\\frac{a}{b}$.
-4. PANGKAT & SUBSKRIP: Gunakan format kurung kurawal ^{ } dan _{ }. Contoh: $x^{2}$, $a_{n}$, $f(x) = 3x^{3} - 2x + 5$.
-5. KESELAMATAN STRING JSON: Jika menggunakan backslash (\\), pastikan di-escape ganda (\\\\) agar JSON tetap valid.
-6. Pembungkus Notasi Matematika Sederhana: WAJIB SECARA KETAT menggunakan $ ... $ untuk SELURUH persamaan matematika, pecahan, dan simbol khusus. Contoh: $x^2 + 2x - 5 = 0$, $\\frac{a}{b}$, $\\Sigma f_i$. JANGAN PERNAH membiarkan sintaks LaTeX (seperti \\Sigma, \\frac, \\cdot) berdiri sendiri tanpa pembungkus $ ... $.
-📋 ATURAN FORMAT OPSI & JSON:
-- Jangan tambahkan prefiks huruf (A, B, C, D, E) pada teks opsi pilihan ganda.
-- Wajib mengembalikan output MURNI berupa objek JSON tanpa pembungkus markdown codeblock (\`\`\`json ... \`\`\`).
-ATURAN KHUSUS NOTASI MATEMATIKA:
-1. SEMUA persamaan matematika, variabel, pecahan, dan rumus WAJIB dibungkus dengan tanda $ ... $ (Contoh: $f(x) = \frac{x^2 + 2x}{x - 1}$).
-2. DILARANG menggunakan sintaks tabel LaTeX seperti \begin{array}, \begin{matrix}, atau \hline.
-3. Untuk pecahan, gunakan format sederhana \frac{pembilang}{penyebut}.
-4. Untuk pangkat gunakan ^{} dan subskrip _{} (Contoh: $x^{2}$, $a_{n}$).
+ATURAN STRICT OUTPUT JSON:
+- Kembalikan MURNI respons berformat JSON tanpa klausa/codeblock markdown (\`\`\`json).
+- Jangan tambahkan awalan huruf (A, B, C, D) pada isi teks opsi.
 
-Format Output JSON Harus Seperti Ini:
+Format JSON Wajib:
 {
   "pilihan_ganda": [
     {
-      "soal": "Pertanyaan atau persamaan matematika...",
+      "soal": "Teks pertanyaan...",
       "opsi": [
-        {"teks": "Isi opsi 1"},
-        {"teks": "Isi opsi 2"},
-        {"teks": "Isi opsi 3"},
-        {"teks": "Isi opsi 4"},
-        {"teks": "Isi opsi 5"}
+        {"teks": "Opsi A"},
+        {"teks": "Opsi B"},
+        {"teks": "Opsi C"},
+        {"teks": "Opsi D"},
+        {"teks": "Opsi E"}
       ],
       "kunciOriginal": "A",
-      "kognitif": "C3"
+      "kognitif": "C1"
     }
   ],
   "essay": [
     {
-      "soal": "Soal matematika/uraian...",
-      "kunci": "Langkah penyelesaian ringkas...",
+      "soal": "Pertanyaan essay...",
+      "kunci": "Kunci/Pedoman jawaban...",
       "kognitif": "C4"
     }
   ]
 }`;
 
-            try {
+    try {
         const response = await fetch(proxyUrl, { 
             method: "POST", 
             headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -1299,7 +1256,7 @@ Format Output JSON Harus Seperti Ini:
         const rawText = await response.text();
         
         if (rawText.includes("<!DOCTYPE") || rawText.includes("<html") || rawText.includes("405 Not Allowed")) {
-            throw new Error("Server Apps Script menolak permintaan HTML/405. Pastikan setting deployment 'Anyone'.");
+            throw new Error("Respon server tidak valid atau proxy Google Apps Script dibatasi.");
         }
 
         let cleanJsonText = rawText;
@@ -1310,14 +1267,14 @@ Format Output JSON Harus Seperti Ini:
                 cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
             }
         } catch (e) {
-            // Biarkan cleanJsonText tetap isi rawText jika berwujud string murni
+            // Teks sudah berupa string murni
         }
 
-        // Sanitasi teks dari karakter perusak JSON
+        // Sanitasi karakter kontrol yang merusak JSON.parse
         cleanJsonText = cleanJsonText
             .replace(/```json/gi, '')
             .replace(/```/g, '')
-            .replace(/[\u0000-\u001F]+/g, " ") // Hapus karakter kontrol perusak JSON
+            .replace(/[\u0000-\u001F]+/g, " ")
             .trim();
 
         const parsedData = JSON.parse(cleanJsonText);
@@ -1333,18 +1290,21 @@ Format Output JSON Harus Seperti Ini:
 
         originalEssayQuestions = parsedData.essay || [];
         
-        // Panggil rendering editor
         renderEditorUI();
 
     } catch (err) { 
-        soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal memuat preview: ${err.message}<br><br><span class="font-normal text-[10px]">Saran: Coba kurangi jumlah total soal yang diminta atau pastikan koneksi internet stabil.</span></div>`;
-        showCustomToast("Gagal memproses respons AI: " + err.message, "error"); 
+        soalContainer.innerHTML = `
+            <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">
+                ❌ Gagal memroses dokumen referensi: ${err.message}<br><br>
+                <span class="font-normal text-[10px]">Tips: Jika menggunakan file PDF, pastikan file bukan berupa hasil scan foto/gambar murni (PDF berteks). Anda juga bisa mencoba menyalin langsung sebagian teks dokumen ke dalam kotak teks manual.</span>
+            </div>
+        `;
+        showCustomToast("Gagal memproses dokumen: " + err.message, "error"); 
     } finally { 
         processGenerateBtn.disabled = false; 
         processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
     }
 });
-
         // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         processModulBtn.addEventListener('click', async () => {
             const mapel = document.getElementById('modulMapel').value.trim();
