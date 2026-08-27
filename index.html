@@ -1248,10 +1248,15 @@ Struktur JSON Wajib:
 }`;
 
     try {
-        const response = await fetch(proxyUrl, { 
+      const response = await fetch(proxyUrl, { 
             method: "POST", 
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] }) 
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: rawPromptText }] }],
+                generationConfig: {
+                    response_mime_type: "application/json"
+                }
+            }) 
         });
         
         const rawText = await response.text();
@@ -1260,7 +1265,7 @@ Struktur JSON Wajib:
             throw new Error("Server Apps Script menolak permintaan atau offline.");
         }
 
-        // 1. Ekstraksi JSON dari String Respons AI
+        // 1. Ekstraksi String AI dari Envelope Respons
         let jsonString = rawText;
         try {
             const parsedEnvelope = JSON.parse(rawText);
@@ -1268,17 +1273,16 @@ Struktur JSON Wajib:
                 jsonString = parsedEnvelope.candidates[0].content.parts[0].text;
             }
         } catch (e) {
-            // Str murni
+            // Raw text murni
         }
 
-        // 2. Pembersihan karakter pengganggu
+        // 2. Bersihkan Markdown Codeblock & Control Characters
         jsonString = jsonString
             .replace(/```json/gi, '')
             .replace(/```/g, '')
             .replace(/[\u0000-\u001F]+/g, " ")
             .trim();
 
-        // 3. Ekstraksi substring objek JSON {}
         const firstBrace = jsonString.indexOf('{');
         const lastBrace = jsonString.lastIndexOf('}');
         if (firstBrace !== -1 && lastBrace !== -1) {
@@ -1286,40 +1290,83 @@ Struktur JSON Wajib:
         }
 
         const parsedData = JSON.parse(jsonString);
-        
-        // 4. Fallback Flexible Mapping (Mencari kunci array jika AI tidak konsisten)
-        const rawPG = parsedData.pilihan_ganda || parsedData.pg || parsedData.multiple_choice || parsedData.soal_pg || [];
-        const rawEssay = parsedData.essay || parsedData.uraian || parsedData.soal_essay || [];
 
-        originalPGQuestions = rawPG.map(q => {
-            const opsiList = q.opsi || q.options || q.pilihan || [];
-            const cleanOpsi = opsiList.map(opt => {
-                let text = typeof opt === 'object' ? (opt.teks || opt.text || "") : opt;
+        // 3. FUNGSI PEMINDAI ULTIMATE: Cari Array Soal Otomatis di Semua Tingkat Objek JSON
+        function extractQuestionsRecursively(obj) {
+            let foundPG = [];
+            let foundEssay = [];
+
+            function traverse(o) {
+                if (!o || typeof o !== 'object') return;
+
+                // Jika elemen adalah array, cek struktur objek didalamnya
+                if (Array.isArray(o)) {
+                    o.forEach(item => {
+                        if (item && typeof item === 'object') {
+                            // Cek indikator Pilihan Ganda (memiliki opsi/options/pilihan)
+                            if (item.opsi || item.options || item.pilihan || item.choices) {
+                                foundPG.push(item);
+                            } 
+                            // Cek indikator Essay (memiliki soal tapi tanpa opsi)
+                            else if (item.soal || item.question || item.pertanyaan) {
+                                foundEssay.push(item);
+                            }
+                        }
+                    });
+                    return;
+                }
+
+                // Jika bentuknya Objek, cek key bawaan umum
+                for (let key in o) {
+                    if (Object.prototype.hasOwnProperty.call(o, key)) {
+                        const lowerKey = key.toLowerCase();
+                        if (lowerKey.includes('pg') || lowerKey.includes('pilihan') || lowerKey.includes('mcq') || lowerKey.includes('choice')) {
+                            if (Array.isArray(o[key])) foundPG.push(...o[key]);
+                        } else if (lowerKey.includes('essay') || lowerKey.includes('uraian')) {
+                            if (Array.isArray(o[key])) foundEssay.push(...o[key]);
+                        } else {
+                            traverse(o[key]);
+                        }
+                    }
+                }
+            }
+
+            traverse(obj);
+            return { pg: foundPG, essay: foundEssay };
+        }
+
+        const extracted = extractQuestionsRecursively(parsedData);
+
+        // 4. MAPPING DATA KE FORMAT APLIKASI
+        originalPGQuestions = extracted.pg.map(q => {
+            const rawOpsi = q.opsi || q.options || q.pilihan || q.choices || [];
+            const cleanOpsi = rawOpsi.map(opt => {
+                let text = typeof opt === 'object' ? (opt.teks || opt.text || opt.jawaban || "") : opt;
                 text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
                 return { teks: text };
             });
-            return { 
-                soal: q.soal || q.question || "", 
-                opsi: cleanOpsi, 
-                kunciOriginal: q.kunciOriginal || q.kunci || q.answer || "A", 
-                kognitif: q.kognitif || "C1" 
+
+            return {
+                soal: q.soal || q.question || q.pertanyaan || "",
+                opsi: cleanOpsi,
+                kunciOriginal: (q.kunciOriginal || q.kunci || q.answer || "A").toString().trim().toUpperCase(),
+                kognitif: q.kognitif || q.bloom || "C1"
             };
         });
 
-        originalEssayQuestions = rawEssay.map(e => ({
-            soal: e.soal || e.question || "",
-            kunci: e.kunci || e.answer || "-",
-            kognitif: e.kognitif || "C4"
+        originalEssayQuestions = extracted.essay.map(e => ({
+            soal: e.soal || e.question || e.pertanyaan || "",
+            kunci: e.kunci || e.answer || e.pembahasan || "-",
+            kognitif: e.kognitif || e.bloom || "C4"
         }));
-        
-        // Cek validitas akhir
+
+        // Verifikasi Akhir
         if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
-            throw new Error("Format JSON terbaca tetapi array 'pilihan_ganda' atau 'essay' tidak ditemukan didalamnya.");
+            throw new Error("Struktur JSON berhasil dibaca tetapi tidak ditemukan daftar soal di dalamnya.");
         }
 
-        // Render jika berhasil
+        // Render UI jika berhasil
         renderEditorUI();
-
     } catch (err) { 
         soalContainer.innerHTML = `
             <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold space-y-2">
