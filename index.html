@@ -1153,17 +1153,17 @@ materiFileInput.addEventListener('change', async (e) => {
     }
 });
 
-// 2. ROBUST GENERATE QUESTION PROCESSOR
+// EVENT LISTENER GENERATE SOAL AI (VERSI FIX & ROBUST PARSING)
 processGenerateBtn.addEventListener('click', async () => {
-    // Utamakan teks dari file unggahan, jika kosong baru ambil dari textarea manual
+    // 1. Ambil teks dari file unggahan atau textarea manual
     const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
-    const manualText = materiInputText.value ? materiInputText.value.trim() : "";
+    const manualText = materiInputText ? materiInputText.value.trim() : "";
     const materi = fileText !== "" ? fileText : manualText;
     
     const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec"; 
     
-    if(!materi) {
-        return showCustomToast("Silakan lampirkan berkas referensi (PDF/Word) atau ketik ringkasan materi terlebih dahulu.", "warning", "Materi Belum Ada");
+    if (!materi) {
+        return showCustomToast("Silakan lampirkan berkas referensi (PDF/Word) atau ketik materi terlebih dahulu.", "warning", "Materi Kosong");
     }
 
     const kuotaKognitif = {
@@ -1186,8 +1186,8 @@ processGenerateBtn.addEventListener('click', async () => {
     };
     const totalEssayMinta = Object.values(kuotaEssayKognitif).reduce((a, b) => a + b, 0);
 
-    if(totalPGMinta === 0 && totalEssayMinta === 0) {
-        return showCustomToast("Jumlah target pembuatan soal tidak boleh kosong.", "warning");
+    if (totalPGMinta === 0 && totalEssayMinta === 0) {
+        return showCustomToast("Jumlah target pembuatan soal tidak boleh 0.", "warning");
     }
 
     previewSection.classList.remove('hidden');
@@ -1196,7 +1196,7 @@ processGenerateBtn.addEventListener('click', async () => {
     soalContainer.innerHTML = `
         <div class="flex flex-col items-center justify-center py-12 space-y-3">
             <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-xs font-bold text-slate-600">AI sedang memproses naskah dokumen materi Anda...</p>
+            <p class="text-xs font-bold text-slate-600">AI sedang memproses materi dokumen (${materi.length} karakter)...</p>
         </div>
     `;
     previewSection.scrollIntoView({ behavior: 'smooth' });
@@ -1204,12 +1204,12 @@ processGenerateBtn.addEventListener('click', async () => {
     processGenerateBtn.disabled = true;
     processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
 
-    // Potong teks materi secukupnya (maksimal 6.000 karakter) agar tidak membentur batas payload proxy
-    const safeMateriText = materi.substring(0, 6000);
+    // Potong materi secukupnya (maksimal 5000 karakter) agar terhindar dari payload overflow
+    const safeMateriText = materi.substring(0, 5000);
     const modeDipilih = documentTypeMode.value;
     let coreTaskInstruction = modeDipilih === "soal_lama"
-        ? `Menganalisis KUMPULAN SOAL LAMA berikut: "${safeMateriText}". Buatkan naskah soal baru yang variatif/clone question.`
-        : `Membuat naskah bank soal baru berdasarkan REFERENSI MATERI berikut: "${safeMateriText}".`;
+        ? `Menganalisis KUMPULAN SOAL LAMA berikut: "${safeMateriText}". Buat naskah soal baru variatif.`
+        : `Membuat naskah bank soal baru berdasarkan MATERI berikut: "${safeMateriText}".`;
 
     const rawPromptText = `Bertindaklah sebagai Ahli Penyusun Soal Evaluasi Pendidikan. ${coreTaskInstruction}
 
@@ -1217,15 +1217,13 @@ Target Jumlah Soal:
 - Total Pilihan Ganda: tepat ${totalPGMinta} soal (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}).
 - Total Uraian/Essay: tepat ${totalEssayMinta} soal.
 
-ATURAN STRICT OUTPUT JSON:
-- Kembalikan MURNI respons berformat JSON tanpa klausa/codeblock markdown (\`\`\`json).
-- Jangan tambahkan awalan huruf (A, B, C, D) pada isi teks opsi.
+WAJIB Mengembalikan MURNI STRING JSON valid tanpa awalan/akhiran markdown codeblock (\`\`\`json).
 
-Format JSON Wajib:
+Format JSON Harus Tepat Seperti Ini:
 {
   "pilihan_ganda": [
     {
-      "soal": "Teks pertanyaan...",
+      "soal": "Pertanyaan...",
       "opsi": [
         {"teks": "Opsi A"},
         {"teks": "Opsi B"},
@@ -1240,7 +1238,7 @@ Format JSON Wajib:
   "essay": [
     {
       "soal": "Pertanyaan essay...",
-      "kunci": "Kunci/Pedoman jawaban...",
+      "kunci": "Pedoman jawaban...",
       "kognitif": "C4"
     }
   ]
@@ -1255,30 +1253,38 @@ Format JSON Wajib:
         
         const rawText = await response.text();
         
-        if (rawText.includes("<!DOCTYPE") || rawText.includes("<html") || rawText.includes("405 Not Allowed")) {
-            throw new Error("Respon server tidak valid atau proxy Google Apps Script dibatasi.");
+        if (!rawText || rawText.includes("<!DOCTYPE") || rawText.includes("405 Not Allowed")) {
+            throw new Error("Server Apps Script menolak permintaan atau offline.");
         }
 
-        let cleanJsonText = rawText;
-
+        // Ekstraksi string AI dari pembungkus Apps Script / Gemini API
+        let jsonString = rawText;
         try {
-            const parsedResponse = JSON.parse(rawText);
-            if (parsedResponse.candidates && parsedResponse.candidates[0] && parsedResponse.candidates[0].content) {
-                cleanJsonText = parsedResponse.candidates[0].content.parts[0].text;
+            const parsedEnvelope = JSON.parse(rawText);
+            if (parsedEnvelope.candidates && parsedEnvelope.candidates[0] && parsedEnvelope.candidates[0].content) {
+                jsonString = parsedEnvelope.candidates[0].content.parts[0].text;
             }
         } catch (e) {
-            // Teks sudah berupa string murni
+            // rawText sudah berupa string murni
         }
 
-        // Sanitasi karakter kontrol yang merusak JSON.parse
-        cleanJsonText = cleanJsonText
+        // Bersihkan Markdown Codeblock & Karakter Kontrol yang merusak JSON.parse
+        jsonString = jsonString
             .replace(/```json/gi, '')
             .replace(/```/g, '')
             .replace(/[\u0000-\u001F]+/g, " ")
             .trim();
 
-        const parsedData = JSON.parse(cleanJsonText);
+        // Cari batas objek JSON `{ ... }` jika AI memberikan narasi pembuka/penutup
+        const firstBrace = jsonString.indexOf('{');
+        const lastBrace = jsonString.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) {
+            jsonString = jsonString.substring(firstBrace, lastBrace + 1);
+        }
+
+        const parsedData = JSON.parse(jsonString);
         
+        // Simpan ke variabel global
         originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
             const cleanOpsi = (q.opsi || []).map(opt => {
                 let text = typeof opt === 'object' ? (opt.teks || "") : opt;
@@ -1290,22 +1296,31 @@ Format JSON Wajib:
 
         originalEssayQuestions = parsedData.essay || [];
         
+        if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
+            throw new Error("AI berhasil merespons tetapi tidak menghasilkan struktur array soal.");
+        }
+
+        // Render hasil ke UI
         renderEditorUI();
 
     } catch (err) { 
         soalContainer.innerHTML = `
-            <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">
-                ❌ Gagal memroses dokumen referensi: ${err.message}<br><br>
-                <span class="font-normal text-[10px]">Tips: Jika menggunakan file PDF, pastikan file bukan berupa hasil scan foto/gambar murni (PDF berteks). Anda juga bisa mencoba menyalin langsung sebagian teks dokumen ke dalam kotak teks manual.</span>
+            <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold space-y-2">
+                <p>❌ Gagal Memproses Soal: ${err.message}</p>
+                <div class="text-[10px] text-slate-600 bg-white p-2 rounded border border-red-100 font-mono overflow-x-auto">
+                    <strong>Saran Penanganan:</strong><br>
+                    1. Pastikan teks file Word/PDF tidak kosong.<br>
+                    2. Jika file berupa PDF Scan Gambar, salin (copy-paste) teks materinya secara manual ke kotak teks di atas.<br>
+                    3. Coba turunkan jumlah target soal PG / Essay jika materi terlalu panjang.
+                </div>
             </div>
         `;
-        showCustomToast("Gagal memproses dokumen: " + err.message, "error"); 
+        showCustomToast("Gagal memproses soal: " + err.message, "error"); 
     } finally { 
         processGenerateBtn.disabled = false; 
         processGenerateBtn.textContent = "✨ Buat Soal Otomatis"; 
     }
-});
-        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
+});        // ACTION BUTTON 3: AI MODUL AJAR MERDEKA GENERATOR
         processModulBtn.addEventListener('click', async () => {
             const mapel = document.getElementById('modulMapel').value.trim();
             const fase = document.getElementById('modulFase').value;
