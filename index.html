@@ -1211,25 +1211,28 @@ processGenerateBtn.addEventListener('click', async () => {
         ? `Menganalisis KUMPULAN SOAL LAMA berikut: "${safeMateriText}". Buat naskah soal baru variatif.`
         : `Membuat naskah bank soal baru berdasarkan MATERI berikut: "${safeMateriText}".`;
 
-    const rawPromptText = `Bertindaklah sebagai Ahli Penyusun Soal Evaluasi Pendidikan. ${coreTaskInstruction}
+    const rawPromptText = `Bertindaklah sebagai mesin pengolah JSON murni untuk penyusunan soal. ${coreTaskInstruction}
 
 Target Jumlah Soal:
 - Total Pilihan Ganda: tepat ${totalPGMinta} soal (C1=${kuotaKognitif.C1}, C2=${kuotaKognitif.C2}, C3=${kuotaKognitif.C3}, C4=${kuotaKognitif.C4}, C5=${kuotaKognitif.C5}, C6=${kuotaKognitif.C6}).
 - Total Uraian/Essay: tepat ${totalEssayMinta} soal.
 
-WAJIB Mengembalikan MURNI STRING JSON valid tanpa awalan/akhiran markdown codeblock (\`\`\`json).
+PERINGATAN SANGAT PENTING:
+1. OUTPUT HARUS MURNI HANYA BERUPA VALID JSON.
+2. DILARANG MENAMBAHKAN TEKS APAPUN DILUAR STRUKTUR JSON (TIDAK BOLEH ADA KATA SALAM, PENJELASAN, ATAU BUNGKUS MARKDOWN \`\`\`json).
+3. PROPERTI UTAMA WAJIB BERNAMA "pilihan_ganda" DAN "essay".
 
-Format JSON Harus Tepat Seperti Ini:
+Struktur JSON Wajib:
 {
   "pilihan_ganda": [
     {
       "soal": "Pertanyaan...",
       "opsi": [
-        {"teks": "Opsi A"},
-        {"teks": "Opsi B"},
-        {"teks": "Opsi C"},
-        {"teks": "Opsi D"},
-        {"teks": "Opsi E"}
+        {"teks": "Jawaban A"},
+        {"teks": "Jawaban B"},
+        {"teks": "Jawaban C"},
+        {"teks": "Jawaban D"},
+        {"teks": "Jawaban E"}
       ],
       "kunciOriginal": "A",
       "kognitif": "C1"
@@ -1238,7 +1241,7 @@ Format JSON Harus Tepat Seperti Ini:
   "essay": [
     {
       "soal": "Pertanyaan essay...",
-      "kunci": "Pedoman jawaban...",
+      "kunci": "Jawaban...",
       "kognitif": "C4"
     }
   ]
@@ -1257,7 +1260,7 @@ Format JSON Harus Tepat Seperti Ini:
             throw new Error("Server Apps Script menolak permintaan atau offline.");
         }
 
-        // Ekstraksi string AI dari pembungkus Apps Script / Gemini API
+        // 1. Ekstraksi JSON dari String Respons AI
         let jsonString = rawText;
         try {
             const parsedEnvelope = JSON.parse(rawText);
@@ -1265,17 +1268,17 @@ Format JSON Harus Tepat Seperti Ini:
                 jsonString = parsedEnvelope.candidates[0].content.parts[0].text;
             }
         } catch (e) {
-            // rawText sudah berupa string murni
+            // Str murni
         }
 
-        // Bersihkan Markdown Codeblock & Karakter Kontrol yang merusak JSON.parse
+        // 2. Pembersihan karakter pengganggu
         jsonString = jsonString
             .replace(/```json/gi, '')
             .replace(/```/g, '')
             .replace(/[\u0000-\u001F]+/g, " ")
             .trim();
 
-        // Cari batas objek JSON `{ ... }` jika AI memberikan narasi pembuka/penutup
+        // 3. Ekstraksi substring objek JSON {}
         const firstBrace = jsonString.indexOf('{');
         const lastBrace = jsonString.lastIndexOf('}');
         if (firstBrace !== -1 && lastBrace !== -1) {
@@ -1284,23 +1287,37 @@ Format JSON Harus Tepat Seperti Ini:
 
         const parsedData = JSON.parse(jsonString);
         
-        // Simpan ke variabel global
-        originalPGQuestions = (parsedData.pilihan_ganda || []).map(q => {
-            const cleanOpsi = (q.opsi || []).map(opt => {
-                let text = typeof opt === 'object' ? (opt.teks || "") : opt;
+        // 4. Fallback Flexible Mapping (Mencari kunci array jika AI tidak konsisten)
+        const rawPG = parsedData.pilihan_ganda || parsedData.pg || parsedData.multiple_choice || parsedData.soal_pg || [];
+        const rawEssay = parsedData.essay || parsedData.uraian || parsedData.soal_essay || [];
+
+        originalPGQuestions = rawPG.map(q => {
+            const opsiList = q.opsi || q.options || q.pilihan || [];
+            const cleanOpsi = opsiList.map(opt => {
+                let text = typeof opt === 'object' ? (opt.teks || opt.text || "") : opt;
                 text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
                 return { teks: text };
             });
-            return { ...q, opsi: cleanOpsi };
+            return { 
+                soal: q.soal || q.question || "", 
+                opsi: cleanOpsi, 
+                kunciOriginal: q.kunciOriginal || q.kunci || q.answer || "A", 
+                kognitif: q.kognitif || "C1" 
+            };
         });
 
-        originalEssayQuestions = parsedData.essay || [];
+        originalEssayQuestions = rawEssay.map(e => ({
+            soal: e.soal || e.question || "",
+            kunci: e.kunci || e.answer || "-",
+            kognitif: e.kognitif || "C4"
+        }));
         
+        // Cek validitas akhir
         if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
-            throw new Error("AI berhasil merespons tetapi tidak menghasilkan struktur array soal.");
+            throw new Error("Format JSON terbaca tetapi array 'pilihan_ganda' atau 'essay' tidak ditemukan didalamnya.");
         }
 
-        // Render hasil ke UI
+        // Render jika berhasil
         renderEditorUI();
 
     } catch (err) { 
