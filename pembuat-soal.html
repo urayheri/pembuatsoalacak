@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembuat Soal AI - Asisten Guru Indonesia</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-xs antialiased min-h-screen flex flex-col justify-between p-6">
+
+    <div class="max-w-4xl mx-auto w-full space-y-4">
+        <a href="index.html" class="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline">← Kembali ke Halaman Utama</a>
+        
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+            <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span>🤖</span> Mode 2: Pembuat Soal AI HOTS
+            </h2>
+
+            <div class="space-y-3">
+                <label class="block font-medium text-slate-600">Salin Teks Materi Utama</label>
+                <textarea id="materiInputText" rows="4" placeholder="Tempelkan ringkasan materi pembelajaran Anda di sini..." class="w-full border border-slate-300 p-2.5 rounded-lg text-xs"></textarea>
+
+                <button id="processGenerateBtn" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-lg cursor-pointer">
+                    ✨ Buat Soal Otomatis
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKRIP AI LOGIC DALAM FILE HTML -->
+    <script>
+        const processGenerateBtn = document.getElementById('processGenerateBtn');
+        const materiInputText = document.getElementById('materiInputText');
+
+        processGenerateBtn.addEventListener('click', async () => {
+            const materi = materiInputText.value.trim();
+            if(!materi) {
+                alert("Silakan isi teks materi pembelajaran terlebih dahulu.");
+                return;
+            }
+            alert("Memproses naskah soal berbasis AI...");
+            // Panggil API Proxy Google Apps Script di sini
+        });
+    </script>
+</body>
+</html>
