@@ -428,11 +428,11 @@ Buatkan Soal:
 - Pilihan Ganda: Tepat ${totalPGMinta} soal.
 - Essay/Uraian: Tepat ${totalEssayMinta} soal.
 
-DILARANG MEMBERIKAN NARRATIVE TEKS ATAU MARKDOWN CODEBLOCK. WAJIB HANYA DENGAN FORMAT JSON STRUKTUR BERIKUT:
+DILARANG MEMBERIKAN NARRATIVE TEKS ATAU MARKDOWN CODEBLOCK. WAJIB HANYA DENGAN FORMAT JSON BERIKUT:
 {
   "pilihan_ganda": [
     {
-      "soal": "Teks pertanyaan PG...",
+      "soal": "Pertanyaan soal pilihan ganda...",
       "opsi": [
         {"teks": "Pilihan A"},
         {"teks": "Pilihan B"},
@@ -446,8 +446,8 @@ DILARANG MEMBERIKAN NARRATIVE TEKS ATAU MARKDOWN CODEBLOCK. WAJIB HANYA DENGAN F
   ],
   "essay": [
     {
-      "soal": "Teks pertanyaan essay...",
-      "kunci": "Pedoman jawaban...",
+      "soal": "Pertanyaan soal uraian/essay...",
+      "kunci": "Jawaban acuan...",
       "kognitif": "C4"
     }
   ]
@@ -491,6 +491,7 @@ DILARANG MEMBERIKAN NARRATIVE TEKS ATAU MARKDOWN CODEBLOCK. WAJIB HANYA DENGAN F
             .trim();
 
         // 3. TANGKAP STRUKTUR { ... } TERLUAR
+       // 3. TANGKAP STRUKTUR { ... } TERLUAR
         const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
             throw new Error("Respons AI tidak mengembalikan format JSON yang valid.");
@@ -498,36 +499,47 @@ DILARANG MEMBERIKAN NARRATIVE TEKS ATAU MARKDOWN CODEBLOCK. WAJIB HANYA DENGAN F
 
         const parsedData = JSON.parse(jsonMatch[0]);
 
-        // 4. MAPPING ARRAY DENGAN PARSER TANGGUH
-        const rawPG = parsedData.pilihan_ganda || parsedData.pg || parsedData.soal_pg || [];
-        const rawEssay = parsedData.essay || parsedData.uraian || parsedData.soal_essay || [];
+        // 4. MAPPING ARRAY UNIVERSAL (TANGGUP TERHADAP NAMA KEY BAHASA INGGRIS / INDONESIA)
+        const rawPG = parsedData.pilihan_ganda || 
+                      parsedData.pilihanGanda || 
+                      parsedData.multiple_choice || 
+                      parsedData.multiple_choice_questions || 
+                      parsedData.pg || 
+                      parsedData.soal_pg || 
+                      parsedData.questions || [];
+
+        const rawEssay = parsedData.essay || 
+                         parsedData.uraian || 
+                         parsedData.essay_questions || 
+                         parsedData.soal_essay || [];
 
         originalPGQuestions = rawPG.map(q => {
-            const rawOpsi = q.opsi || q.options || q.pilihan || [];
+            // Ambil opsi dari berbagai kemungkinan key (opsi, options, choices, dll)
+            const rawOpsi = q.opsi || q.options || q.choices || q.pilihan || [];
+            
             const cleanOpsi = rawOpsi.map(opt => {
-                let text = typeof opt === 'object' ? (opt.teks || opt.text || "") : opt;
+                let text = typeof opt === 'object' ? (opt.teks || opt.text || opt.option || "") : opt;
                 text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
                 return { teks: text };
             });
 
             return {
-                soal: q.soal || q.question || "",
+                soal: q.soal || q.question || q.prompt || "",
                 opsi: cleanOpsi,
-                kunciOriginal: (q.kunciOriginal || q.kunci || "A").toString().trim().toUpperCase(),
-                kognitif: q.kognitif || "C1"
+                kunciOriginal: (q.kunciOriginal || q.kunci || q.correct_answer || q.answer || "A").toString().trim().toUpperCase(),
+                kognitif: q.kognitif || q.bloom_taxonomy || "C1"
             };
         });
 
         originalEssayQuestions = rawEssay.map(e => ({
-            soal: e.soal || e.question || "",
-            kunci: e.kunci || e.answer || "-",
-            kognitif: e.kognitif || "C4"
+            soal: e.soal || e.question || e.prompt || "",
+            kunci: e.kunci || e.answer || e.correct_answer || "-",
+            kognitif: e.kognitif || e.bloom_taxonomy || "C4"
         }));
 
         if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
-            throw new Error("JSON terbaca tetapi array 'pilihan_ganda' atau 'essay' di dalamnya kosong.");
+            throw new Error("Objek JSON terbaca tetapi array soal tidak ditemukan di dalamnya.");
         }
-
         // Render UI jika sukses
         renderEditorUI();
         showCustomToast("Naskah soal AI berhasil dibuat!", "success", "Berhasil");
