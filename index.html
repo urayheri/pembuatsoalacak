@@ -1,59 +1,341 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Guru Indonesia - Platform Administrasi Guru</title>
+    <title>Asisten Guru Indonesia - Platform Administrasi Guru Indonesia</title>
+    
+    <!-- GOOGLE ADSENSE CODE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9646208288837391" crossorigin="anonymous"></script>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+            color: #334155;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -10px rgba(16, 185, 129, 0.12);
+            border-color: #a7f3d0;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        .animate-float-slow {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 15px rgba(5, 150, 105, 0.3)); }
+            50% { opacity: 0.8; filter: drop-shadow(0 0 25px rgba(5, 150, 105, 0.6)); }
+        }
+        .animate-glow {
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #059669; }
     </style>
 </head>
-<body class="bg-slate-50 text-xs antialiased min-h-screen flex flex-col justify-between">
+<body class="text-xs antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-50 selection:text-emerald-800">
 
-    <header class="bg-white/90 border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between shadow-xs">
+    <!-- HEADER & NAVBAR UTAMA -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between shadow-xs">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-bold">👨‍🏫</div>
+            <a href="index.html" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-emerald-600/20 transform hover:scale-105 transition-transform">
+                👨‍🏫
+            </a>
             <div>
-                <h1 class="text-sm font-bold text-slate-800 tracking-tight">Asisten Guru Indonesia</h1>
-                <p class="text-[10px] text-slate-500 font-medium">Platform Efisiensi Administrasi Pendidik</p>
+                <h1 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                    Asisten Guru Indonesia <span class="text-[9px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-emerald-700 font-extrabold shadow-2xs">ProMax AI</span>
+                </h1>
+                <p class="text-[10px] text-slate-500 font-medium">Platform Efisiensi Administrasi Pendidik Masa Kini</p>
             </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- STATUS MONITOR -->
+            <div class="hidden md:flex items-center gap-3 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-[10px] text-slate-600">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="font-semibold text-slate-700">Sistem Engine: Online</span>
+            </div>
+
+            <!-- TOMBOL MODAL SEDEKAH / APRESIASI -->
+            <button id="openSedekahBtn" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-4 py-2 rounded-xl transition-all shadow-sm shadow-amber-500/20 cursor-pointer text-[11px] transform active:scale-95">
+                💝 Apresiasi
+            </button>
         </div>
     </header>
 
-    <div class="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white py-10 px-6 text-center">
-        <h2 class="text-2xl font-extrabold tracking-tight">Solusi Cerdas Administrasi Mengajar</h2>
-        <p class="text-xs text-emerald-100/90 max-w-xl mx-auto mt-2">Pilih alat kerja administrasi yang Anda perlukan di bawah ini.</p>
-    </div>
+    <!-- HERO BANNER PROMOSI & INTERAKTIF -->
+    <section class="bg-gradient-to-r from-emerald-900 via-teal-800 to-emerald-950 text-white py-12 px-6 shadow-inner relative overflow-hidden">
+        <!-- Background Pattern Decorator -->
+        <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-10 -top-10 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <main class="container mx-auto px-4 py-8 max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a href="pengacak-soal.html" class="p-6 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-emerald-500 transition-all text-center block group">
-            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📊</div>
-            <h3 class="font-bold text-slate-800 text-sm mb-1">Pengacak Paket Soal</h3>
-            <p class="text-slate-500 text-[11px]">Acak urutan soal & pilihan jawaban dari Excel secara otomatis.</p>
-        </a>
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div class="space-y-3 max-w-xl text-center md:text-left">
+                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+                    ⚡ Otomasi Kurikulum Merdeka 2026
+                </span>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">
+                    Solusi Cerdas Menyusun Soal & Perangkat Ajar Tanpa Ribet
+                </h2>
+                <p class="text-xs text-emerald-100/90 leading-relaxed">
+                    Hemat hingga 80% waktu administrasi mengajar Anda. Pemrosesan dilakukan aman secara lokal di browser Anda tanpa mengunggah rahasia sekolah ke luar.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-3 justify-center md:justify-start">
+                    <a href="#fitur-utama" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl transition-all shadow-lg text-xs">
+                        🚀 Pilih Alat Kerja
+                    </a>
+                    <button id="openDevStatementBtn" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-4 py-2.5 rounded-xl transition-all text-xs cursor-pointer">
+                        ✨ Keunggulan Platform
+                    </button>
+                </div>
+            </div>
+            
+            <!-- MASKOT HERO -->
+            <div class="shrink-0 relative group cursor-pointer" id="heroMascotTrigger">
+                <div class="w-36 h-36 md:w-44 md:h-44 rounded-full bg-white/10 backdrop-blur-md border-2 border-emerald-300/40 hover:border-amber-300 flex items-center justify-center p-3 shadow-2xl transition-all duration-300 group-hover:scale-105 animate-float-slow">
+                    <span class="text-7xl filter drop-shadow-lg">👨‍🏫</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <a href="pembuat-soal.html" class="p-6 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-emerald-500 transition-all text-center block group">
-            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🤖</div>
-            <h3 class="font-bold text-slate-800 text-sm mb-1">Pembuat Soal AI</h3>
-            <p class="text-slate-500 text-[11px]">Susun bank soal berbasis indikator & Taksonomi Bloom.</p>
-        </a>
+    <!-- HIGHLIGHT STATISTIK / NILAI TAMBAH -->
+    <section class="max-w-5xl mx-auto px-6 -mt-6 relative z-20 w-full">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm text-center">
+                <p class="text-emerald-600 font-extrabold text-lg">100%</p>
+                <p class="text-slate-500 text-[10px] font-medium">Lokal & Safe Browser</p>
+            </div>
+            <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm text-center">
+                <p class="text-emerald-600 font-extrabold text-lg">Otomatis</p>
+                <p class="text-slate-500 text-[10px] font-medium">Acak Kunci Jawaban</p>
+            </div>
+            <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm text-center">
+                <p class="text-emerald-600 font-extrabold text-lg">HOTS AI</p>
+                <p class="text-slate-500 text-[10px] font-medium">Taksonomi Bloom C1-C6</p>
+            </div>
+            <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm text-center">
+                <p class="text-emerald-600 font-extrabold text-lg">.DOCX</p>
+                <p class="text-slate-500 text-[10px] font-medium">Format Siap Cetak Word</p>
+            </div>
+        </div>
+    </section>
 
-        <a href="modul-ajar.html" class="p-6 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-emerald-500 transition-all text-center block group">
-            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📚</div>
-            <h3 class="font-bold text-slate-800 text-sm mb-1">Perumus Modul Ajar</h3>
-            <p class="text-slate-500 text-[11px]">Perumus ATP & RPP Plus Kurikulum Merdeka siap cetak.</p>
-        </a>
+    <!-- SEKSI DASHBOARD UTAMA - PILIHAN MODE KERJA -->
+    <main id="fitur-utama" class="container mx-auto px-4 py-12 max-w-5xl flex-1 space-y-8">
+        
+        <div class="text-center space-y-1">
+            <h3 class="text-lg font-extrabold text-slate-800 tracking-tight">Pusat Alat Kerja Guru</h3>
+            <p class="text-slate-500 text-xs">Pilih modul kerja yang ingin Anda jalankan hari ini</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- KARTU MODE 1 -->
+            <a href="pengacak-soal.html" class="glass-card p-6 flex flex-col justify-between space-y-5 group cursor-pointer text-left">
+                <div class="space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                        📊
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Mode 1</span>
+                        <h4 class="text-sm font-bold text-slate-800 mt-1.5 group-hover:text-emerald-700 transition-colors">Pengacak Paket Soal</h4>
+                        <p class="text-slate-500 text-[11px] leading-relaxed mt-1">
+                            Unggah berkas Excel master soal Anda. Sistem akan mengacak nomor dan pilihan jawaban otomatis menjadi paket A, B, C lengkap dengan kunci jawaban.
+                        </p>
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-emerald-700 font-bold text-[11px]">
+                    <span>Buka Mode Pengacak</span>
+                    <span class="group-hover:translate-x-1 transition-transform">➔</span>
+                </div>
+            </a>
+
+            <!-- KARTU MODE 2 -->
+            <a href="pembuat-soal.html" class="glass-card p-6 flex flex-col justify-between space-y-5 group cursor-pointer text-left relative overflow-hidden">
+                <div class="space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-100 border border-teal-200 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                        🤖
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Mode 2</span>
+                        <h4 class="text-sm font-bold text-slate-800 mt-1.5 group-hover:text-emerald-700 transition-colors">Pembuat Soal AI HOTS</h4>
+                        <p class="text-slate-500 text-[11px] leading-relaxed mt-1">
+                            Buat naskah soal baru berdasarkan rangkuman materi PDF/Word atau variasi soal lama dengan parameter Taksonomi Bloom (C1 - C6) yang presisi.
+                        </p>
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-emerald-700 font-bold text-[11px]">
+                    <span>Buka Generator AI</span>
+                    <span class="group-hover:translate-x-1 transition-transform">➔</span>
+                </div>
+            </a>
+
+            <!-- KARTU MODE 3 -->
+            <a href="modul-ajar.html" class="glass-card p-6 flex flex-col justify-between space-y-5 group cursor-pointer text-left">
+                <div class="space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                        📚
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Mode 3</span>
+                            <span class="text-[9px] bg-emerald-500 text-white font-extrabold px-1.5 py-0.2 rounded-md">BARU</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 mt-1.5 group-hover:text-emerald-700 transition-colors">Perumus Modul Ajar</h4>
+                        <p class="text-slate-500 text-[11px] leading-relaxed mt-1">
+                            Formulasikan Alur Tujuan Pembelajaran (ATP) dan Modul Ajar Kurikulum Merdeka secara detail, kontekstual sesuai fasilitas sekolah, dan siap cetak.
+                        </p>
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-emerald-700 font-bold text-[11px]">
+                    <span>Buka Perumus Modul</span>
+                    <span class="group-hover:translate-x-1 transition-transform">➔</span>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- PANDUAN RINGKAS & FITUR INFORMASIONAL -->
+        <section class="glass-card p-6 space-y-4 bg-white/80">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                <span>📖</span> Keamanan & Workflow Platform Asisten Guru Indonesia
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-slate-600 text-[11px] leading-relaxed">
+                <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80 space-y-1">
+                    <h4 class="font-bold text-emerald-800">🔒 Privasi Terjamin Lokal</h4>
+                    <p>Seluruh proses pengolahan berkas Excel dan dokumen dilakukan langsung di peramban (browser) Anda tanpa mengunggah dokumen ke server pihak ketiga.</p>
+                </div>
+                <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80 space-y-1">
+                    <h4 class="font-bold text-emerald-800">📄 Format Dokumen Baku</h4>
+                    <p>Hasil akhir ekspor berupa file Microsoft Word (.docx) yang sudah rapi lengkap dengan margin sekolah dan format penomoran standar.</p>
+                </div>
+                <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80 space-y-1">
+                    <h4 class="font-bold text-emerald-800">📐 Notasi Matematika KaTeX</h4>
+                    <p>Mendukung formulasi rumus matematika dan persamaan ilmiah secara presisi tanpa khawatir formatnya berantakan saat dicetak.</p>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs">
+    <!-- POP-UP PERNYATAAN PENGEMBANG -->
+    <div id="devStatementModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 border border-slate-200 relative">
+            <button id="closeDevStatementBtn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl cursor-pointer">&times;</button>
+            
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-12 h-12 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center text-xl shrink-0">
+                    👨‍💻
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">Pernyataan Pengembang Platform</h3>
+                    <p class="text-[10px] text-emerald-700 font-semibold">U. Heri Mukti, S.Tr.Kom. — Guru SMK & Developer</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-[11px] text-slate-600 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+                <p class="italic bg-emerald-50/60 p-3 rounded-xl border border-emerald-100 text-emerald-900 font-medium">
+                    "Platform Asisten Guru Indonesia lahir dari pemahaman atas tingginya beban administrasi pendidik di sekolah. Visi kami adalah mengembalikan fokus utama guru pada proses mendidik dan berinteraksi bersama siswa."
+                </p>
+
+                <h4 class="font-bold text-slate-800 text-xs">✨ Keunggulan Utama Platform Ini:</h4>
+                <ul class="space-y-1.5 list-disc list-inside text-slate-700">
+                    <li><strong>Pemrosesan Lokal & Aman:</strong> Dokumen diproses langsung di browser.</li>
+                    <li><strong>Integrasi Kurikulum Merdeka:</strong> Disesuaikan dengan Fase dan Capaian Pembelajaran.</li>
+                    <li><strong>Export Siap Cetak (.docx):</strong> Hasil rumusan dikemas ke dalam format Word baku.</li>
+                    <li><strong>Gratis Untuk Pendidik:</strong> Dapat diakses kapan saja oleh seluruh pendidik di Indonesia.</li>
+                </ul>
+            </div>
+
+            <div class="pt-2 text-right">
+                <button id="confirmDevModalBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition-colors cursor-pointer shadow-md">
+                    Saya Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL APRESIASI / SEDEKAH (QRIS) -->
+    <div id="sedekahModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white text-slate-800 rounded-xl p-6 max-w-sm w-full shadow-xl space-y-4 border border-slate-200 text-center">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">💝 Apresiasi Sukarela Pengembangan</h3>
+                <button id="closeSedekahBtn" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">&times;</button>
+            </div>
+            <p class="text-slate-500 leading-relaxed text-[11px]">
+                Jika platform ini membantu mempermudah pekerjaan Anda, dukungan dapat disalurkan via QRIS.
+            </p>
+            <div class="bg-slate-50 p-2 rounded-lg inline-block border border-slate-200">
+                <img src="qr.jpeg" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>';" alt="QRIS" class="w-44 h-44 mx-auto object-contain rounded-md">
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg py-1.5 px-3 font-semibold text-[9px] uppercase">
+                ✓ QRIS Interkoneksi Universal
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER STABLE -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs space-y-2">
+        <div class="flex justify-center gap-4">
+            <a href="#about" id="footerAboutLink" class="hover:underline">Tentang Kami</a> |
+            <a href="#privacy" onclick="alert('Kebijakan Privasi: Semua pemrosesan data dilakukan secara lokal di browser Anda. Kami tidak menyimpan dokumen naskah soal pengguna.')" class="hover:underline">Kebijakan Privasi</a> |
+            <a href="#terms" onclick="alert('Ketentuan Layanan: Layanan ini disediakan gratis untuk mendukung efisiensi mengajar pendidik di Indonesia.')" class="hover:underline">Syarat & Ketentuan</a>
+        </div>
         <p>Asisten Guru Indonesia © 2026 | Dibuat oleh U. Heri Mukti, S.Tr.Kom.</p>
     </footer>
 
-    <!-- SKRIP LANGSUNG DI FILE HTML -->
+    <!-- JS LOGIC DI DALAM FILE HTML -->
     <script>
-        console.log("Landing page berhasil dimuat.");
+        // MODAL HANDLERS
+        const devStatementModal = document.getElementById('devStatementModal');
+        const openDevStatementBtn = document.getElementById('openDevStatementBtn');
+        const closeDevStatementBtn = document.getElementById('closeDevStatementBtn');
+        const confirmDevModalBtn = document.getElementById('confirmDevModalBtn');
+        const heroMascotTrigger = document.getElementById('heroMascotTrigger');
+        const footerAboutLink = document.getElementById('footerAboutLink');
+
+        function openKeunggulanModal() {
+            if (devStatementModal) devStatementModal.classList.remove('hidden');
+        }
+
+        if (heroMascotTrigger) heroMascotTrigger.addEventListener('click', openKeunggulanModal);
+        if (openDevStatementBtn) openDevStatementBtn.addEventListener('click', openKeunggulanModal);
+        if (footerAboutLink) footerAboutLink.addEventListener('click', (e) => { e.preventDefault(); openKeunggulanModal(); });
+        if (closeDevStatementBtn) closeDevStatementBtn.addEventListener('click', () => devStatementModal.classList.add('hidden'));
+        if (confirmDevModalBtn) confirmDevModalBtn.addEventListener('click', () => devStatementModal.classList.add('hidden'));
+
+        // MODAL SEDEKAH / QRIS
+        const openSedekahBtn = document.getElementById('openSedekahBtn');
+        const closeSedekahBtn = document.getElementById('closeSedekahBtn');
+        const sedekahModal = document.getElementById('sedekahModal');
+
+        if (openSedekahBtn) openSedekahBtn.addEventListener('click', () => sedekahModal.classList.remove('hidden'));
+        if (closeSedekahBtn) closeSedekahBtn.addEventListener('click', () => sedekahModal.classList.add('hidden'));
     </script>
 </body>
 </html>
