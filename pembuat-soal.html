@@ -1,55 +1,708 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembuat Soal AI - Asisten Guru Indonesia</title>
+    <title>Pembuat Soal AI HOTS - Asisten Guru Indonesia</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
+    
+    <!-- TAILWIND & PUSTAKA PARSING / MATH -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    
+    <!-- KATEX MATH PREVIEW -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+            color: #334155;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+            border-radius: 16px;
+        }
+
+        .app-input {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+            outline: none;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #059669; }
     </style>
 </head>
-<body class="bg-slate-50 text-xs antialiased min-h-screen flex flex-col justify-between p-6">
+<body class="text-xs antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-50 selection:text-emerald-800">
 
-    <div class="max-w-4xl mx-auto w-full space-y-4">
-        <a href="index.html" class="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline">← Kembali ke Halaman Utama</a>
-        
-        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
-            <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span>🤖</span> Mode 2: Pembuat Soal AI HOTS
-            </h2>
-
-            <div class="space-y-3">
-                <label class="block font-medium text-slate-600">Salin Teks Materi Utama</label>
-                <textarea id="materiInputText" rows="4" placeholder="Tempelkan ringkasan materi pembelajaran Anda di sini..." class="w-full border border-slate-300 p-2.5 rounded-lg text-xs"></textarea>
-
-                <button id="processGenerateBtn" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-lg cursor-pointer">
-                    ✨ Buat Soal Otomatis
-                </button>
+    <!-- HEADER UTAMA -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 h-16 flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-emerald-600/20 transform hover:scale-105 transition-transform">
+                👨‍🏫
+            </a>
+            <div>
+                <h1 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                    Asisten Guru Indonesia <span class="text-[9px] bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full text-teal-700 font-extrabold">Mode 2</span>
+                </h1>
+                <p class="text-[10px] text-slate-500 font-medium">Pembuat Soal Otomatis Berbasis AI & Taksonomi Bloom</p>
             </div>
+        </div>
+
+        <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl transition-all text-[11px] flex items-center gap-1.5">
+            <span>←</span> Kembali ke Dashboard
+        </a>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- SIDEBAR FORMAT MARGIN & CETAK (4 KOLOM) -->
+        <section class="lg:col-span-4 space-y-6">
+            <div class="app-card p-5 space-y-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Format & Layout Dokumen Cetak</p>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1.5">Jenis Font Dokumen</label>
+                        <select id="fontFamily" class="w-full app-input rounded-lg p-2 font-medium text-xs">
+                            <option value="Times New Roman" selected>Times New Roman</option>
+                            <option value="Arial">Arial Standard</option>
+                            <option value="Calibri">Calibri Pro</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1.5">Ukuran (pt)</label>
+                            <input type="number" id="fontSize" value="11" class="w-full app-input rounded-lg p-2 text-center font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1.5">Margin (cm)</label>
+                            <input type="number" id="marginCm" value="1.27" step="0.1" class="w-full app-input rounded-lg p-2 text-center font-bold">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1.5">Ukuran Kertas Lembar Ujian</label>
+                        <select id="pageSize" class="w-full app-input rounded-lg p-2 font-medium text-xs">
+                            <option value="A4" selected>A4 Standar Internasional (210x297mm)</option>
+                            <option value="F4">F4 / Folio Standar Sekolah (215x330mm)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CENTRAL AI WORKSPACE PANEL (8 KOLOM) -->
+        <section class="lg:col-span-8 space-y-6">
+            
+            <!-- ATRIBUT KOP SURAT -->
+            <div class="app-card p-6 space-y-4">
+                <p class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest flex items-center gap-2">
+                    <span>🏛️</span> Atribut Kepala Surat / Kop Lembar Kerja Ujian
+                </p>
+                
+                <div class="space-y-3">
+                    <input type="text" id="ujianHeader" value="SOAL ASESMEN SUMATIF SEMESTER GENAP" class="w-full app-input p-2.5 rounded-lg font-bold text-center text-xs tracking-wide">
+                    <input type="text" id="ujianTahun" value="TAHUN PELAJARAN 2025/2026" class="w-full app-input p-2.5 rounded-lg font-bold text-center text-xs tracking-wide">
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                        <div class="space-y-1"><label class="text-[10px] font-medium text-slate-500">Mata Pelajaran</label><input type="text" id="attrMapel" value="Pemrograman Web" class="w-full app-input p-2 rounded-lg text-center"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-medium text-slate-500">Kelas / Jurusan</label><input type="text" id="attrKelas" value="XI RPL 1, 2" class="w-full app-input p-2 rounded-lg text-center"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-medium text-slate-500">Hari / Tanggal</label><input type="text" id="attrHari" placeholder="Hari / Tanggal" class="w-full app-input p-2 rounded-lg text-center"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-medium text-slate-500">Waktu Pelaksanaan</label><input type="text" id="attrWaktu" placeholder="Durasi Waktu" class="w-full app-input p-2 rounded-lg text-center"></div>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-4">
+                    <div>
+                        <label class="block font-medium text-slate-700 text-xs">Gambar Kop Resmi</label>
+                        <p class="text-[10px] text-slate-500">Gunakan berkas gambar memanjang Kop Lembar Ujian Sekolah.</p>
+                    </div>
+                    <input type="file" id="kopGambarInput" accept="image/*" class="w-64 app-input p-1.5 rounded-lg text-[10px]">
+                </div>
+            </div>
+
+            <!-- AI PARAMETER FORM CARD -->
+            <div class="app-card p-6 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <p class="text-xs font-bold text-slate-700 flex items-center gap-2">
+                        <span>🧠</span> Parameter Pembuatan Soal Berbasis Otomasi AI
+                    </p>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block font-medium text-slate-600 mb-1.5 text-xs">Metode Analisis Dokumen</label>
+                    <select id="documentTypeMode" class="w-full app-input p-2 rounded-lg font-medium focus:outline-none text-xs">
+                        <option value="materi">Hasilkan Bank Soal Baru Berdasarkan Ringkasan Materi</option>
+                        <option value="soal_lama">Kembangkan Variasi Soal Baru Berdasarkan Pola Kumpulan Soal Lama</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="block font-medium text-slate-600 text-xs">Unggah Dokumen Referensi (PDF / Word .docx)</label>
+                        <input type="file" id="materiFileInput" accept=".pdf, .docx" class="w-full app-input rounded-lg p-2 text-[10px]">
+                        <span id="fileMateriStatus" class="text-[10px] text-slate-400 block font-medium">Sistem pemindaian siap memproses naskah kerja.</span>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block font-medium text-slate-600 text-xs">Atau Salin Teks Materi Langsung Di Sini</label>
+                        <textarea id="materiInputText" rows="3" placeholder="Tempel rangkuman bahan/indikator materi Anda ke sini..." class="w-full app-input rounded-lg p-2 font-medium text-xs"></textarea>
+                    </div>
+                </div>
+
+                <!-- TAKSONOMI BLOOM PG GRIDS -->
+                <div class="space-y-2.5">
+                    <h4 class="font-bold text-slate-700 text-[10px] uppercase tracking-wider flex items-center gap-1.5"><span>📊</span> Komposisi Soal Pilihan Ganda (Jenjang Taksonomi Bloom)</h4>
+                    <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">C1 Mengingat</span><input type="number" id="countC1" value="2" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">C2 Memahami</span><input type="number" id="countC2" value="2" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">C3 Menerapkan</span><input type="number" id="countC3" value="1" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">C4 Menganalisis</span><input type="number" id="countC4" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">C5 Mengevaluasi</span><input type="number" id="countC5" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">C6 Menciptakan</span><input type="number" id="countC6" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 cog-input"></div>
+                    </div>
+                </div>
+
+                <!-- TAKSONOMI BLOOM ESSAY GRIDS -->
+                <div class="space-y-2.5">
+                    <h4 class="font-bold text-slate-700 text-[10px] uppercase tracking-wider flex items-center gap-1.5"><span>📝</span> Komposisi Soal Uraian / Essay (Jenjang Taksonomi Bloom)</h4>
+                    <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">Uraian C1</span><input type="number" id="countEssayC1" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 essay-cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">Uraian C2</span><input type="number" id="countEssayC2" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 essay-cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">Uraian C3</span><input type="number" id="countEssayC3" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 essay-cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">Uraian C4</span><input type="number" id="countEssayC4" value="1" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 essay-cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">Uraian C5</span><input type="number" id="countEssayC5" value="1" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 essay-cog-input"></div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 text-center"><span class="text-slate-500 block text-[9px] font-semibold">Uraian C6</span><input type="number" id="countEssayC6" value="0" min="0" class="w-full bg-white border border-slate-300 p-1 rounded-md text-center font-bold text-emerald-700 essay-cog-input"></div>
+                    </div>
+                </div>
+
+                <!-- TOTAL TARGET CALCULATOR -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-200 items-end text-xs">
+                    <div><label class="block font-semibold text-slate-500 mb-1">Total PG Terhitung</label><input type="text" id="generateCountPG" value="5" readonly class="w-full app-input p-2 rounded-lg text-center bg-slate-50 font-bold text-slate-600"></div>
+                    <div><label class="block font-semibold text-slate-500 mb-1">Total Uraian Terhitung</label><input type="text" id="generateCountEssay" value="2" readonly class="w-full app-input p-2 rounded-lg text-center bg-slate-50 font-bold text-slate-600"></div>
+                    <div><label class="block font-semibold text-slate-500 mb-1">Format Penomoran</label><select id="generateEssayLabelStyle" class="w-full app-input p-2 rounded-lg font-medium"><option value="angka">Angka (1,2)</option><option value="huruf">Huruf (A,B)</option></select></div>
+                    <div><button id="processGenerateBtn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase transition-all shadow-md shadow-emerald-600/20 cursor-pointer">✨ Buat Soal Otomatis</button></div>
+                </div>
+            </div>
+
+            <!-- LIVE PREVIEW CANVAS AREA -->
+            <section id="previewSection" class="hidden app-card overflow-hidden bg-white">
+                <div class="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 text-xs" id="previewTitle">Pratinjau Hasil Penyusunan Dokumen</h3>
+                    <button id="exportSingleWordBtn" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all shadow-xs cursor-pointer text-xs">
+                        📥 Download File Word (.docx)
+                    </button>
+                </div>
+                <div id="soalContainer" class="p-6 space-y-6 max-h-[500px] overflow-y-auto divide-y divide-slate-100 text-slate-700 text-xs"></div>
+            </section>
+
+        </section>
+    </main>
+
+    <!-- CUSTOM TOAST MODAL -->
+    <div id="customToastModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white text-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-100 text-center transform scale-90 opacity-0 transition-all duration-300 relative" id="customToastBox">
+            <div id="toastIconBg" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce">
+                <span id="toastIcon">🎉</span>
+            </div>
+            <div class="space-y-1">
+                <h3 id="toastTitle" class="font-extrabold text-slate-800 text-sm">Pemberitahuan Sistem</h3>
+                <p id="toastMessage" class="text-slate-600 text-[11px] leading-relaxed">Pesan notifikasi.</p>
+            </div>
+            <button id="closeToastBtn" type="button" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-md">
+                Paham & Tutup
+            </button>
         </div>
     </div>
 
-    <!-- SKRIP AI LOGIC DALAM FILE HTML -->
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-xs">
+        <p>Asisten Guru Indonesia © 2026 | Dibuat oleh U. Heri Mukti, S.Tr.Kom.</p>
+    </footer>
+
+    <!-- LOGICAL UNIFIED INLINE SCRIPT FOR MODE 2 -->
     <script>
+        // FUNCTION CUSTOM TOAST
+        function showCustomToast(message, type = 'error', title = null) {
+            const toastModal = document.getElementById('customToastModal');
+            const toastBox = document.getElementById('customToastBox');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastIconBg = document.getElementById('toastIconBg');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            const closeToastBtn = document.getElementById('closeToastBtn');
+
+            if (type === 'error') {
+                toastIcon.textContent = '❌';
+                toastIconBg.className = 'w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+                toastTitle.textContent = title || 'Gagal Memproses Data';
+            } else if (type === 'warning') {
+                toastIcon.textContent = '⚠️';
+                toastIconBg.className = 'w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+                toastTitle.textContent = title || 'Perhatian!';
+            } else {
+                toastIcon.textContent = '🎉';
+                toastIconBg.className = 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce';
+                toastTitle.textContent = title || 'Berhasil!';
+            }
+
+            toastMessage.textContent = message;
+            toastModal.classList.remove('hidden');
+            setTimeout(() => {
+                toastBox.classList.remove('scale-90', 'opacity-0');
+                toastBox.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            const closeAction = () => {
+                toastBox.classList.remove('scale-100', 'opacity-100');
+                toastBox.classList.add('scale-90', 'opacity-0');
+                setTimeout(() => toastModal.classList.add('hidden'), 200);
+            };
+
+            closeToastBtn.onclick = closeAction;
+            toastModal.onclick = (e) => { if (e.target === toastModal) closeAction(); };
+        }
+
+        // AUTO-CALCULATE TOTAL PG & ESSAY
+        const generateCountPG = document.getElementById('generateCountPG');
+        const generateCountEssay = document.getElementById('generateCountEssay');
+
+        function updateTotalPG() {
+            const c1 = parseInt(document.getElementById('countC1').value) || 0;
+            const c2 = parseInt(document.getElementById('countC2').value) || 0;
+            const c3 = parseInt(document.getElementById('countC3').value) || 0;
+            const c4 = parseInt(document.getElementById('countC4').value) || 0;
+            const c5 = parseInt(document.getElementById('countC5').value) || 0;
+            const c6 = parseInt(document.getElementById('countC6').value) || 0;
+            generateCountPG.value = c1 + c2 + c3 + c4 + c5 + c6;
+        }
+
+        function updateTotalEssay() {
+            const ec1 = parseInt(document.getElementById('countEssayC1').value) || 0;
+            const ec2 = parseInt(document.getElementById('countEssayC2').value) || 0;
+            const ec3 = parseInt(document.getElementById('countEssayC3').value) || 0;
+            const ec4 = parseInt(document.getElementById('countEssayC4').value) || 0;
+            const ec5 = parseInt(document.getElementById('countEssayC5').value) || 0;
+            const ec6 = parseInt(document.getElementById('countEssayC6').value) || 0;
+            generateCountEssay.value = ec1 + ec2 + ec3 + ec4 + ec5 + ec6;
+        }
+
+        document.querySelectorAll('.cog-input').forEach(input => {
+            input.addEventListener('input', updateTotalPG);
+            input.addEventListener('change', updateTotalPG);
+        });
+
+        document.querySelectorAll('.essay-cog-input').forEach(input => {
+            input.addEventListener('input', updateTotalEssay);
+            input.addEventListener('change', updateTotalEssay);
+        });
+
+        // READ PDF / DOCX FILE
+        const materiFileInput = document.getElementById('materiFileInput');
+        const fileMateriStatus = document.getElementById('fileMateriStatus');
+        let extractedTextFromDocument = "";
+
+        materiFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            fileMateriStatus.textContent = "⏳ Memindai isi dokumen...";
+            fileMateriStatus.className = "text-[10px] text-amber-600 font-semibold block mt-0.5";
+            extractedTextFromDocument = "";
+            const reader = new FileReader();
+
+            if (file.name.endsWith('.docx')) {
+                reader.onload = function(event) {
+                    mammoth.extractRawText({ arrayBuffer: event.target.result }).then(function(result) {
+                        extractedTextFromDocument = (result.value || "").trim();
+                        fileMateriStatus.textContent = `✓ Berkas Word terbaca (${extractedTextFromDocument.split(/\s+/).length} kata).`;
+                        fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                    }).catch(err => {
+                        fileMateriStatus.textContent = "❌ Gagal membaca file Word.";
+                        fileMateriStatus.className = "text-[10px] text-red-500 block";
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            } else if (file.name.endsWith('.pdf')) {
+                reader.onload = async function(event) {
+                    try {
+                        const typedarray = new Uint8Array(event.target.result);
+                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                        let textContent = "";
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const textObj = await page.getTextContent();
+                            textContent += textObj.items.map(item => item.str).join(" ") + "\n";
+                        }
+                        extractedTextFromDocument = textContent.trim();
+                        fileMateriStatus.textContent = `✓ Berkas PDF terbaca (${extractedTextFromDocument.split(/\s+/).length} kata).`;
+                        fileMateriStatus.className = "text-[10px] text-emerald-600 font-semibold block mt-0.5";
+                    } catch(err) {
+                        fileMateriStatus.textContent = "❌ Gagal membaca file PDF.";
+                        fileMateriStatus.className = "text-[10px] text-red-500 block";
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        // AI PROCESSOR VIA PROXY
+        let originalPGQuestions = [];
+        let originalEssayQuestions = [];
         const processGenerateBtn = document.getElementById('processGenerateBtn');
-        const materiInputText = document.getElementById('materiInputText');
+        const previewSection = document.getElementById('previewSection');
+        const soalContainer = document.getElementById('soalContainer');
+        const exportSingleWordBtn = document.getElementById('exportSingleWordBtn');
 
         processGenerateBtn.addEventListener('click', async () => {
-            const materi = materiInputText.value.trim();
-            if(!materi) {
-                alert("Silakan isi teks materi pembelajaran terlebih dahulu.");
+            const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
+            const manualText = document.getElementById('materiInputText').value.trim();
+            const materi = fileText !== "" ? fileText : manualText;
+
+            if (!materi) {
+                return showCustomToast("Silakan lampirkan berkas materi (PDF/Word) atau ketik teks materi terlebih dahulu.", "warning", "Materi Kosong");
+            }
+
+            const totalPGMinta = parseInt(generateCountPG.value) || 0;
+            const totalEssayMinta = parseInt(generateCountEssay.value) || 0;
+
+            if (totalPGMinta === 0 && totalEssayMinta === 0) {
+                return showCustomToast("Jumlah target pembuatan soal tidak boleh 0.", "warning");
+            }
+
+            previewSection.classList.remove('hidden');
+            exportSingleWordBtn.classList.add('hidden');
+            soalContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 space-y-3">
+                    <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs font-bold text-slate-600">AI sedang membaca materi dan menyusun soal evaluasi HOTS...</p>
+                </div>
+            `;
+            previewSection.scrollIntoView({ behavior: 'smooth' });
+
+            processGenerateBtn.disabled = true;
+            processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
+
+            const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
+            const modeDipilih = document.getElementById('documentTypeMode').value;
+            const safeMateriText = materi.substring(0, 4000);
+
+            let coreTaskInstruction = modeDipilih === "soal_lama"
+                ? `Buatkan soal variasi/clone baru berdasarkan pola kumpulan soal berikut: "${safeMateriText}".`
+                : `Buatkan naskah bank soal evaluasi baru berdasarkan BAHAN MATERI BACAAN berikut: "${safeMateriText}".`;
+
+            const rawPromptText = `Anda adalah sistem pembuat soal. ${coreTaskInstruction}
+
+Buatkan Soal:
+- Pilihan Ganda: Tepat ${totalPGMinta} soal.
+- Essay/Uraian: Tepat ${totalEssayMinta} soal.
+
+WAJIB BALAS DENGAN MURNI FORMAT JSON BERIKUT (TANPA MARKDOWN CODEBLOCK):
+{
+  "pilihan_ganda": [
+    {
+      "soal": "Teks pertanyaan soal PG...",
+      "opsi": [
+        {"teks": "Pilihan A"},
+        {"teks": "Pilihan B"},
+        {"teks": "Pilihan C"},
+        {"teks": "Pilihan D"},
+        {"teks": "Pilihan E"}
+      ],
+      "kunciOriginal": "A",
+      "kognitif": "C1"
+    }
+  ],
+  "essay": [
+    {
+      "soal": "Teks pertanyaan uraian/essay...",
+      "kunci": "Pedoman jawaban...",
+      "kognitif": "C4"
+    }
+  ]
+}`;
+
+            try {
+                const response = await fetch(proxyUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] })
+                });
+
+                const rawText = await response.text();
+                let jsonString = rawText;
+
+                try {
+                    const parsedEnvelope = JSON.parse(rawText);
+                    if (parsedEnvelope.candidates && parsedEnvelope.candidates[0] && parsedEnvelope.candidates[0].content) {
+                        jsonString = parsedEnvelope.candidates[0].content.parts[0].text;
+                    }
+                } catch (e) {}
+
+                jsonString = jsonString.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("Format AI mengembalikan narasi tanpa JSON yang valid.");
+
+                const parsedData = JSON.parse(jsonMatch[0]);
+                const rawPG = parsedData.pilihan_ganda || [];
+                const rawEssay = parsedData.essay || [];
+
+                originalPGQuestions = rawPG.map(q => ({
+                    soal: q.soal || "",
+                    opsi: (q.opsi || []).map(opt => ({ teks: typeof opt === 'object' ? (opt.teks || "") : opt })),
+                    kunciOriginal: (q.kunciOriginal || "A").toString().trim().toUpperCase(),
+                    kognitif: q.kognitif || "C1"
+                }));
+
+                originalEssayQuestions = rawEssay.map(e => ({
+                    soal: e.soal || "",
+                    kunci: e.kunci || "-",
+                    kognitif: e.kognitif || "C4"
+                }));
+
+                renderEditorUI();
+                showCustomToast("Naskah soal AI berhasil dibuat!", "success", "Selesai");
+
+            } catch (err) {
+                soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal Memproses Soal: ${err.message}</div>`;
+                showCustomToast("Gagal memproses soal: " + err.message, "error");
+            } finally {
+                processGenerateBtn.disabled = false;
+                processGenerateBtn.textContent = "✨ Buat Soal Otomatis";
+            }
+        });
+
+        // RENDER PREVIEW EDITOR
+        function renderEditorUI() {
+            previewSection.classList.remove('hidden');
+            exportSingleWordBtn.classList.remove('hidden');
+            soalContainer.innerHTML = "";
+
+            if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
+                soalContainer.innerHTML = `<div class="text-center py-8 text-slate-400 font-medium">⚠️ Tidak ada data soal.</div>`;
                 return;
             }
-            alert("Memproses naskah soal berbasis AI...");
-            // Panggil API Proxy Google Apps Script di sini
+
+            if (originalPGQuestions.length > 0) {
+                originalPGQuestions.forEach((q, idx) => {
+                    const block = document.createElement('div');
+                    block.className = "py-4 space-y-2 border-b border-slate-100";
+                    let opsiHtml = "";
+
+                    if (q.opsi) {
+                        q.opsi.forEach((opt, oIdx) => {
+                            opsiHtml += `
+                                <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                                    <span class="font-bold text-emerald-700 pl-1 text-[10px]">${String.fromCharCode(65+oIdx)}.</span>
+                                    <input type="text" value="${opt.teks}" class="bg-transparent w-full focus:outline-none p-0.5 text-slate-800 font-medium" onchange="originalPGQuestions[${idx}].opsi[${oIdx}].teks = this.value;">
+                                </div>
+                            `;
+                        });
+                    }
+
+                    block.innerHTML = `
+                        <div class="flex gap-3 items-start">
+                            <span class="font-bold text-emerald-700 text-xs pt-1">${idx+1}.</span>
+                            <textarea class="w-full app-input rounded-lg p-2 font-medium text-xs" rows="2" onchange="originalPGQuestions[${idx}].soal = this.value;">${q.soal}</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5 pt-1">${opsiHtml}</div>
+                    `;
+                    soalContainer.appendChild(block);
+                });
+            }
+
+            if (originalEssayQuestions.length > 0) {
+                originalEssayQuestions.forEach((q, idx) => {
+                    const block = document.createElement('div');
+                    block.className = "py-4 space-y-2 border-b border-slate-100";
+                    block.innerHTML = `
+                        <div class="flex gap-3 items-start">
+                            <span class="font-bold text-emerald-700 text-xs pt-1">${idx+1}.</span>
+                            <textarea class="w-full app-input rounded-lg p-2 font-medium text-xs" rows="2" onchange="originalEssayQuestions[${idx}].soal = this.value;">${q.soal}</textarea>
+                        </div>
+                    `;
+                    soalContainer.appendChild(block);
+                });
+            }
+        }
+
+        // EXPORT DOCX WITH ADAPTIVE LAYOUT
+        exportSingleWordBtn.addEventListener('click', async () => {
+            const { Document, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, BorderStyle, WidthType } = window.docx;
+            const children = [];
+            const customFont = document.getElementById('fontFamily').value;
+            const customSize = parseInt(document.getElementById('fontSize').value) * 2;
+            const titleSize = customSize + 2;
+            const customMargin = Math.round(parseFloat(document.getElementById('marginCm').value) * 567);
+            const sizeMode = document.getElementById('pageSize').value;
+
+            const dxaWidth = Math.round((sizeMode === "F4" ? 215 : 210) * 56.7);
+            const dxaHeight = Math.round((sizeMode === "F4" ? 330 : 297) * 56.7);
+            const visualKopWidth = sizeMode === "F4" ? 620 : 600;
+
+            const kopGambarElem = document.getElementById('kopGambarInput');
+            const kopGambarFile = kopGambarElem && kopGambarElem.files ? kopGambarElem.files[0] : null;
+
+            if (kopGambarFile) {
+                try {
+                    const bufKop = await kopGambarFile.arrayBuffer();
+                    children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: new Uint8Array(bufKop), transformation: { width: visualKopWidth, height: 95 } })], spacing: { after: 150 } }));
+                } catch(e) {}
+            } else {
+                children.push(
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: document.getElementById('ujianHeader').value, bold: true, size: titleSize, font: customFont })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: document.getElementById('ujianTahun').value, bold: true, size: titleSize, font: customFont })], spacing: { after: 150 } })
+                );
+            }
+
+            children.push(new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE } },
+                rows: [
+                    new TableRow({
+                        children: [
+                            new TableCell({ width: { size: 55, type: WidthType.PERCENTAGE }, children: [
+                                new Paragraph({ children: [new TextRun({ text: `Mata Pelajaran : ${document.getElementById('attrMapel').value}`, font: customFont, size: customSize })] }),
+                                new Paragraph({ children: [new TextRun({ text: `Kelas / Jurusan : ${document.getElementById('attrKelas').value}`, font: customFont, size: customSize })] })
+                            ]}),
+                            new TableCell({ width: { size: 45, type: WidthType.PERCENTAGE }, children: [
+                                new Paragraph({ children: [new TextRun({ text: `Hari / Tanggal  : ${document.getElementById('attrHari').value || '-'}`, font: customFont, size: customSize })] }),
+                                new Paragraph({ children: [new TextRun({ text: `Waktu           : ${document.getElementById('attrWaktu').value || '-'}`, font: customFont, size: customSize })] })
+                            ]})
+                        ]
+                    })
+                ]
+            }));
+            children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "_________________________________________________________________________________", bold: true, font: customFont, size: customSize })], spacing: { after: 250 } }));
+
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+
+            // SOAL PILIHAN GANDA
+            if (originalPGQuestions.length > 0) {
+                children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
+
+                originalPGQuestions.forEach((q, index) => {
+                    children.push(new Paragraph({ 
+                        alignment: AlignmentType.JUSTIFIED,
+                        indent: { left: 360, hanging: 360 }, 
+                        children: [new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: q.soal, font: customFont, size: customSize })], 
+                        spacing: { before: 120, after: 80 } 
+                    }));
+
+                    const targetOptions = q.opsi || [];
+                    let maxOptLen = Math.max(...targetOptions.map(o => (o.teks || "").length));
+                    let totalOptLen = targetOptions.reduce((acc, o) => acc + (o.teks || "").length, 0);
+
+                    // 1 BARIS (SANGAT PENDEK)
+                    if (maxOptLen <= 15 && totalOptLen < 70 && targetOptions.length > 0) {
+                        const runChildren = [];
+                        targetOptions.forEach((opt, oIdx) => {
+                            runChildren.push(new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize }));
+                            if (oIdx < targetOptions.length - 1) runChildren.push(new TextRun({ text: "\t" }));
+                        });
+                        const tabStops = [];
+                        const colWidth = Math.floor(8200 / targetOptions.length);
+                        for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
+                        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: tabStops, indent: { left: 360 }, children: runChildren, spacing: { after: 60 } }));
+                    } 
+                    // 2 BARIS (SEDANG - BARIS 1: A,B,C & BARIS 2: D,E)
+                    else if (maxOptLen <= 30 && totalOptLen < 140 && targetOptions.length === 5) {
+                        const row1Runs = [];
+                        for (let i = 0; i < 3; i++) {
+                            row1Runs.push(new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: targetOptions[i].teks, font: customFont, size: customSize }));
+                            if (i < 2) row1Runs.push(new TextRun({ text: "\t" }));
+                        }
+                        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 2800 }, { type: "left", position: 5600 }], indent: { left: 360 }, children: row1Runs, spacing: { after: 60 } }));
+
+                        const row2Runs = [];
+                        for (let i = 3; i < 5; i++) {
+                            row2Runs.push(new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: targetOptions[i].teks, font: customFont, size: customSize }));
+                            if (i === 3) row2Runs.push(new TextRun({ text: "\t" }));
+                        }
+                        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, tabStops: [{ type: "left", position: 2800 }], indent: { left: 360 }, children: row2Runs, spacing: { after: 60 } }));
+                    } 
+                    // 5 BARIS (PANJANG)
+                    else {
+                        targetOptions.forEach((opt, oIdx) => {
+                            children.push(new Paragraph({ 
+                                alignment: AlignmentType.JUSTIFIED,
+                                indent: { left: 720, hanging: 360 }, 
+                                children: [new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize })], 
+                                spacing: { after: 60 } 
+                            }));
+                        });
+                    }
+                });
+            }
+
+            // SOAL ESSAY
+            if (originalEssayQuestions.length > 0) {
+                children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
+                originalEssayQuestions.forEach((eq, eIndex) => {
+                    children.push(new Paragraph({ 
+                        alignment: AlignmentType.JUSTIFIED,
+                        indent: { left: 360, hanging: 360 }, 
+                        children: [new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize })], 
+                        spacing: { before: 120, after: 120 } 
+                    }));
+                });
+            }
+
+            // KUNCI JAWABAN BACK PAGE
+            children.push(
+                new Paragraph({ children: [new TextRun({ text: "--------------------------------------------------------------------------------------------------", font: customFont, size: customSize })], spacing: { before: 300, after: 100 } }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "KUNCI JAWABAN & PEDOMAN PENSKORAN", bold: true, font: customFont, size: titleSize })], spacing: { after: 150 } })
+            );
+
+            if (originalPGQuestions.length > 0) {
+                originalPGQuestions.forEach((q, index) => {
+                    children.push(new Paragraph({ children: [new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), new TextRun({ text: `${q.kunciOriginal}`, bold: true, font: customFont, size: customSize })], spacing: { after: 60 } }));
+                });
+            }
+
+            if (originalEssayQuestions.length > 0) {
+                originalEssayQuestions.forEach((eq, eIndex) => {
+                    children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 360, hanging: 360 }, children: [new TextRun({ text: `Essay ${eIndex + 1}: `, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.kunci, font: customFont, size: customSize })], spacing: { after: 60 } }));
+                });
+            }
+
+            const doc = new Document({ sections: [{ properties: { page: { size: { width: dxaWidth, height: dxaHeight }, margin: { top: customMargin, bottom: customMargin, left: customMargin, right: customMargin } } }, children }] });
+            const blob = await window.docx.Packer.toBlob(doc);
+            
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const el = document.createElement('a');
+                el.href = reader.result;
+                el.download = "Hasil_AI_Soal_Ujian_HOTS.docx";
+                document.body.appendChild(el); el.click(); document.body.removeChild(el);
+            };
+            reader.readAsDataURL(blob);
         });
     </script>
 </body>
