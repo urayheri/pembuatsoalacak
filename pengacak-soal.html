@@ -430,51 +430,110 @@
 
             const labels = ['A', 'B', 'C', 'D', 'E'];
 
-            // JIKA DOKUMEN KUNCI JAWABAN
-            if (isAnswerKey) {
-                if (pgData && pgData.length > 0) {
-                    children.push(new Paragraph({ children: [new TextRun({ text: "KUNCI JAWABAN PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { after: 150 } }));
-                    pgData.forEach((q, index) => {
-                        const keyVal = q.newKey || q.kunciOriginal || "-";
-                        children.push(new Paragraph({ children: [new TextRun({ text: `Nomor ${index + 1} : `, font: customFont, size: customSize }), new TextRun({ text: `${keyVal}`, bold: true, font: customFont, size: customSize })], spacing: { after: 60 } }));
-                    });
+   // NASKAH SOAL UTAMA - PILIHAN GANDA DENGAN LAYOUT ADAPTIF RAPI
+if (pgData && pgData.length > 0) {
+    children.push(new Paragraph({ 
+        children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], 
+        spacing: { before: 100, after: 150 } 
+    }));
+
+    pgData.forEach((q, index) => {
+        // Teks Soal Ujian (Justified / Rata Kiri Kanan)
+        children.push(new Paragraph({ 
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { left: 360, hanging: 360 }, 
+            children: [
+                new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), 
+                new TextRun({ text: q.soal, font: customFont, size: customSize })
+            ], 
+            spacing: { before: 120, after: 80 } 
+        }));
+
+        const targetOptions = q.shuffledOptions || q.opsi || [];
+        
+        // Hitung total panjang karakter seluruh opsi jawaban
+        let totalOptLen = targetOptions.reduce((acc, o) => acc + (o.teks || "").length, 0);
+
+        // -------------------------------------------------------------
+        // TINGKAT 1: SANGAT PENDEK (1 BARIS KE SAMPING) - Contoh: SMTP, HTTP, PNG
+        // -------------------------------------------------------------
+        if (totalOptLen < 60 && targetOptions.length > 0) {
+            const runChildren = [];
+            targetOptions.forEach((opt, oIdx) => {
+                runChildren.push(
+                    new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }),
+                    new TextRun({ text: opt.teks, font: customFont, size: customSize })
+                );
+                // Tambahkan Tab pemisah kecuali di opsi terakhir
+                if (oIdx < targetOptions.length - 1) {
+                    runChildren.push(new TextRun({ text: "\t" }));
                 }
-            } 
-            // NASKAH SOAL UTAMA
-            else {
-                if (pgData && pgData.length > 0) {
-                    children.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], spacing: { before: 100, after: 150 } }));
-                    pgData.forEach((q, index) => {
-                        children.push(new Paragraph({ 
-                            alignment: AlignmentType.JUSTIFIED,
-                            indent: { left: 360, hanging: 360 }, 
-                            children: [new TextRun({ text: `${index + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: q.soal, font: customFont, size: customSize })], 
-                            spacing: { before: 120, after: 80 } 
-                        }));
-                        
-                        (q.shuffledOptions || []).forEach((opt, oIdx) => {
-                            children.push(new Paragraph({ 
-                                alignment: AlignmentType.JUSTIFIED,
-                                indent: { left: 720, hanging: 360 }, 
-                                children: [new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: opt.teks, font: customFont, size: customSize })], 
-                                spacing: { after: 60 } 
-                            }));
-                        });
-                    });
+            });
+
+            // Atur posisi tab stop otomatis berdasarkan jumlah opsi
+            const tabStops = [];
+            const colWidth = Math.floor(8200 / targetOptions.length);
+            for (let t = 1; t < targetOptions.length; t++) {
+                tabStops.push({ type: "left", position: t * colWidth });
+            }
+
+            children.push(new Paragraph({ 
+                alignment: AlignmentType.JUSTIFIED,
+                tabStops: tabStops,
+                indent: { left: 360 }, 
+                children: runChildren, 
+                spacing: { after: 60 } 
+            }));
+        } 
+        
+        // -------------------------------------------------------------
+        // TINGKAT 2: SEDANG (2 KOLOM / 3 BARIS) - Contoh: font-weight: bold
+        // -------------------------------------------------------------
+        else if (totalOptLen < 120 && targetOptions.length > 0) {
+            for (let i = 0; i < targetOptions.length; i += 2) {
+                const optText1 = targetOptions[i].teks;
+                const runChildren = [
+                    new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }),
+                    new TextRun({ text: optText1, font: customFont, size: customSize })
+                ];
+
+                // Jika ada pasangan opsi di sebelahnya (misal B atau D)
+                if (i + 1 < targetOptions.length) {
+                    const optText2 = targetOptions[i + 1].teks;
+                    runChildren.push(
+                        new TextRun({ text: `\t${labels[i + 1]}. `, bold: true, font: customFont, size: customSize }),
+                        new TextRun({ text: optText2, font: customFont, size: customSize })
+                    );
                 }
 
-                if (essayData && essayData.length > 0) {
-                    children.push(new Paragraph({ children: [new TextRun({ text: "B. ESSAY / URAIAN", bold: true, font: customFont, size: titleSize })], spacing: { before: 300, after: 150 } }));
-                    essayData.forEach((eq, eIndex) => {
-                        children.push(new Paragraph({ 
-                            alignment: AlignmentType.JUSTIFIED,
-                            indent: { left: 360, hanging: 360 }, 
-                            children: [new TextRun({ text: `${eIndex + 1}. `, bold: true, font: customFont, size: customSize }), new TextRun({ text: eq.soal, font: customFont, size: customSize })], 
-                            spacing: { before: 120, after: 120 } 
-                        }));
-                    });
-                }
+                children.push(new Paragraph({ 
+                    alignment: AlignmentType.JUSTIFIED,
+                    tabStops: [{ type: "left", position: 4400 }], // Tab stop di pertengahan kertas
+                    indent: { left: 360 }, 
+                    children: runChildren, 
+                    spacing: { after: 60 } 
+                }));
             }
+        } 
+
+        // -------------------------------------------------------------
+        // TINGKAT 3 & 4: PANJANG / SANGAT PANJANG (BERDERET 5 BARIS KE BAWAH)
+        // -------------------------------------------------------------
+        else {
+            targetOptions.forEach((opt, oIdx) => {
+                children.push(new Paragraph({ 
+                    alignment: AlignmentType.JUSTIFIED,
+                    indent: { left: 720, hanging: 360 }, 
+                    children: [
+                        new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }), 
+                        new TextRun({ text: opt.teks, font: customFont, size: customSize })
+                    ], 
+                    spacing: { after: 60 } 
+                }));
+            });
+        }
+    });
+}
 
             const doc = new Document({ sections: [{ properties: { page: { size: { width: dxaWidth, height: dxaHeight }, margin: { top: customMargin, bottom: customMargin, left: customMargin, right: customMargin } } }, children }] });
             return await window.docx.Packer.toBlob(doc);
