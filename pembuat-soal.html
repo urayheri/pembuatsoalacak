@@ -380,57 +380,59 @@
         const soalContainer = document.getElementById('soalContainer');
         const exportSingleWordBtn = document.getElementById('exportSingleWordBtn');
 
-        processGenerateBtn.addEventListener('click', async () => {
-            const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
-            const manualText = document.getElementById('materiInputText').value.trim();
-            const materi = fileText !== "" ? fileText : manualText;
+        // EVENT LISTENER PROSES GENERATE SOAL AI (SOLUSI ANTI-GAGAL JSON PARSE)
+processGenerateBtn.addEventListener('click', async () => {
+    // 1. Ambil teks dari PDF/Word (extractedTextFromDocument) atau Textarea Manual
+    const fileText = (typeof extractedTextFromDocument === 'string') ? extractedTextFromDocument.trim() : "";
+    const manualText = document.getElementById('materiInputText').value.trim();
+    const materi = fileText !== "" ? fileText : manualText;
 
-            if (!materi) {
-                return showCustomToast("Silakan lampirkan berkas materi (PDF/Word) atau ketik teks materi terlebih dahulu.", "warning", "Materi Kosong");
-            }
+    if (!materi) {
+        return showCustomToast("Silakan lampirkan berkas materi (PDF/Word) atau ketik teks materi terlebih dahulu.", "warning", "Materi Kosong");
+    }
 
-            const totalPGMinta = parseInt(generateCountPG.value) || 0;
-            const totalEssayMinta = parseInt(generateCountEssay.value) || 0;
+    const totalPGMinta = parseInt(generateCountPG.value) || 0;
+    const totalEssayMinta = parseInt(generateCountEssay.value) || 0;
 
-            if (totalPGMinta === 0 && totalEssayMinta === 0) {
-                return showCustomToast("Jumlah target pembuatan soal tidak boleh 0.", "warning");
-            }
+    if (totalPGMinta === 0 && totalEssayMinta === 0) {
+        return showCustomToast("Jumlah target pembuatan soal tidak boleh 0.", "warning");
+    }
 
-            previewSection.classList.remove('hidden');
-            exportSingleWordBtn.classList.add('hidden');
-            soalContainer.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 space-y-3">
-                    <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold text-slate-600">AI sedang membaca materi dan menyusun soal evaluasi HOTS...</p>
-                </div>
-            `;
-            previewSection.scrollIntoView({ behavior: 'smooth' });
+    previewSection.classList.remove('hidden');
+    exportSingleWordBtn.classList.add('hidden');
+    soalContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-12 space-y-3">
+            <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs font-bold text-slate-600">AI sedang membaca materi dan menyusun soal evaluasi HOTS...</p>
+        </div>
+    `;
+    previewSection.scrollIntoView({ behavior: 'smooth' });
 
-            processGenerateBtn.disabled = true;
-            processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
+    processGenerateBtn.disabled = true;
+    processGenerateBtn.textContent = "AI Sedang Memformulasikan Soal Evaluasi...";
 
-            const proxyUrl = "https://script.google.com/macros/s/AKfycbyOKkT6pRqpLQrN02J70gMVGjXWcIrSDBQYHDP_KqY13Qa28iGIL-7Fc9Oeyrz9VoGQ/exec";
-            const modeDipilih = document.getElementById('documentTypeMode').value;
-            const safeMateriText = materi.substring(0, 4000);
+    const proxyUrl = "https://script.google.com/macros/s/AKfycbx8Ck7ZnEh__CMzKiqeDdSSiRWZpVHhPfmPHFnRRK-tnNIA80m_jg2eMJR3H4I-b9xV/exec";
+    const modeDipilih = document.getElementById('documentTypeMode').value;
+    
+    // Potong materi maks 3.500 karakter agar respons tidak terpotong oleh proxy Google Apps Script
+    const safeMateriText = materi.substring(0, 3500);
 
-            let coreTaskInstruction = "";
-            if (modeDipilih === "soal_lama") {
-                coreTaskInstruction = `Buatkan soal variasi/clone baru berdasarkan pola kumpulan soal lama berikut: "${safeMateriText}".`;
-            } else {
-                coreTaskInstruction = `Buatkan naskah bank soal evaluasi baru berdasarkan ISI DOKUMEN/MATERI BACAAN (PDF/Word) berikut: "${safeMateriText}".`;
-            }
+    let coreTaskInstruction = modeDipilih === "soal_lama"
+        ? `Buatkan soal variasi/clone baru berdasarkan pola kumpulan soal lama berikut: "${safeMateriText}".`
+        : `Buatkan naskah bank soal evaluasi baru berdasarkan MATERI BACAAN berikut: "${safeMateriText}".`;
 
-            const rawPromptText = `Anda adalah sistem pembuat soal. ${coreTaskInstruction}
+    // PROMPT DENGAN FORMAT STRUKTUR STRICT JSON
+    const rawPromptText = `Anda adalah sistem pembuat soal. ${coreTaskInstruction}
 
 Buatkan Soal:
 - Pilihan Ganda: Tepat ${totalPGMinta} soal.
 - Essay/Uraian: Tepat ${totalEssayMinta} soal.
 
-WAJIB BALAS DENGAN MURNI FORMAT JSON BERIKUT (TANPA MARKDOWN CODEBLOCK):
+DILARANG MEMBERIKAN NARRATIVE TEKS ATAU MARKDOWN CODEBLOCK. WAJIB HANYA DENGAN FORMAT JSON STRUKTUR BERIKUT:
 {
   "pilihan_ganda": [
     {
-      "soal": "Teks pertanyaan soal PG...",
+      "soal": "Teks pertanyaan PG...",
       "opsi": [
         {"teks": "Pilihan A"},
         {"teks": "Pilihan B"},
@@ -444,63 +446,108 @@ WAJIB BALAS DENGAN MURNI FORMAT JSON BERIKUT (TANPA MARKDOWN CODEBLOCK):
   ],
   "essay": [
     {
-      "soal": "Teks pertanyaan uraian/essay...",
+      "soal": "Teks pertanyaan essay...",
       "kunci": "Pedoman jawaban...",
       "kognitif": "C4"
     }
   ]
 }`;
 
-            try {
-                const response = await fetch(proxyUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] })
-                });
-
-                const rawText = await response.text();
-                let jsonString = rawText;
-
-                try {
-                    const parsedEnvelope = JSON.parse(rawText);
-                    if (parsedEnvelope.candidates && parsedEnvelope.candidates[0] && parsedEnvelope.candidates[0].content) {
-                        jsonString = parsedEnvelope.candidates[0].content.parts[0].text;
-                    }
-                } catch (e) {}
-
-                jsonString = jsonString.replace(/```json/gi, '').replace(/```/g, '').trim();
-                const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("Format AI mengembalikan narasi tanpa JSON yang valid.");
-
-                const parsedData = JSON.parse(jsonMatch[0]);
-                const rawPG = parsedData.pilihan_ganda || [];
-                const rawEssay = parsedData.essay || [];
-
-                originalPGQuestions = rawPG.map(q => ({
-                    soal: q.soal || "",
-                    opsi: (q.opsi || []).map(opt => ({ teks: typeof opt === 'object' ? (opt.teks || "") : opt })),
-                    kunciOriginal: (q.kunciOriginal || "A").toString().trim().toUpperCase(),
-                    kognitif: q.kognitif || "C1"
-                }));
-
-                originalEssayQuestions = rawEssay.map(e => ({
-                    soal: e.soal || "",
-                    kunci: e.kunci || "-",
-                    kognitif: e.kognitif || "C4"
-                }));
-
-                renderEditorUI();
-                showCustomToast("Naskah soal AI berhasil dibuat!", "success", "Selesai");
-
-            } catch (err) {
-                soalContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold">❌ Gagal Memproses Soal: ${err.message}</div>`;
-                showCustomToast("Gagal memproses soal: " + err.message, "error");
-            } finally {
-                processGenerateBtn.disabled = false;
-                processGenerateBtn.textContent = "✨ Buat Soal Otomatis";
-            }
+    try {
+        const response = await fetch(proxyUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: rawPromptText }] }] })
         });
 
+        const rawText = await response.text();
+        
+        if (!rawText || rawText.includes("<!DOCTYPE") || rawText.includes("405 Not Allowed")) {
+            throw new Error("Server Google Apps Script sibuk atau menolak permintaan.");
+        }
+
+        // 1. Ambil teks dari pembungkus candidates AI
+        let jsonString = rawText;
+        try {
+            const parsedEnvelope = JSON.parse(rawText);
+            
+            // Tangkap jika Apps Script mengembalikan error dari API Key
+            if (parsedEnvelope.error) {
+                throw new Error(parsedEnvelope.error.message || JSON.stringify(parsedEnvelope.error));
+            }
+
+            if (parsedEnvelope.candidates && parsedEnvelope.candidates[0] && parsedEnvelope.candidates[0].content) {
+                jsonString = parsedEnvelope.candidates[0].content.parts[0].text;
+            }
+        } catch (e) {
+            if (e.message.includes("API key") || e.message.includes("quota")) throw e;
+        }
+
+        // 2. BERSIONALKAN TEKS DARI CODEBLOCK MARKDOWN & KARAKTER TERSEMBUNYI
+        jsonString = jsonString
+            .replace(/```json/gi, '')
+            .replace(/```/g, '')
+            .replace(/[\u0000-\u001F]+/g, " ")
+            .trim();
+
+        // 3. TANGKAP STRUKTUR { ... } TERLUAR
+        const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            throw new Error("Respons AI tidak mengembalikan format JSON yang valid.");
+        }
+
+        const parsedData = JSON.parse(jsonMatch[0]);
+
+        // 4. MAPPING ARRAY DENGAN PARSER TANGGUH
+        const rawPG = parsedData.pilihan_ganda || parsedData.pg || parsedData.soal_pg || [];
+        const rawEssay = parsedData.essay || parsedData.uraian || parsedData.soal_essay || [];
+
+        originalPGQuestions = rawPG.map(q => {
+            const rawOpsi = q.opsi || q.options || q.pilihan || [];
+            const cleanOpsi = rawOpsi.map(opt => {
+                let text = typeof opt === 'object' ? (opt.teks || opt.text || "") : opt;
+                text = text.toString().replace(/^[A-Ea-e][\.\)\-\s]+/g, '').trim();
+                return { teks: text };
+            });
+
+            return {
+                soal: q.soal || q.question || "",
+                opsi: cleanOpsi,
+                kunciOriginal: (q.kunciOriginal || q.kunci || "A").toString().trim().toUpperCase(),
+                kognitif: q.kognitif || "C1"
+            };
+        });
+
+        originalEssayQuestions = rawEssay.map(e => ({
+            soal: e.soal || e.question || "",
+            kunci: e.kunci || e.answer || "-",
+            kognitif: e.kognitif || "C4"
+        }));
+
+        if (originalPGQuestions.length === 0 && originalEssayQuestions.length === 0) {
+            throw new Error("JSON terbaca tetapi array 'pilihan_ganda' atau 'essay' di dalamnya kosong.");
+        }
+
+        // Render UI jika sukses
+        renderEditorUI();
+        showCustomToast("Naskah soal AI berhasil dibuat!", "success", "Berhasil");
+
+    } catch (err) {
+        soalContainer.innerHTML = `
+            <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold space-y-2">
+                <p>❌ Gagal Memproses Soal: ${err.message}</p>
+                <div class="text-[10px] text-slate-600 font-normal bg-white p-2.5 rounded border border-red-100">
+                    <strong>Penyebab Utama:</strong> Teks materi dari file PDF terlalu panjang atau AI mengirimkan teks di luar format JSON.<br>
+                    <strong>Solusi Instan:</strong> Salin (copy) sebagian teks materi yang penting saja lalu tempel ke kotak <em>"Atau Salin Teks Materi Langsung Di Sini"</em> di sebelah kanan, kemudian klik Buat Soal Otomatis kembali.
+                </div>
+            </div>
+        `;
+        showCustomToast("Gagal memproses soal: " + err.message, "error");
+    } finally {
+        processGenerateBtn.disabled = false;
+        processGenerateBtn.textContent = "✨ Buat Soal Otomatis";
+    }
+});
         // RENDER PREVIEW EDITOR
         function renderEditorUI() {
             previewSection.classList.remove('hidden');
