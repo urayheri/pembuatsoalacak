@@ -430,7 +430,7 @@
 
             const labels = ['A', 'B', 'C', 'D', 'E'];
 
-   // NASKAH SOAL UTAMA - PILIHAN GANDA DENGAN LAYOUT ADAPTIF RAPI
+   // NASKAH SOAL UTAMA - PILIHAN GANDA (LAYOUT ADAPTIF RAPI 1, 2, DAN 3 BARIS)
 if (pgData && pgData.length > 0) {
     children.push(new Paragraph({ 
         children: [new TextRun({ text: "A. PILIHAN GANDA", bold: true, font: customFont, size: titleSize })], 
@@ -438,7 +438,7 @@ if (pgData && pgData.length > 0) {
     }));
 
     pgData.forEach((q, index) => {
-        // Teks Soal Ujian (Justified / Rata Kiri Kanan)
+        // Teks Soal Ujian (Justified)
         children.push(new Paragraph({ 
             alignment: AlignmentType.JUSTIFIED,
             indent: { left: 360, hanging: 360 }, 
@@ -450,32 +450,25 @@ if (pgData && pgData.length > 0) {
         }));
 
         const targetOptions = q.shuffledOptions || q.opsi || [];
-        
-        // Hitung total panjang karakter seluruh opsi jawaban
+        let maxOptLen = Math.max(...targetOptions.map(o => (o.teks || "").length));
         let totalOptLen = targetOptions.reduce((acc, o) => acc + (o.teks || "").length, 0);
 
         // -------------------------------------------------------------
-        // TINGKAT 1: SANGAT PENDEK (1 BARIS KE SAMPING) - Contoh: SMTP, HTTP, PNG
+        // TINGKAT 1: SANGAT PENDEK (PAS 1 BARIS) -> Misal: SMTP, HTTP, PNG
         // -------------------------------------------------------------
-        if (totalOptLen < 60 && targetOptions.length > 0) {
+        if (maxOptLen <= 15 && totalOptLen < 70 && targetOptions.length > 0) {
             const runChildren = [];
             targetOptions.forEach((opt, oIdx) => {
                 runChildren.push(
                     new TextRun({ text: `${labels[oIdx]}. `, bold: true, font: customFont, size: customSize }),
                     new TextRun({ text: opt.teks, font: customFont, size: customSize })
                 );
-                // Tambahkan Tab pemisah kecuali di opsi terakhir
-                if (oIdx < targetOptions.length - 1) {
-                    runChildren.push(new TextRun({ text: "\t" }));
-                }
+                if (oIdx < targetOptions.length - 1) runChildren.push(new TextRun({ text: "\t" }));
             });
 
-            // Atur posisi tab stop otomatis berdasarkan jumlah opsi
             const tabStops = [];
             const colWidth = Math.floor(8200 / targetOptions.length);
-            for (let t = 1; t < targetOptions.length; t++) {
-                tabStops.push({ type: "left", position: t * colWidth });
-            }
+            for (let t = 1; t < targetOptions.length; t++) tabStops.push({ type: "left", position: t * colWidth });
 
             children.push(new Paragraph({ 
                 alignment: AlignmentType.JUSTIFIED,
@@ -487,37 +480,47 @@ if (pgData && pgData.length > 0) {
         } 
         
         // -------------------------------------------------------------
-        // TINGKAT 2: SEDANG (2 KOLOM / 3 BARIS) - Contoh: font-weight: bold
+        // TINGKAT 2: SEDANG (PAS 2 BARIS) -> 3 Opsi Baris 1 (A,B,C) & 2 Opsi Baris 2 (D,E)
+        // Contoh: "Control Style Sheets", "page-color: red"
         // -------------------------------------------------------------
-        else if (totalOptLen < 120 && targetOptions.length > 0) {
-            for (let i = 0; i < targetOptions.length; i += 2) {
-                const optText1 = targetOptions[i].teks;
-                const runChildren = [
+        else if (maxOptLen <= 30 && totalOptLen < 140 && targetOptions.length === 5) {
+            // Baris 1: A, B, C
+            const row1Runs = [];
+            for (let i = 0; i < 3; i++) {
+                row1Runs.push(
                     new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }),
-                    new TextRun({ text: optText1, font: customFont, size: customSize })
-                ];
-
-                // Jika ada pasangan opsi di sebelahnya (misal B atau D)
-                if (i + 1 < targetOptions.length) {
-                    const optText2 = targetOptions[i + 1].teks;
-                    runChildren.push(
-                        new TextRun({ text: `\t${labels[i + 1]}. `, bold: true, font: customFont, size: customSize }),
-                        new TextRun({ text: optText2, font: customFont, size: customSize })
-                    );
-                }
-
-                children.push(new Paragraph({ 
-                    alignment: AlignmentType.JUSTIFIED,
-                    tabStops: [{ type: "left", position: 4400 }], // Tab stop di pertengahan kertas
-                    indent: { left: 360 }, 
-                    children: runChildren, 
-                    spacing: { after: 60 } 
-                }));
+                    new TextRun({ text: targetOptions[i].teks, font: customFont, size: customSize })
+                );
+                if (i < 2) row1Runs.push(new TextRun({ text: "\t" }));
             }
+            children.push(new Paragraph({ 
+                alignment: AlignmentType.JUSTIFIED,
+                tabStops: [{ type: "left", position: 2800 }, { type: "left", position: 5600 }],
+                indent: { left: 360 }, 
+                children: row1Runs, 
+                spacing: { after: 60 } 
+            }));
+
+            // Baris 2: D, E
+            const row2Runs = [];
+            for (let i = 3; i < 5; i++) {
+                row2Runs.push(
+                    new TextRun({ text: `${labels[i]}. `, bold: true, font: customFont, size: customSize }),
+                    new TextRun({ text: targetOptions[i].teks, font: customFont, size: customSize })
+                );
+                if (i === 3) row2Runs.push(new TextRun({ text: "\t" }));
+            }
+            children.push(new Paragraph({ 
+                alignment: AlignmentType.JUSTIFIED,
+                tabStops: [{ type: "left", position: 2800 }],
+                indent: { left: 360 }, 
+                children: row2Runs, 
+                spacing: { after: 60 } 
+            }));
         } 
 
         // -------------------------------------------------------------
-        // TINGKAT 3 & 4: PANJANG / SANGAT PANJANG (BERDERET 5 BARIS KE BAWAH)
+        // TINGKAT 3: PANJANG (BERDERET KE BAWAH / 5 BARIS)
         // -------------------------------------------------------------
         else {
             targetOptions.forEach((opt, oIdx) => {
@@ -534,7 +537,6 @@ if (pgData && pgData.length > 0) {
         }
     });
 }
-
             const doc = new Document({ sections: [{ properties: { page: { size: { width: dxaWidth, height: dxaHeight }, margin: { top: customMargin, bottom: customMargin, left: customMargin, right: customMargin } } }, children }] });
             return await window.docx.Packer.toBlob(doc);
         }
