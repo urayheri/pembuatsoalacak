@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembuat Soal AI HOTS - Asisten Guru Indonesia</title>
     
-    <!-- FAVICON -->
+    <!-- FAVICON ICON -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
     
-    <!-- TAILWIND & PUSTAKA PARSING / MATH -->
+    <!-- TAILWIND CSS & PUSTAKA PARSING -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -159,7 +159,7 @@
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="block font-medium text-slate-600 mb-1.5 text-xs">Metode Analisis Dokumen</label>
                     <select id="documentTypeMode" class="w-full app-input p-2 rounded-lg font-medium focus:outline-none text-xs">
-                        <option value="materi">Hasilkan Bank Soal Baru Berdasarkan Ringkasan Materi</option>
+                        <option value="materi_pdf">Hasilkan Bank Soal Baru Berdasarkan Dokumen PDF / Word / Ringkasan Materi</option>
                         <option value="soal_lama">Kembangkan Variasi Soal Baru Berdasarkan Pola Kumpulan Soal Lama</option>
                     </select>
                 </div>
@@ -413,9 +413,12 @@
             const modeDipilih = document.getElementById('documentTypeMode').value;
             const safeMateriText = materi.substring(0, 4000);
 
-            let coreTaskInstruction = modeDipilih === "soal_lama"
-                ? `Buatkan soal variasi/clone baru berdasarkan pola kumpulan soal berikut: "${safeMateriText}".`
-                : `Buatkan naskah bank soal evaluasi baru berdasarkan BAHAN MATERI BACAAN berikut: "${safeMateriText}".`;
+            let coreTaskInstruction = "";
+            if (modeDipilih === "soal_lama") {
+                coreTaskInstruction = `Buatkan soal variasi/clone baru berdasarkan pola kumpulan soal lama berikut: "${safeMateriText}".`;
+            } else {
+                coreTaskInstruction = `Buatkan naskah bank soal evaluasi baru berdasarkan ISI DOKUMEN/MATERI BACAAN (PDF/Word) berikut: "${safeMateriText}".`;
+            }
 
             const rawPromptText = `Anda adalah sistem pembuat soal. ${coreTaskInstruction}
 
